@@ -300,6 +300,74 @@ elif page == "⚡ Stato delle Reti Elettriche":
     """)
 
 # --- PAGINE SEGNAPOSTO (Da popolare blocco per blocco) ---
-elif page in ["💧 Focus: Idroelettrico", "🔥 Focus: Gas & Petrolio", "🌱 Focus: Biomasse & Biogas", "🔋 Focus: Batterie & Accumuli", "🌍 Emissioni e Clima (FVG)"]:
+elif page in ["💧 Focus: Idroelettrico", "🌱 Focus: Biomasse & Biogas", "🔋 Focus: Batterie & Accumuli", "🌍 Emissioni e Clima (FVG)"]:
     st.title(page)
     st.info("🚧 Sezione pronta. Inizieremo a popolarla con i dati specifici nel prossimo blocco!")
+
+#"🔥 Focus: Gas & Petrolio"
+
+elif page == "🔥 Focus: Gas & Petrolio":
+    st.title("🔥 Focus: Gas & Petrolio (Termoelettrico e Cogenerazione)")
+    st.markdown("Analisi basata sui dati statistici ufficiali Terna relativi al parco termoelettrico regionale.")
+    
+    # Controlliamo se l'utente ha caricato i file Terna nella barra laterale
+    if 'dict_dfs' not in locals() or not dict_dfs:
+        st.warning("⚠️ Per visualizzare i dati reali in questa sezione, devi caricare i file Excel di Terna nella barra laterale (Quadro Generale).")
+        st.info("In attesa dei file, mostriamo i macro-trend regionali.")
+    else:
+        st.success("Dati Terna rilevati in memoria. Analisi attivata.")
+        
+        # Cerchiamo il file del termoelettrico tra quelli caricati
+        file_termo = next((nome for nome in dict_dfs.keys() if "Produzione termoelettrica per categoria" in nome and "(1)" not in nome), None)
+        
+        if file_termo:
+            df_termo = dict_dfs[file_termo]
+            # Assicuriamoci che le colonne siano pulite
+            df_termo.columns = [str(c).strip() for c in df_termo.columns]
+            
+            # KPI Principali calcolati dal file Terna
+            anno_max = df_termo['Anno'].max()
+            prod_recente = df_termo[df_termo['Anno'] == anno_max]['Sum of Produzione (GWh)'].sum()
+            prod_picco = df_termo.groupby('Anno')['Sum of Produzione (GWh)'].sum().max()
+            anno_picco = df_termo.groupby('Anno')['Sum of Produzione (GWh)'].sum().idxmax()
+            
+            c1, c2, c3 = st.columns(3)
+            c1.metric(f"Produzione Termoelettrica ({anno_max})", f"{prod_recente:,.0f} GWh", "Crollo storico")
+            c2.metric(f"Picco Storico ({anno_picco})", f"{prod_picco:,.0f} GWh")
+            c3.metric("Calo dal picco", f"-{((prod_picco - prod_recente)/prod_picco)*100:.1f}%")
+            
+            st.divider()
+            
+            c_chart, c_text = st.columns([2, 1])
+            with c_chart:
+                fig_termo = px.area(
+                    df_termo, x='Anno', y='Sum of Produzione (GWh)', color='Categoria',
+                    title="Evoluzione e Crollo del Termoelettrico (GWh)",
+                    color_discrete_map={'Cogenerative': '#F97316', 'Non cogenerative': '#6B7280'}
+                )
+                fig_termo.update_layout(margin=dict(t=30, b=0, l=0, r=0))
+                st.plotly_chart(fig_termo, use_container_width=True)
+                
+            with c_text:
+                st.markdown("### L'Evoluzione del Sistema")
+                st.markdown(f"""
+                I dati Terna mostrano una transizione interna ai combustibili fossili prima ancora che verso le rinnovabili:
+                * **L'Efficienza vince:** Gli impianti non cogenerativi (grigio) che sprecavano il calore termico sono collassati, passando da oltre 10.000 GWh nei primi anni 2000 a valori marginali oggi.
+                * **Il crollo recente:** A partire dal 2022/2023 si nota un dimezzamento della produzione totale. Questo è l'effetto combinato della crisi dei prezzi del gas metano e dell'erosione delle quote di mercato da parte del fotovoltaico (elettrificazione).
+                """)
+        else:
+            st.error("Il file 'Produzione termoelettrica per categoria [GWh].xlsx' non è presente tra quelli caricati.")
+            
+        # Cerchiamo il secondo file: dettaglio tecnologie
+        file_dettaglio = next((nome for nome in dict_dfs.keys() if "Produzione termoelettrica per categoria" in nome and "(1)" in nome), None)
+        if file_dettaglio:
+            st.subheader("Anatomia del Parco Termoelettrico")
+            df_det = dict_dfs[file_dettaglio]
+            # Assumendo che le colonne siano: Categoria, Sottocategoria, Sum of Produzione (GWh)
+            fig_det = px.bar(
+                df_det, y='Sottocategoria', x='Sum of Produzione (GWh)', color='Categoria',
+                orientation='h', title="Composizione Tecnologica",
+                color_discrete_map={'Cogenerative': '#F97316', 'Non cogenerative': '#6B7280'}
+            )
+            fig_det.update_layout(yaxis={'categoryorder':'total ascending'})
+            st.plotly_chart(fig_det, use_container_width=True)
