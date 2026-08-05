@@ -19,10 +19,10 @@ color_map = {
     'Non cogenerative': '#6B7280'
 }
 
-# --- 2. CARICAMENTO DATI REALI (Hardcoded dai tuoi file) ---
+# --- 2. CARICAMENTO DATI REALI FVG ---
 @st.cache_data
 def load_real_fvg_data():
-    # 1. Serie storica estesa per Marchetti, Ternario e Sankey (2000 - 2030)
+    # Serie storica estesa per Ternario e Marchetti (2000 - 2030)
     anni = list(range(2000, 2031, 2))
     data_primaria = []
     
@@ -47,13 +47,13 @@ def load_real_fvg_data():
     
     df_primaria = pd.DataFrame(data_primaria)
     
-    # 2. Dati storici reali Fotovoltaico (Green Deal / PER FVG)
+    # Dati storici Fotovoltaico
     df_cap_fv = pd.DataFrame([
         {'Anno': 2019, 'MW': 545}, {'Anno': 2020, 'MW': 561}, {'Anno': 2021, 'MW': 591},
         {'Anno': 2022, 'MW': 656}, {'Anno': 2023, 'MW': 948}, {'Anno': 2024, 'MW': 1318}
     ])
 
-    # 3. Dati reali TERMOELETTRICO (Estratti dai file Excel Terna)
+    # Dati storici Termoelettrico (Terna)
     data_termo = [
         {'Anno': 2000, 'Categoria': 'Non cogenerative', 'GWh': 7768},
         {'Anno': 2000, 'Categoria': 'Cogenerative', 'GWh': 8000},
@@ -74,7 +74,7 @@ def load_real_fvg_data():
     ]
     df_termo_storico = pd.DataFrame(data_termo)
 
-    # 4. Dati reali Mix Tecnologico Termoelettrico
+    # Mix Tecnologico Termoelettrico
     data_mix_termo = [
         {'Categoria': 'Cogenerative', 'Tecnologia': 'Ciclo Combinato', 'GWh': 2108},
         {'Categoria': 'Cogenerative', 'Tecnologia': 'Combustione Interna', 'GWh': 850},
@@ -95,6 +95,7 @@ st.sidebar.title("FVG Energy Portal")
 
 page = st.sidebar.radio("Vai a:", [
     "📊 Quadro Generale (Offerta & Domanda)",
+    "🔺 Transizione (Marchetti & Ternario)",
     "🔄 Sankey Termodinamico",
     "☀️ Focus: Fotovoltaico",
     "🔥 Focus: Gas & Petrolio",
@@ -115,64 +116,119 @@ selected_year = st.sidebar.selectbox("Filtro Anno Globale (Sankey & Macro):", so
 if page == "📊 Quadro Generale (Offerta & Domanda)":
     st.title("📊 Quadro Generale (Offerta & Domanda)")
     
-    tab_macro, tab_transizione = st.tabs(["Overview & Mix", "📈 Transizione (Marchetti & Ternario)"])
+    c1, c2 = st.columns(2)
+    df_anno = df_primaria[df_primaria['Anno'] == selected_year]
+    with c1:
+        fig_pie = px.pie(
+            df_anno, values='GWh', names='Fonte', hole=0.4, 
+            color='Fonte', color_discrete_map=color_map, 
+            title=f"Mix Energetico FVG ({selected_year})"
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
+    with c2:
+        fig_bar = px.bar(
+            df_primaria, x='Anno', y='GWh', color='Fonte', 
+            color_discrete_map=color_map, title="Trend Consumi Storici"
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+# --- PAGINA 2: TERNARIO & MARCHETTI (PAGINA DEDICATA) ---
+elif page == "🔺 Transizione (Marchetti & Ternario)":
+    st.title("🔺 Transizione Energetica FVG: Diagramma Ternario & Marchetti")
+    st.markdown("Analisi della traiettoria di decarbonizzazione e della competizione tra vettori energetici.")
     
-    with tab_macro:
-        c1, c2 = st.columns(2)
-        df_anno = df_primaria[df_primaria['Anno'] == selected_year]
-        with c1:
-            fig_pie = px.pie(
-                df_anno, values='GWh', names='Fonte', hole=0.4, 
-                color='Fonte', color_discrete_map=color_map, 
-                title=f"Mix Energetico FVG ({selected_year})"
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
-        with c2:
-            fig_bar = px.bar(
-                df_primaria, x='Anno', y='GWh', color='Fonte', 
-                color_discrete_map=color_map, title="Trend Consumi Storici"
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
+    # 1. DIAGRAMMA TERNARIO
+    st.subheader("1. Diagramma Ternario (Fossili vs Elettroni vs Biomasse)")
+    st.markdown("""
+    Il diagramma ternario traccia lo spostamento del mix energetico primario tra tre assi fondamentali ($100\%$ totale):
+    * **Asse A (Sinistra)**: Fonti Fossili (Gas, Petrolio, Carbone)
+    * **Asse B (Destra)**: Elettroni Rinnovabili (Idro, Solare, Eolico)
+    * **Asse C (Alto)**: Molecole Bio (Biomasse, Geotermia)
+    """)
+    
+    # Calcolo Dati Ternario
+    pivot_df = df_primaria.pivot_table(index='Anno', columns='Fonte', values='GWh', aggfunc='sum').fillna(0)
+    pivot_df['Total'] = pivot_df.sum(axis=1)
+    
+    pivot_df['Fossil'] = pivot_df.get('Carbone',0) + pivot_df.get('Gas Naturale',0) + pivot_df.get('Petrolio',0)
+    pivot_df['Electrons'] = pivot_df.get('Idroelettrico',0) + pivot_df.get('Solare Fotovoltaico',0) + pivot_df.get('Eolico',0)
+    pivot_df['Bio_Other'] = pivot_df.get('Biomasse/Geo',0)
+    
+    pivot_df['Fossil_pct'] = (pivot_df['Fossil'] / pivot_df['Total']) * 100
+    pivot_df['Electrons_pct'] = (pivot_df['Electrons'] / pivot_df['Total']) * 100
+    pivot_df['Bio_pct'] = (pivot_df['Bio_Other'] / pivot_df['Total']) * 100
+    
+    pivot_res = pivot_df.reset_index()
+    
+    fig_t = px.scatter_ternary(
+        pivot_res, 
+        a="Fossil_pct", 
+        b="Electrons_pct", 
+        c="Bio_pct", 
+        hover_name="Anno", 
+        text="Anno",
+        color="Anno", 
+        color_continuous_scale="Viridis",
+        labels={
+            "Fossil_pct": "Fossili (%)",
+            "Electrons_pct": "Elettroni (%)",
+            "Bio_pct": "Biomasse (%)"
+        },
+        title="Traiettoria Storica e Proiettata (2000 - 2030)"
+    )
+    
+    fig_t.update_traces(
+        mode="lines+markers+text", 
+        textposition="top center",
+        line=dict(color='#22C55E', width=3), 
+        marker=dict(size=12, symbol="circle")
+    )
+    
+    fig_t.update_layout(
+        height=650,
+        margin=dict(t=50, b=40, l=40, r=40),
+        ternary=dict(
+            sum=100,
+            aaxis=dict(title="Fossili (Gas, Petrolio, Carbone)"),
+            baxis=dict(title="Elettroni (Idro, Solare, Eolico)"),
+            caxis=dict(title="Biomasse & Altro")
+        )
+    )
+    
+    st.plotly_chart(fig_t, use_container_width=True)
+    
+    # Tabella riassuntiva percentuali
+    with st.expander("📊 Visualizza la Tabella Dati del Ternario (Percentuali)"):
+        st.dataframe(
+            pivot_res[['Anno', 'Fossil_pct', 'Electrons_pct', 'Bio_pct']].rename(columns={
+                'Fossil_pct': 'Fossili (%)',
+                'Electrons_pct': 'Elettroni (%)',
+                'Bio_pct': 'Biomasse (%)'
+            }).round(1),
+            use_container_width=True
+        )
 
-    with tab_transizione:
-        c_m1, c_m2 = st.columns(2)
-        
-        with c_m1:
-            st.subheader("Sostituzione Fonti Primarie (Marchetti)")
-            st.markdown("Asse Y: $ \log_{10}(f / (1-f)) $")
-            df_march = df_primaria.copy()
-            tot_y = df_march.groupby('Anno')['GWh'].sum().reset_index().rename(columns={'GWh':'Total'})
-            df_march = pd.merge(df_march, tot_y, on='Anno')
-            df_march['f'] = np.clip(df_march['GWh'] / df_march['Total'], 0.0001, 0.9999)
-            df_march['Marchetti'] = np.log10(df_march['f'] / (1 - df_march['f']))
-            
-            fig_m = px.line(
-                df_march, x='Anno', y='Marchetti', color='Fonte', 
-                color_discrete_map=color_map, markers=True
-            )
-            st.plotly_chart(fig_m, use_container_width=True)
+    st.divider()
 
-        with c_m2:
-            st.subheader("Rotta dell'Elettrificazione (Diagramma Ternario)")
-            pivot_df = df_primaria.pivot_table(index='Anno', columns='Fonte', values='GWh', aggfunc='sum').fillna(0)
-            pivot_df['Total'] = pivot_df.sum(axis=1)
-            pivot_df['Fossil'] = pivot_df.get('Carbone',0) + pivot_df.get('Gas Naturale',0) + pivot_df.get('Petrolio',0)
-            pivot_df['Bio & Other'] = pivot_df.get('Biomasse/Geo',0)
-            pivot_df['Electrons'] = pivot_df.get('Idroelettrico',0) + pivot_df.get('Solare Fotovoltaico',0) + pivot_df.get('Eolico',0)
-            
-            for col in ['Fossil', 'Bio & Other', 'Electrons']:
-                pivot_df[col] = (pivot_df[col] / pivot_df['Total']) * 100
-                
-            pivot_df = pivot_df.reset_index()
-            fig_t = px.scatter_ternary(
-                pivot_df, a="Fossil", b="Electrons", c="Bio & Other", 
-                hover_name="Anno", color="Anno", color_continuous_scale="Viridis",
-                labels={"Fossil": "Fossili (%)", "Electrons": "Elettroni (%)", "Bio & Other": "Biomasse/Bio (%)"}
-            )
-            fig_t.update_traces(mode="lines+markers", line=dict(color='#22C55E', width=3), marker=dict(size=10))
-            st.plotly_chart(fig_t, use_container_width=True)
+    # 2. DIAGRAMMA DI MARCHETTI
+    st.subheader("2. Modello di Sostituzione Tecnologica di Marchetti")
+    st.markdown("Asse Y: $ \log_{10}(f / (1-f)) $ dove $ f $ è la quota di mercato della fonte. Rappresenta la competizione tra fonti nel tempo.")
+    
+    df_march = df_primaria.copy()
+    tot_y = df_march.groupby('Anno')['GWh'].sum().reset_index().rename(columns={'GWh':'Total'})
+    df_march = pd.merge(df_march, tot_y, on='Anno')
+    df_march['f'] = np.clip(df_march['GWh'] / df_march['Total'], 0.0001, 0.9999)
+    df_march['Marchetti'] = np.log10(df_march['f'] / (1 - df_march['f']))
+    
+    fig_m = px.line(
+        df_march, x='Anno', y='Marchetti', color='Fonte', 
+        color_discrete_map=color_map, markers=True,
+        title="Dinamica di Marchetti (2000 - 2030)"
+    )
+    fig_m.update_layout(height=500, yaxis_title="log(f / 1-f)", margin=dict(t=40, b=30, l=30, r=30))
+    st.plotly_chart(fig_m, use_container_width=True)
 
-# --- PAGINA 2: SANKEY TERMODINAMICO ---
+# --- PAGINA 3: SANKEY TERMODINAMICO ---
 elif page == "🔄 Sankey Termodinamico":
     st.title(f"🔄 Flussi di Energia FVG ({selected_year})")
     df_anno = df_primaria[df_primaria['Anno'] == selected_year]
@@ -210,7 +266,7 @@ elif page == "🔄 Sankey Termodinamico":
     fig_sankey.update_layout(height=700, margin=dict(t=40, b=20, l=10, r=10), font_size=13)
     st.plotly_chart(fig_sankey, use_container_width=True)
 
-# --- PAGINA 3: FOCUS FOTOVOLTAICO ---
+# --- PAGINA 4: FOCUS FOTOVOLTAICO ---
 elif page == "☀️ Focus: Fotovoltaico":
     st.title("☀️ Focus: Fotovoltaico in FVG")
     m1, m2, m3, m4 = st.columns(4)
@@ -228,9 +284,9 @@ elif page == "☀️ Focus: Fotovoltaico":
         fig_fv.update_layout(yaxis_range=[0, 2200])
         st.plotly_chart(fig_fv, use_container_width=True)
     with c2:
-        st.markdown("### Dettagli Territoriali:\n* **Consumo del suolo:** I grandi impianti a terra (>1MW) sono passati da 334 ha (2023) a 424 ha (2024).\n* **Impatto agricolo:** Occupano lo **0,19% della SAU**.\n* **Trend 2025:** Flssione del -46% nel primo semestre.")
+        st.markdown("### Dettagli Territoriali:\n* **Consumo del suolo:** Impianti a terra (>1MW) passati da 334 ha a 424 ha.\n* **Impatto agricolo:** Occupano lo **0,19% della SAU**.\n* **Trend 2025:** Flessione del -46% nel primo semestre.")
 
-# --- PAGINA 4: GAS & PETROLIO (NUOVA, HARDCODED) ---
+# --- PAGINA 5: GAS & PETROLIO ---
 elif page == "🔥 Focus: Gas & Petrolio":
     st.title("🔥 Focus: Gas & Petrolio (Termoelettrico e Cogenerazione)")
     st.markdown("Dati estratti dai report statistici Terna sul parco termoelettrico del FVG.")
@@ -254,7 +310,6 @@ elif page == "🔥 Focus: Gas & Petrolio":
         )
         st.plotly_chart(fig_termo, use_container_width=True)
         
-        st.markdown("### Anatomia del Parco Termoelettrico (Mix Tecnologico Attuale)")
         fig_det = px.bar(
             df_termo_mix, y='Tecnologia', x='GWh', color='Categoria',
             orientation='h', title="Composizione Tecnologica",
@@ -266,13 +321,12 @@ elif page == "🔥 Focus: Gas & Petrolio":
     with c_text:
         st.markdown("### L'Evoluzione del Sistema")
         st.markdown("""
-        I dati mostrano una transizione interna ai combustibili fossili prima ancora che verso le rinnovabili:
-        * **L'Efficienza vince:** Gli impianti non cogenerativi (in grigio) che sprecavano il calore termico sono collassati, passando da oltre 10.000 GWh nei primi anni 2000 a valori marginali oggi.
-        * **Il crollo recente:** A partire dal 2022/2023 si nota un dimezzamento della produzione totale. Questo è l'effetto combinato della crisi dei prezzi del gas metano e dell'erosione delle quote di mercato da parte del fotovoltaico (elettrificazione).
-        * **Ciclo Combinato Re:** La tecnologia dominante rimasta in funzione è il ciclo combinato cogenerativo, che permette di recuperare il calore per teleriscaldamento o processi industriali.
+        * **L'Efficienza vince:** Gli impianti non cogenerativi (in grigio) sono crollati.
+        * **Il crollo recente:** Dimezzamento della produzione dovuto a crisi gas ed elettrificazione.
+        * **Ciclo Combinato Re:** La tecnologia dominante rimasta è il ciclo combinato cogenerativo.
         """)
 
-# --- PAGINA 5: RETI ELETTRICHE ---
+# --- PAGINA 6: RETI ELETTRICHE ---
 elif page == "⚡ Stato delle Reti Elettriche":
     st.title("⚡ Stato delle Reti Elettriche e Hosting Capacity")
     c1, c2, c3 = st.columns(3)
@@ -284,4 +338,4 @@ elif page == "⚡ Stato delle Reti Elettriche":
 
 elif page in ["💧 Focus: Idroelettrico", "🌱 Focus: Biomasse & Biogas", "🌍 Emissioni e Clima (FVG)"]:
     st.title(page)
-    st.info("🚧 Questa sezione sarà popolata con i prossimi step di analisi dei PDF (Clima ARPA, PAESC, Idroelettrico).")
+    st.info("🚧 Questa sezione sarà popolata nei prossimi step di analisi.")
