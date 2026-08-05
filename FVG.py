@@ -299,12 +299,6 @@ elif page == "⚡ Stato delle Reti Elettriche":
     * 🎯 **Obiettivo:** Rimuovere la saturazione delle stazioni critiche (es. Udine Sud) per permettere l'immissione di nuove FER.
     """)
 
-# --- PAGINE SEGNAPOSTO (Da popolare blocco per blocco) ---
-elif page in ["💧 Focus: Idroelettrico", "🌱 Focus: Biomasse & Biogas", "🔋 Focus: Batterie & Accumuli", "🌍 Emissioni e Clima (FVG)"]:
-    st.title(page)
-    st.info("🚧 Sezione pronta. Inizieremo a popolarla con i dati specifici nel prossimo blocco!")
-
-#"🔥 Focus: Gas & Petrolio"
 
 elif page == "🔥 Focus: Gas & Petrolio":
     st.title("🔥 Focus: Gas & Petrolio (Termoelettrico e Cogenerazione)")
@@ -369,5 +363,12 @@ elif page == "🔥 Focus: Gas & Petrolio":
                 orientation='h', title="Composizione Tecnologica",
                 color_discrete_map={'Cogenerative': '#F97316', 'Non cogenerative': '#6B7280'}
             )
+
+            # --- PAGINE SEGNAPOSTO (Da popolare blocco per blocco) ---
+elif page in ["💧 Focus: Idroelettrico", "🌱 Focus: Biomasse & Biogas", "🔋 Focus: Batterie & Accumuli", "🌍 Emissioni e Clima (FVG)"]:
+    st.title(page)
+    st.info("🚧 Sezione pronta. Inizieremo a popolarla con i dati specifici nel prossimo blocco!")
+
+#"🔥 Focus: Gas & Petrolio"
             fig_det.update_layout(yaxis={'categoryorder':'total ascending'})
             st.plotly_chart(fig_det, use_container_width=True)
