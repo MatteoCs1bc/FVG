@@ -98,10 +98,13 @@ page = st.sidebar.radio("Vai a:", [
     "🔺 Transizione (Marchetti & Ternario)",
     "🔄 Sankey Termodinamico",
     "☀️ Focus: Fotovoltaico",
-    "🔥 Focus: Gas & Petrolio",
-    "⚡ Stato delle Reti Elettriche",
+    "🔥 Focus: Gas Naturale",
+    "🛢️ Focus: Petrolio e Carburanti",
+    "🏭 Focus: Industria HTA & Idrogeno",
     "💧 Focus: Idroelettrico",
     "🌱 Focus: Biomasse & Biogas",
+    "🔋 Focus: Batterie & Accumuli",
+    "⚡ Stato delle Reti Elettriche",
     "🌍 Emissioni e Clima (FVG)"
 ])
 
@@ -132,21 +135,11 @@ if page == "📊 Quadro Generale (Offerta & Domanda)":
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
-# --- PAGINA 2: TERNARIO & MARCHETTI (PAGINA DEDICATA) ---
+# --- PAGINA 2: TERNARIO & MARCHETTI ---
 elif page == "🔺 Transizione (Marchetti & Ternario)":
     st.title("🔺 Transizione Energetica FVG: Diagramma Ternario & Marchetti")
-    st.markdown("Analisi della traiettoria di decarbonizzazione e della competizione tra vettori energetici.")
     
-    # 1. DIAGRAMMA TERNARIO
     st.subheader("1. Diagramma Ternario (Fossili vs Elettroni vs Biomasse)")
-    st.markdown("""
-    Il diagramma ternario traccia lo spostamento del mix energetico primario tra tre assi fondamentali ($100\%$ totale):
-    * **Asse A (Sinistra)**: Fonti Fossili (Gas, Petrolio, Carbone)
-    * **Asse B (Destra)**: Elettroni Rinnovabili (Idro, Solare, Eolico)
-    * **Asse C (Alto)**: Molecole Bio (Biomasse, Geotermia)
-    """)
-    
-    # Calcolo Dati Ternario
     pivot_df = df_primaria.pivot_table(index='Anno', columns='Fonte', values='GWh', aggfunc='sum').fillna(0)
     pivot_df['Total'] = pivot_df.sum(axis=1)
     
@@ -161,71 +154,24 @@ elif page == "🔺 Transizione (Marchetti & Ternario)":
     pivot_res = pivot_df.reset_index()
     
     fig_t = px.scatter_ternary(
-        pivot_res, 
-        a="Fossil_pct", 
-        b="Electrons_pct", 
-        c="Bio_pct", 
-        hover_name="Anno", 
-        text="Anno",
-        color="Anno", 
-        color_continuous_scale="Viridis",
-        labels={
-            "Fossil_pct": "Fossili (%)",
-            "Electrons_pct": "Elettroni (%)",
-            "Bio_pct": "Biomasse (%)"
-        },
-        title="Traiettoria Storica e Proiettata (2000 - 2030)"
+        pivot_res, a="Fossil_pct", b="Electrons_pct", c="Bio_pct", 
+        hover_name="Anno", text="Anno", color="Anno", color_continuous_scale="Viridis",
+        labels={"Fossil_pct": "Fossili (%)", "Electrons_pct": "Elettroni (%)", "Bio_pct": "Biomasse (%)"}
     )
-    
-    fig_t.update_traces(
-        mode="lines+markers+text", 
-        textposition="top center",
-        line=dict(color='#22C55E', width=3), 
-        marker=dict(size=12, symbol="circle")
-    )
-    
-    fig_t.update_layout(
-        height=650,
-        margin=dict(t=50, b=40, l=40, r=40),
-        ternary=dict(
-            sum=100,
-            aaxis=dict(title="Fossili (Gas, Petrolio, Carbone)"),
-            baxis=dict(title="Elettroni (Idro, Solare, Eolico)"),
-            caxis=dict(title="Biomasse & Altro")
-        )
-    )
-    
+    fig_t.update_traces(mode="lines+markers+text", textposition="top center", line=dict(color='#22C55E', width=3), marker=dict(size=12))
+    fig_t.update_layout(height=650, margin=dict(t=50, b=40, l=40, r=40))
     st.plotly_chart(fig_t, use_container_width=True)
-    
-    # Tabella riassuntiva percentuali
-    with st.expander("📊 Visualizza la Tabella Dati del Ternario (Percentuali)"):
-        st.dataframe(
-            pivot_res[['Anno', 'Fossil_pct', 'Electrons_pct', 'Bio_pct']].rename(columns={
-                'Fossil_pct': 'Fossili (%)',
-                'Electrons_pct': 'Elettroni (%)',
-                'Bio_pct': 'Biomasse (%)'
-            }).round(1),
-            use_container_width=True
-        )
 
     st.divider()
-
-    # 2. DIAGRAMMA DI MARCHETTI
     st.subheader("2. Modello di Sostituzione Tecnologica di Marchetti")
-    st.markdown("Asse Y: $ \log_{10}(f / (1-f)) $ dove $ f $ è la quota di mercato della fonte. Rappresenta la competizione tra fonti nel tempo.")
-    
     df_march = df_primaria.copy()
     tot_y = df_march.groupby('Anno')['GWh'].sum().reset_index().rename(columns={'GWh':'Total'})
     df_march = pd.merge(df_march, tot_y, on='Anno')
     df_march['f'] = np.clip(df_march['GWh'] / df_march['Total'], 0.0001, 0.9999)
     df_march['Marchetti'] = np.log10(df_march['f'] / (1 - df_march['f']))
     
-    fig_m = px.line(
-        df_march, x='Anno', y='Marchetti', color='Fonte', 
-        color_discrete_map=color_map, markers=True,
-        title="Dinamica di Marchetti (2000 - 2030)"
-    )
-    fig_m.update_layout(height=500, yaxis_title="log(f / 1-f)", margin=dict(t=40, b=30, l=30, r=30))
+    fig_m = px.line(df_march, x='Anno', y='Marchetti', color='Fonte', color_discrete_map=color_map, markers=True)
+    fig_m.update_layout(height=500, yaxis_title="log(f / 1-f)")
     st.plotly_chart(fig_m, use_container_width=True)
 
 # --- PAGINA 3: SANKEY TERMODINAMICO ---
@@ -286,47 +232,171 @@ elif page == "☀️ Focus: Fotovoltaico":
     with c2:
         st.markdown("### Dettagli Territoriali:\n* **Consumo del suolo:** Impianti a terra (>1MW) passati da 334 ha a 424 ha.\n* **Impatto agricolo:** Occupano lo **0,19% della SAU**.\n* **Trend 2025:** Flessione del -46% nel primo semestre.")
 
-# --- PAGINA 5: GAS & PETROLIO ---
-elif page == "🔥 Focus: Gas & Petrolio":
-    st.title("🔥 Focus: Gas & Petrolio (Termoelettrico e Cogenerazione)")
-    st.markdown("Dati estratti dai report statistici Terna sul parco termoelettrico del FVG.")
+# --- PAGINA 5: FOCUS GAS NATURALE (DIFFERENZIATO) ---
+elif page == "🔥 Focus: Gas Naturale":
+    st.title("🔥 Focus: Gas Naturale in Friuli-Venezia Giulia")
+    st.markdown("Ripartizione vettoriale del consumo di metano tra Generazione Elettrica, Usi Industriali e Usi Domestici/Civili.")
     
-    c1, c2, c3 = st.columns(3)
-    prod_2007 = df_termo_storico[df_termo_storico['Anno'] == 2007]['GWh'].sum()
-    prod_2024 = df_termo_storico[df_termo_storico['Anno'] == 2024]['GWh'].sum()
+    # Consumo indicativo gas FVG ~1.5 - 1.7 Mld m3 (~16.000 GWh equivalenti)
+    gwh_gas_tot = df_primaria[df_primaria['Anno'] == 2024][df_primaria['Fonte'] == 'Gas Naturale']['GWh'].values[0]
     
-    c1.metric("Picco Produzione Termoelettrica (2007)", f"{prod_2007:,.0f} GWh")
-    c2.metric("Produzione Recente (2024)", f"{prod_2024:,.0f} GWh", "Crollo storico")
-    c3.metric("Calo dal picco", f"-{((prod_2007 - prod_2024)/prod_2007)*100:.1f}%")
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Consumo Primario Gas", f"{gwh_gas_tot:,.0f} GWh", "~1.6 Mld m³")
+    m2.metric("Generazione Elettrica / Cogen", f"{gwh_gas_tot*0.40:,.0f} GWh", "40% del totale")
+    m3.metric("Usi Industriali (Processo)", f"{gwh_gas_tot*0.30:,.0f} GWh", "30% del totale")
+    m4.metric("Usi Civili / Riscaldamento", f"{gwh_gas_tot*0.30:,.0f} GWh", "30% del totale")
     
     st.divider()
-    c_chart, c_text = st.columns([2, 1])
     
-    with c_chart:
+    c1, c2 = st.columns([1, 1])
+    with c1:
+        st.subheader("Ripartizione Usi del Gas Metano")
+        df_gas_split = pd.DataFrame([
+            {'Destinazione': 'Generazione Elettrica & Cogenerazione', 'GWh': gwh_gas_tot*0.40},
+            {'Destinazione': 'Industria Manifatturiera & HTA', 'GWh': gwh_gas_tot*0.30},
+            {'Destinazione': 'Civile (Riscaldamento Domestico & Terziario)', 'GWh': gwh_gas_tot*0.30}
+        ])
+        fig_gas = px.pie(
+            df_gas_split, values='GWh', names='Destinazione', hole=0.45,
+            color_discrete_sequence=['#F97316', '#4B5563', '#3B82F6']
+        )
+        fig_gas.update_traces(textinfo='percent+label')
+        st.plotly_chart(fig_gas, use_container_width=True)
+        
+    with c2:
+        st.subheader("Trend Storico Termoelettrico a Gas (Terna)")
         fig_termo = px.area(
             df_termo_storico, x='Anno', y='GWh', color='Categoria',
-            title="Evoluzione e Crollo del Termoelettrico in FVG (GWh)",
+            title="Crollo della produzione elettrica da Gas (GWh)",
             color_discrete_map={'Cogenerative': color_map['Cogenerative'], 'Non cogenerative': color_map['Non cogenerative']}
         )
         st.plotly_chart(fig_termo, use_container_width=True)
-        
-        fig_det = px.bar(
-            df_termo_mix, y='Tecnologia', x='GWh', color='Categoria',
-            orientation='h', title="Composizione Tecnologica",
-            color_discrete_map={'Cogenerative': color_map['Cogenerative'], 'Non cogenerative': color_map['Non cogenerative']}
-        )
-        fig_det.update_layout(yaxis={'categoryorder':'total ascending'})
-        st.plotly_chart(fig_det, use_container_width=True)
 
-    with c_text:
-        st.markdown("### L'Evoluzione del Sistema")
+    st.markdown("""
+    ### Key Takeaways sul Gas in FVG:
+    * **Riscaldamento Domestico:** La metanizzazione capillare della pianura FVG rende il gas la fonte primaria per il settore civile. La transizione prevede la sostituzione progressiva con pompe di calore.
+    * **Cogenerazione Industriale:** Cartiere (es. Ovaro), vetrerie e siderurgia usano il gas sia per il calore di processo che per autoprodursi energia elettrica.
+    """)
+
+# --- PAGINA 6: FOCUS PETROLIO E CARBURANTI ---
+elif page == "🛢️ Focus: Petrolio e Carburanti":
+    st.title("🛢️ Focus: Petrolio e Prodotti Petroliferi")
+    st.markdown("Analisi dei consumi petroliferi regionali, dominati dal settore Trasporti.")
+    
+    gwh_petrolio = df_primaria[df_primaria['Anno'] == 2024][df_primaria['Fonte'] == 'Petrolio']['GWh'].values[0]
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Consumo Primario Petrolio", f"{gwh_petrolio:,.0f} GWh")
+    m2.metric("Quota Settore Trasporti", f"{gwh_petrolio*0.88:,.0f} GWh", "88% del petrolio")
+    m3.metric("Usi Industriali / Altro", f"{gwh_petrolio*0.12:,.0f} GWh", "12%")
+    
+    st.divider()
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        st.subheader("Destinazione dei Prodotti Petroliferi")
+        df_petro = pd.DataFrame([
+            {'Uso': 'Diesel Trasporti / Logistica', 'Quota': 55},
+            {'Uso': 'Benzina Autotrazione', 'Quota': 25},
+            {'Uso': 'GPL & Combustibili riscaldamento', 'Quota': 12},
+            {'Uso': 'Usi Industriali & Altro', 'Quota': 8}
+        ])
+        fig_petro = px.bar(df_petro, x='Quota', y='Uso', orientation='h', title="Composizione Consumi Petroliferi (%)", color_discrete_sequence=['#4B5563'])
+        st.plotly_chart(fig_petro, use_container_width=True)
+        
+    with c2:
         st.markdown("""
-        * **L'Efficienza vince:** Gli impianti non cogenerativi (in grigio) sono crollati.
-        * **Il crollo recente:** Dimezzamento della produzione dovuto a crisi gas ed elettrificazione.
-        * **Ciclo Combinato Re:** La tecnologia dominante rimasta è il ciclo combinato cogenerativo.
+        ### Elettrificazione del Trasporto e Decarbonizzazione:
+        * **Logistica di Transito:** Il FVG è uno snodo logistico fondamentale per i corridoi europei (Porto di Trieste, corridoi stradali verso Austria e Slovenia). Questo comporta un'elevata incidenza del consumo di gasolio autotrazione.
+        * **Obiettivi del PER:** Sostituzione progressiva del parco veicolare con veicoli elettrici (EV) per il trasporto leggero e introduzione del **Biometano e Idrogeno verde** per i trasporti pesanti e la logistica portuale.
         """)
 
-# --- PAGINA 6: RETI ELETTRICHE ---
+# --- PAGINA 7: FOCUS INDUSTRIA HTA & IDROGENO ---
+elif page == "🏭 Focus: Industria HTA & Idrogeno":
+    st.title("🏭 Focus: Industria Hard-to-Abate (HTA) & Idrogeno in FVG")
+    st.markdown("Analisi dei settori industriali ad alta intensità energetica e strategie di decarbonizzazione (Strategia Regionale Idrogeno FVG).")
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Incidenza Manifattura FVG", "23% Valore Aggiunto", "4ª regione in Italia")
+    m2.metric("Progetti BESS / Idrogeno", "North Adriatic Hydrogen Valley", "Sintonia Slovenia-Croazia-FVG")
+    m3.metric("Elettrolizzatori Previsti", "Iniziative PNRR / Hard-to-Abate", "Progetti-faro al 2026")
+    
+    st.divider()
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        st.subheader("Settori Hard-to-Abate (HTA) nel FVG")
+        df_hta = pd.DataFrame([
+            {'Settore': 'Siderurgia / Acciaierie', 'Consumo_Relativo': 45, 'Descrizione': 'Distretto Udinese (Forni elettrici e gas per laminatoi)'},
+            {'Settore': 'Cartiere', 'Consumo_Relativo': 25, 'Descrizione': 'Carnia (Ovaro) e Pordenonese (Usi vapore / Cogenerazione)'},
+            {'Settore': 'Vetrerie & Ceramiche', 'Consumo_Relativo': 18, 'Descrizione': 'Forni fusori continui ad alta temperatura'},
+            {'Settore': 'Cantieristica & Meccanica Pesante', 'Consumo_Relativo': 12, 'Descrizione': 'Monfalcone, Trieste e Pordenone'}
+        ])
+        fig_hta = px.pie(df_hta, values='Consumo_Relativo', names='Settore', title="Peso Relativo dei Consumi nei Settori HTA", hole=0.35)
+        st.plotly_chart(fig_hta, use_container_width=True)
+        
+    with c2:
+        st.markdown("""
+        ### La Strategia Regionale per l'Idrogeno:
+        * **Valle dell'Idrogeno del Nord Adriatico:** Progetto transfrontaliero integrato tra Friuli-Venezia Giulia, Slovenia e Croazia per creare una filiera locale dell'idrogeno verde.
+        * **Sostituzione del Gas Metano:** L'idrogeno verde è destinato a sostituire il metano nei bruciatori dei laminatoi siderurgici e delle vetrerie, dove l'elettrificazione diretta è complessa o antieconomica.
+        * **Sinergia con le FER:** Utilizzo dell'energia elettrica rinnovabile in eccesso (*overgeneration*) per alimentare gli elettrolizzatori.
+        """)
+
+# --- PAGINA 8: FOCUS IDROELETTRICO ---
+elif page == "💧 Focus: Idroelettrico":
+    st.title("💧 Focus: Energia Idroelettrica in FVG")
+    st.markdown("La risorsa idrica è la colonna portante della generazione rinnovabile storica del FVG (Dati dal report *L'infinito in una goccia*).")
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Produzione Media Annua", "~2.800 - 3.500 GWh", "Soggetta a variabilità meteo")
+    m2.metric("Potenza Installata", "~1.000 MW", "Tra grande e piccolo idro")
+    m3.metric("Rilevanza in Carnia", "82% Produzione Locale", "98% delle FER in Carnia")
+    
+    st.divider()
+    st.markdown("""
+    ### Caratteristiche del Parco Idroelettrico FVG:
+    * **Grandi Impianti di Monte:** Bacini e centrali ad alta caduta nelle Alpi Carniche e Giulie (es. asta del Tagliamento, Cellina, Meduna).
+    * **Piccolo Idroelettrico & Aqueduct Power:** Impianti ad acqua fluente e turbine inserite negli acquedotti (es. esperienze A2A, Secab, e cooperative storiche come la *Cooperativa della Luce*).
+    * **Vulnerabilità Climatica:** I report *Segnali dal Clima FVG* evidenziano una crescente variabilità delle precipitazioni e riduzioni estive della portata dei fiumi, che richiedono un'ottimizzazione della gestione dei bacini.
+    """)
+
+# --- PAGINA 9: FOCUS BIOMASSE & BIOGAS ---
+elif page == "🌱 Focus: Biomasse & Biogas":
+    st.title("🌱 Focus: Bioenergie (Biomasse Solide, Biogas, Biometano)")
+    st.markdown("Dati estratti dal documento ENEA *Ruolo delle bioenergie nel PER*.")
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Produzione Biogas FVG", "406,8 GWh", "Settore agricolo / zootecnico")
+    m2.metric("Produzione Biomasse Solide", "68,5 GWh", "Cippato / Pellet per calore")
+    m3.metric("Bioliquidi", "361 GWh", "Impianti dedicati")
+    
+    st.divider()
+    st.markdown("""
+    ### Valorizzazione della Filiera Filiera Legno-Energia e Agro-zootecnica:
+    * **Biometano:** Riconversione degli impianti di biogas agricolo per l'immissione di biometano nella rete SNAM e per l'uso nei trasporti pesanti.
+    * **Filiera Forestale Carnia e Prealpi:** Valorizzazione degli scarti di lavorazione del legno e pulizia dei boschi per impianti di teleriscaldamento a cippato locale.
+    """)
+
+# --- PAGINA 10: FOCUS BATTERIE & ACCUMULI ---
+elif page == "🔋 Focus: Batterie & Accumuli":
+    st.title("🔋 Focus: Sistemi di Accumulo (SDA) e BESS in FVG")
+    st.markdown("Dati estratti dal *Green Deal FVG 2024* e dall'audizione della IV Commissione Regionale.")
+    
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Sistemi di Accumulo Residenziali", "35.621 impianti", "Abbinati al PV")
+    m2.metric("Capacità Accumuli Piccoli", "409 MWh", "331 MW di potenza")
+    m3.metric("Grandi Impianti BESS Autorizzati", "26 Progetti", "Di cui 1 da 200 MW a Pavia di Udine")
+    m4.metric("Potenza BESS in Autorizzazione", "1.405 MW", "Rete Terna / Standalone")
+    
+    st.divider()
+    st.markdown("""
+    ### Il Ruolo Chiave degli Accumuli Elettrochimici:
+    * **Stabilizzazione della Rete:** Gli impianti BESS (Battery Energy Storage System) di grande taglia (es. snodo Udine Sud Terna, Pavia di Udine, Gemona, Fogliano) sono indispensabili per stoccare l'overgeneration fotovoltaica diurna e rilasciarla nelle ore serali.
+    * **Autoconsumo Residenziale:** Oltre il 45% degli impianti fotovoltaici domestici in FVG è oggi dotato di un sistema di accumulo a batteria.
+    """)
+
+# --- PAGINA 11: RETI ELETTRICHE ---
 elif page == "⚡ Stato delle Reti Elettriche":
     st.title("⚡ Stato delle Reti Elettriche e Hosting Capacity")
     c1, c2, c3 = st.columns(3)
@@ -336,6 +406,33 @@ elif page == "⚡ Stato delle Reti Elettriche":
     st.divider()
     st.markdown("### Interventi in Programma\n* 🏗️ **23 Ampliamenti** di Cabine Primarie esistenti.\n* ⚡ **14 Nuove Cabine Primarie** da realizzare ex novo (es. snodo Udine Sud).")
 
-elif page in ["💧 Focus: Idroelettrico", "🌱 Focus: Biomasse & Biogas", "🌍 Emissioni e Clima (FVG)"]:
-    st.title(page)
-    st.info("🚧 Questa sezione sarà popolata nei prossimi step di analisi.")
+# --- PAGINA 12: EMISSIONI E CLIMA FVG ---
+elif page == "🌍 Emissioni e Clima (FVG)":
+    st.title("🌍 Emissioni di Gas Serra e Impatti Climatici in FVG")
+    st.markdown("Dati ufficiali ARPA FVG (Report *Segnali dal Clima FVG 2024-2026* e *Legge FVG Green*).")
+    
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Emissioni Dirette FVG", "8,8 Mt CO₂eq/anno", "Totale regionale")
+    m2.metric("Assorbimento Foreste FVG", "23% delle emissioni", "Sequestro di carbonio naturale")
+    m3.metric("Anno 2025/2026", "3° anno più caldo", "Anomalia termica ARPA")
+    
+    st.divider()
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        st.subheader("Ripartizione Emissioni per Settore")
+        df_emis = pd.DataFrame([
+            {'Settore': 'Industria & Manifattura', 'MtCO2': 3.2},
+            {'Settore': 'Trasporti Stradali & Logistica', 'MtCO2': 2.8},
+            {'Settore': 'Residenziale & Servizi (Riscaldamento)', 'MtCO2': 2.0},
+            {'Settore': 'Agricoltura & Rifiuti', 'MtCO2': 0.8}
+        ])
+        fig_em = px.pie(df_emis, values='MtCO2', names='Settore', title="Emissioni Dirette Regionali (Mt CO₂eq)", hole=0.4)
+        st.plotly_chart(fig_em, use_container_width=True)
+        
+    with c2:
+        st.markdown("""
+        ### Il Ruolo del Patrimonio Forestale e di Mitigazione:
+        * **Foreste del FVG:** Il patrimonio boschivo regionale assorbe e bilancia circa il **23% dell'intero monte emissioni regionale** (~2 milioni di tonnellate di CO₂ all'anno).
+        * **Obiettivi FVGreen:** Neutralità carbonica regionale e attuazione della Strategia di Adattamento ai Cambiamenti Climatici.
+        """)
