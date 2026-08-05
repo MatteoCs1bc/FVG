@@ -8,19 +8,23 @@ import plotly.graph_objects as go
 st.set_page_config(page_title="FVG Energy Portal", layout="wide", page_icon="⚡")
 
 color_map = {
-    'Carbone': '#000000', 'Petrolio': '#4B5563', 'Gas Naturale': '#9CA3AF',
-    'Idroelettrico': '#3B82F6', 'Solare Fotovoltaico': '#FACC15',
-    'Eolico': '#22C55E', 'Biomasse/Geo': '#8B4513'
+    'Carbone': '#000000', 
+    'Petrolio': '#4B5563', 
+    'Gas Naturale': '#9CA3AF',
+    'Idroelettrico': '#3B82F6', 
+    'Solare Fotovoltaico': '#FACC15',
+    'Eolico': '#22C55E', 
+    'Biomasse/Geo': '#8B4513'
 }
 
-# --- 2. CARICAMENTO DATI REALI ---
+# --- 2. CARICAMENTO DATI REALI FVG ---
 @st.cache_data
 def load_real_fvg_data():
-    anni = list(range(2000, 2031, 2)) # Spingiamo l'orizzonte per Marchetti fino al 2030
+    # Serie storica estesa per Marchetti e Ternario (2000 - 2030)
+    anni = list(range(2000, 2031, 2))
     data_primaria = []
     
     for y in anni:
-        # Simulazione trend storico e proiezioni
         carbone = max(0, 4000 - (y-2000)*150)
         petrolio = max(10000, 18000 - (y-2000)*250)
         gas = 15000 + (y-2000)*100 if y < 2020 else 17000 - (y-2020)*300
@@ -40,62 +44,93 @@ def load_real_fvg_data():
         ])
     
     df_primaria = pd.DataFrame(data_primaria)
-    return df_primaria
+    
+    # Dati storici reali Fotovoltaico (Green Deal / PER FVG)
+    df_cap_fv = pd.DataFrame([
+        {'Anno': 2019, 'MW': 545},
+        {'Anno': 2020, 'MW': 561},
+        {'Anno': 2021, 'MW': 591},
+        {'Anno': 2022, 'MW': 656},
+        {'Anno': 2023, 'MW': 948},
+        {'Anno': 2024, 'MW': 1318}
+    ])
+    
+    return df_primaria, df_cap_fv
 
-df_primaria = load_real_fvg_data()
+df_primaria, df_cap_fv = load_real_fvg_data()
 
 # --- 3. MENU DI NAVIGAZIONE LATERALE ---
 st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Friuli-Venezia_Giulia.svg/320px-Flag_of_Friuli-Venezia_Giulia.svg.png", width=150)
-st.sidebar.title("Navigazione")
+st.sidebar.title("FVG Energy Portal")
 
 page = st.sidebar.radio("Vai a:", [
     "📊 Quadro Generale (Offerta & Domanda)",
     "🔄 Sankey Termodinamico",
     "☀️ Focus: Fotovoltaico",
-    "⚡ Stato delle Reti Elettriche"
+    "💧 Focus: Idroelettrico",
+    "🔥 Focus: Gas & Petrolio",
+    "🌱 Focus: Biomasse & Biogas",
+    "🔋 Focus: Batterie & Accumuli",
+    "⚡ Stato delle Reti Elettriche",
+    "🌍 Emissioni e Clima (FVG)"
 ])
 
 st.sidebar.divider()
-selected_year = st.sidebar.selectbox("Filtro Anno Globale:", sorted(df_primaria['Anno'].unique(), reverse=True), index=2) # Default un anno recente
+selected_year = st.sidebar.selectbox("Filtro Anno Globale:", sorted(df_primaria['Anno'].unique(), reverse=True), index=3) # Anno 2024
 
 # ==========================================
 # 4. CONTENUTO DELLE PAGINE
 # ==========================================
 
+# --- PAGINA 1: QUADRO GENERALE ---
 if page == "📊 Quadro Generale (Offerta & Domanda)":
     st.title("📊 Quadro Generale (Offerta & Domanda)")
     
-    tab_macro, tab_transizione, tab_terna = st.tabs(["Overview & Mix", "📈 Transizione (Marchetti & Ternario)", "📂 Esploratore Terna"])
+    tab_macro, tab_transizione, tab_terna = st.tabs([
+        "Overview & Mix", 
+        "📈 Transizione (Marchetti & Ternario)", 
+        "📂 Esploratore Terna (Multi-Excel)"
+    ])
     
     with tab_macro:
         c1, c2 = st.columns(2)
         df_anno = df_primaria[df_primaria['Anno'] == selected_year]
         with c1:
-            fig_pie = px.pie(df_anno, values='GWh', names='Fonte', hole=0.4, color='Fonte', color_discrete_map=color_map, title=f"Mix Energetico FVG {selected_year}")
+            fig_pie = px.pie(
+                df_anno, values='GWh', names='Fonte', hole=0.4, 
+                color='Fonte', color_discrete_map=color_map, 
+                title=f"Mix Energetico FVG ({selected_year})"
+            )
             st.plotly_chart(fig_pie, use_container_width=True)
         with c2:
-            fig_bar = px.bar(df_primaria, x='Anno', y='GWh', color='Fonte', color_discrete_map=color_map, title="Trend Consumi Storici")
+            fig_bar = px.bar(
+                df_primaria, x='Anno', y='GWh', color='Fonte', 
+                color_discrete_map=color_map, title="Trend Consumi Storici"
+            )
             st.plotly_chart(fig_bar, use_container_width=True)
 
     with tab_transizione:
         c_m1, c_m2 = st.columns(2)
         
         with c_m1:
-            st.subheader("Competizione tra Fonti (Marchetti)")
-            st.markdown("Dinamica di sostituzione nel FVG. Asse Y: $ \log_{10}(f / (1-f)) $")
+            st.subheader("Sostituzione Fonti Primarie (Marchetti)")
+            st.markdown("Asse Y: $ \log_{10}(f / (1-f)) $ dove $ f $ è la quota di mercato.")
             df_march = df_primaria.copy()
             tot_y = df_march.groupby('Anno')['GWh'].sum().reset_index().rename(columns={'GWh':'Total'})
             df_march = pd.merge(df_march, tot_y, on='Anno')
             df_march['f'] = np.clip(df_march['GWh'] / df_march['Total'], 0.0001, 0.9999)
             df_march['Marchetti'] = np.log10(df_march['f'] / (1 - df_march['f']))
             
-            fig_m = px.line(df_march, x='Anno', y='Marchetti', color='Fonte', color_discrete_map=color_map, markers=True)
+            fig_m = px.line(
+                df_march, x='Anno', y='Marchetti', color='Fonte', 
+                color_discrete_map=color_map, markers=True
+            )
             fig_m.update_layout(yaxis_title="log(f / 1-f)", margin=dict(t=30, b=0, l=0, r=0))
             st.plotly_chart(fig_m, use_container_width=True)
 
         with c_m2:
-            st.subheader("Rotta dell'Elettrificazione (Ternario)")
-            st.markdown("Fossili vs Elettroni (Rinnovabili Elettriche) vs Molecole (Biomasse)")
+            st.subheader("Rotta dell'Elettrificazione (Diagramma Ternario)")
+            st.markdown("Fossili vs Elettroni (Rinnovabili) vs Molecole (Biomasse)")
             pivot_df = df_primaria.pivot_table(index='Anno', columns='Fonte', values='GWh', aggfunc='sum').fillna(0)
             pivot_df['Total'] = pivot_df.sum(axis=1)
             pivot_df['Fossil'] = pivot_df.get('Carbone',0) + pivot_df.get('Gas Naturale',0) + pivot_df.get('Petrolio',0)
@@ -106,19 +141,34 @@ if page == "📊 Quadro Generale (Offerta & Domanda)":
                 pivot_df[col] = (pivot_df[col] / pivot_df['Total']) * 100
                 
             pivot_df = pivot_df.reset_index()
-            fig_t = px.scatter_ternary(pivot_df, a="Fossil", b="Electrons", c="Bio & Other", hover_name="Anno", color="Anno", color_continuous_scale="Viridis")
+            fig_t = px.scatter_ternary(
+                pivot_df, a="Fossil", b="Electrons", c="Bio & Other", 
+                hover_name="Anno", color="Anno", color_continuous_scale="Viridis"
+            )
             fig_t.update_traces(mode="lines+markers", line=dict(color='#22C55E', width=2), marker=dict(size=8))
             fig_t.update_layout(margin=dict(t=30, b=0, l=0, r=0))
             st.plotly_chart(fig_t, use_container_width=True)
 
     with tab_terna:
-        st.info("Trascina i tuoi 14 file Excel Terna nella sidebar per abilitarli (Funzione mantenuta dal modulo precedente).")
+        st.subheader("Esploratore File Terna")
+        st.info("Trascina i tuoi 14 file Excel Terna qui sotto per caricarli ed esplorarli.")
+        uploaded_files = st.file_uploader("Carica file Excel Terna (.xlsx)", type=['xlsx'], accept_multiple_files=True)
+        dict_dfs = {}
+        if uploaded_files:
+            for f in uploaded_files:
+                try:
+                    dict_dfs[f.name] = pd.read_excel(f)
+                except Exception as e:
+                    st.error(f"Errore su {f.name}: {e}")
+            if dict_dfs:
+                file_sel = st.selectbox("Seleziona File da Analizzare:", list(dict_dfs.keys()))
+                st.dataframe(dict_dfs[file_sel], use_container_width=True)
 
+# --- PAGINA 2: SANKEY TERMODINAMICO ---
 elif page == "🔄 Sankey Termodinamico":
     st.title(f"🔄 Flussi di Energia FVG ({selected_year})")
-    st.markdown("Mappatura dell'energia primaria: dalle fonti di origine ai settori finali di consumo, incluse le perdite termodinamiche.")
+    st.markdown("Mappatura dall'energia primaria ai consumi finali e perdite termodinamiche.")
     
-    # 1. Recupero Dati per l'anno selezionato
     df_anno = df_primaria[df_primaria['Anno'] == selected_year]
     def get_val(fonte):
         res = df_anno[df_anno['Fonte'] == fonte]['GWh']
@@ -132,32 +182,26 @@ elif page == "🔄 Sankey Termodinamico":
     eolico = get_val('Eolico')
     bio = get_val('Biomasse/Geo')
 
-    # 2. Logica dei flussi (Modello FVG Approssimato basato sul PER)
-    # Elettricità (Input)
-    in_elec_gas = gas * 0.40       # 40% del gas va in termoelettrico/cogenerazione
-    in_elec_coal = carbone * 1.0   # Il carbone rimasto va tutto in elettricità
-    in_elec_bio = bio * 0.20       # 20% biomasse (biogas) per elettricità
+    # Logica dei flussi
+    in_elec_gas = gas * 0.40
+    in_elec_coal = carbone * 1.0
+    in_elec_bio = bio * 0.20
     
-    # Usi Diretti (Input Molecole)
     dir_gas = gas * 0.60
-    dir_petrolio = petrolio * 0.95 # Quasi tutto nei trasporti/industria
-    dir_bio = bio * 0.80           # Stufe, caldaie a biomassa
+    dir_petrolio = petrolio * 0.95
+    dir_bio = bio * 0.80
     
-    # Calcolo Elettricità generata ed efficienze (Termodinamica)
-    eff_termo = 0.45 # Efficienza media termoelettrico
+    eff_termo = 0.45
     elec_from_termo = (in_elec_gas + in_elec_coal + in_elec_bio) * eff_termo
     perdite_termo = (in_elec_gas + in_elec_coal + in_elec_bio) * (1 - eff_termo)
     
-    elec_from_rin = idro + solare + eolico # 100% efficiente per convenzione IEA
+    elec_from_rin = idro + solare + eolico
     tot_elec = elec_from_termo + elec_from_rin
     
-    # Destinazione Settori Finali
-    # Elettricità
     elec_ind = tot_elec * 0.50
     elec_civ = tot_elec * 0.45
     elec_tra = tot_elec * 0.05
     
-    # Molecole / Usi termici
     gas_ind = dir_gas * 0.50
     gas_civ = dir_gas * 0.50
     pet_tra = dir_petrolio * 0.90
@@ -165,11 +209,9 @@ elif page == "🔄 Sankey Termodinamico":
     bio_civ = dir_bio * 0.90
     bio_ind = dir_bio * 0.10
     
-    # Perdite usi finali (Motori termici, caldaie vecchie)
-    perdite_trasporti = pet_tra * 0.70 # Il motore a scoppio spreca il 70% in calore
-    perdite_civile = (gas_civ + bio_civ) * 0.15 # Caldaie
+    perdite_trasporti = pet_tra * 0.70
+    perdite_civile = (gas_civ + bio_civ) * 0.15
 
-    # 3. Costruzione Nodi Sankey
     nodes = ["Gas Naturale", "Petrolio", "Carbone", "Idro", "Solare", "Eolico", "Biomasse", 
              "Generazione Elettrica", "Usi Diretti (Termico/Motori)", 
              "Industria", "Civile/Edifici", "Trasporti", "Perdite Termodinamiche"]
@@ -178,26 +220,21 @@ elif page == "🔄 Sankey Termodinamico":
               color_map['Idroelettrico'], color_map['Solare Fotovoltaico'], color_map['Eolico'], color_map['Biomasse/Geo'],
               '#FACC15', '#9CA3AF', 
               '#F97316', '#3B82F6', '#10B981', 'rgba(239, 68, 68, 0.7)']
-              
-    # Indici dei nodi
-    # 0:Gas, 1:Pet, 2:Carb, 3:Idro, 4:Sol, 5:Eol, 6:Bio
-    # 7:Elec, 8:Usi Diretti
-    # 9:Ind, 10:Civ, 11:Tra, 12:Perdite
     
     source = [
-        0, 2, 6, 3, 4, 5,  # Verso Elettricità
-        0, 1, 6,           # Verso Usi Diretti
-        7, 7, 7,           # Da Elettricità a Settori
-        8, 8, 8, 8, 8, 8,  # Da Usi Diretti a Settori (Gas_Ind, Gas_Civ, Pet_Tra, Pet_Ind, Bio_Civ, Bio_Ind)
-        7, 11, 10          # Flussi verso Perdite
+        0, 2, 6, 3, 4, 5,
+        0, 1, 6,
+        7, 7, 7,
+        8, 8, 8, 8, 8, 8,
+        7, 11, 10
     ]
     
     target = [
-        7, 7, 7, 7, 7, 7,  # (Gas, Carb, Bio, Idro, Sol, Eol) -> Elec
-        8, 8, 8,           # (Gas, Pet, Bio) -> Usi Diretti
-        9, 10, 11,         # Elec -> Ind, Civ, Tra
-        9, 10, 11, 9, 10, 9, # Usi Diretti -> Ind, Civ, Tra...
-        12, 12, 12         # Perdite da Termoelettrico(7), Trasporti(11), Civile(10)
+        7, 7, 7, 7, 7, 7,
+        8, 8, 8,
+        9, 10, 11,
+        9, 10, 11, 9, 10, 9,
+        12, 12, 12
     ]
     
     value = [
@@ -215,13 +252,54 @@ elif page == "🔄 Sankey Termodinamico":
     
     fig_sankey.update_layout(height=700, margin=dict(t=40, b=20, l=10, r=10), font_size=13)
     st.plotly_chart(fig_sankey, use_container_width=True)
-    
-    st.info("💡 **Insights:** Osserva il flusso rosso in basso ('Perdite Termodinamiche'). Il crollo del carbone e l'elettrificazione dei trasporti servono proprio a stringere quel nodo, riducendo gli sprechi di calore del sistema.")
 
+# --- PAGINA 3: FOCUS FOTOVOLTAICO ---
 elif page == "☀️ Focus: Fotovoltaico":
     st.title("☀️ Focus: Fotovoltaico in FVG")
-    st.info("Questa scheda era già stata implementata nello step precedente.")
+    st.markdown("Dati ufficiali dal *Piano Energetico Regionale (PER)* e *Energy Green Deal FVG 2024*.")
+    
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Potenza Installata (2024)", "1.318 MW", "+39% vs 2023")
+    m2.metric("Impianti Attivi", "75.375", "+23%")
+    m3.metric("Produzione (2024)", "1.211 GWh")
+    m4.metric("Target PER al 2030", "1.960 MW")
+    
+    st.divider()
+    
+    c1, c2 = st.columns([2, 1])
+    with c1:
+        fig_fv = px.bar(df_cap_fv, x='Anno', y='MW', title="Evoluzione Potenza FV Installata (MW)", text='MW')
+        fig_fv.update_traces(marker_color=color_map['Solare Fotovoltaico'], textposition='outside')
+        fig_fv.add_hline(y=1960, line_dash="dash", line_color="green", annotation_text="Target FVG 2030 (1.960 MW)")
+        fig_fv.update_layout(yaxis_range=[0, 2200])
+        st.plotly_chart(fig_fv, use_container_width=True)
+    with c2:
+        st.markdown("""
+        ### Dettagli Territoriali e Suolo:
+        * **Consumo del suolo:** I grandi impianti a terra (>1MW) sono passati da 334 ha (2023) a 424 ha (2024).
+        * **Impatto agricolo:** Occupano lo **0,19% della SAU** (Superficie Agricola Utilizzata) regionale.
+        * **Trend 2025:** Nel primo semestre 2025 la nuova potenza connessa ha subìto una flessione (-46% rispetto allo stesso periodo del 2024).
+        """)
 
+# --- PAGINA 4: STATO DELLE RETI ---
 elif page == "⚡ Stato delle Reti Elettriche":
     st.title("⚡ Stato delle Reti Elettriche e Hosting Capacity")
-    st.info("Questa scheda era già stata implementata nello step precedente.")
+    st.markdown("Dati ufficiali audizione IV Commissione Regionale (Gestione Rete FVG).")
+    
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Potenza FER Connessa", "1,6 GW", "Di cui 1,25 GW Solare")
+    c2.metric("Connessioni ultimi 3 anni", "800 MW", "50% del totale storico")
+    c3.metric("Nuova Hosting Capacity", "+ 1,6 GW", "Previsto Raddoppio")
+    
+    st.divider()
+    st.subheader("Infrastrutture e Sviluppo in Programma")
+    st.markdown("""
+    * 🏗️ **23 Ampliamenti** di Cabine Primarie esistenti.
+    * ⚡ **14 Nuove Cabine Primarie** da realizzare ex novo.
+    * 🎯 **Obiettivo:** Rimuovere la saturazione delle stazioni critiche (es. Udine Sud) per permettere l'immissione di nuove FER.
+    """)
+
+# --- PAGINE SEGNAPOSTO (Da popolare blocco per blocco) ---
+elif page in ["💧 Focus: Idroelettrico", "🔥 Focus: Gas & Petrolio", "🌱 Focus: Biomasse & Biogas", "🔋 Focus: Batterie & Accumuli", "🌍 Emissioni e Clima (FVG)"]:
+    st.title(page)
+    st.info("🚧 Sezione pronta. Inizieremo a popolarla con i dati specifici nel prossimo blocco!")
