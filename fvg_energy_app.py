@@ -586,6 +586,8 @@ tabs = st.tabs([
     "🌡️ Clima",
     "📈 Transizione",
     "🗂 Dati",
+    "🗺️ Mappa FV",
+    
 ])
 
 # ================================================================ 1. PANORAMICA
@@ -1351,3 +1353,59 @@ with tabs[9]:
         "- **Reti**: eventi intensi e concentrati mettono sotto stress le linee aeree, "
         "in una regione che ha 13.400 km di bassa tensione da mantenere."
     )
+
+
+# ================================================================ MAPPA FV
+with tabs[12]:
+    st.subheader("🗺️ Mappa Impianti Fotovoltaici e Agrivoltaici FVG")
+    st.markdown("Visualizzazione geografica degli impianti basata sui dati cartografici regionali (Shapefile).")
+    
+    try:
+        import geopandas as gpd
+        
+        with st.spinner("Caricamento della cartografia in corso..."):
+            # 1. Carica lo shapefile (assicurati che i 5 file siano nella cartella)
+            gdf = gpd.read_file("imp_ftv_agriftv.shp")
+            
+            # 2. Converte le coordinate in WGS84
+            gdf = gdf.to_crs(epsg=4326)
+            
+            # 3. Calcola i centroidi
+            gdf['lat'] = gdf.geometry.centroid.y
+            gdf['lon'] = gdf.geometry.centroid.x
+            
+            # 4. Metriche
+            potenza_totale = gdf['potenza_el'].sum() / 1000
+            area_totale = gdf['superficie'].sum() / 10000
+            
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Numero Impianti Mappati", len(gdf))
+            c2.metric("Potenza Totale Mappata", f"{potenza_totale:,.1f} MW".replace(",", "."))
+            c3.metric("Superficie Impegnata", f"{area_totale:,.1f} ha".replace(",", "."))
+            
+            st.divider()
+            
+            # 5. Rendering Mappa
+            fig_map = px.scatter_mapbox(
+                gdf, 
+                lat="lat", 
+                lon="lon", 
+                hover_name="nome_proge", 
+                hover_data={"lat": False, "lon": False, "tipo": True, "stato": True, "potenza_el": True, "superficie": True},
+                color="tipo",
+                color_discrete_sequence=["#FACC15", "#22C55E"],
+                zoom=7.5, 
+                center={"lat": 46.06, "lon": 13.1}
+            )
+            fig_map.update_layout(mapbox_style="carto-positron", margin={"r":0,"t":0,"l":0,"b":0}, height=500)
+            
+            st.plotly_chart(fig_map, use_container_width=True)
+            
+            # 6. Tabella dati
+            with st.expander("Mostra i dati completi in formato tabellare"):
+                st.dataframe(gdf.drop(columns=['geometry']), use_container_width=True)
+            
+    except ImportError:
+        st.error("Libreria 'geopandas' non trovata. Aggiungi `geopandas>=0.13.0` e `shapely>=2.0.0` al tuo file requirements.txt.")
+    except Exception as e:
+        st.error(f"Errore nel caricamento della mappa: {e}. Assicurati di aver caricato tutti i file (.shp, .dbf, .shx, ecc.) nella cartella root.")
