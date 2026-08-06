@@ -26,7 +26,7 @@ import streamlit as st
 # --------------------------------------------------------------------- dati
 _DATI: dict[str, str] = {
     "bilancio_2021":
-        "H4sIACw9dGoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
+        "H4sIADZ6dGoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
         "i9/8+77BV0NVRbKjCmSnDTmQ2lqSwSLrh1PTkmP5TM01eMYrGhSeDNYo1U59TGSapEq+MrQTegZ2"
         "ESCpkkOxBsxy3bX35GOyYp+uwS8W3B1BOIw9dbqPkWmZr6EXvGFgFJbsDE9WmxgmFTU47DTTOjQW"
         "1wIMMDustEzzOXhBT86DQMvgLMhT7WiiowJ5uUl/IqaODOseztJN9isZHRuOh2ZIrTbpz0ATudsE"
@@ -35,47 +35,58 @@ _DATI: dict[str, str] = {
         "7k8xd54c1qiXH2+pZA1ZTDyxWb5a9pmsDw39pklEDeu4KGW2KO+0v5FrRiXkybaB+6G04PmXeBPs"
         "tiK/BO5Da1iJXf73i9AzuBp58HoRuD+orcBjYKqGOVGAaP+kcRA9Koq/64LihtHr0UPorwBgrFDu"
         "y616F7A1NmCHuyTfq/RQZirN8jy+78awDw+/AIVMnrNsBQAA",
+    "biomassa_province":
+        "H4sIADZ6dGoC/42PMQ7CMAxFd07RA0QoTZukrCyMMJQDhNQCS5FdJVEHTk9QVYmhFd3+8Pz8f/JA"
+        "LiKLMfKE5NGJzEQQgstwOHPyL6yc95ASPjCUHKoxQkCYWNw4DkBMIExTd/Io/x1cOOK7vGg7s4O+"
+        "D1jUtdGq3UH3ESFlEFad9tDXXhSttl+25+wCVBGeyFTSzzAljZSrzLKl1tqsAnN93bQbgqWwaraA"
+        "0tHabtZ/AEr5VoOpAQAA",
+    "bosco":
+        "H4sIADZ6dGoC/3WQPW/DIBCG9/4KlKmVaHR8HTBm8uYu3i3qUgfJDlVM+vt70A5Woi4nAc9z9x5T"
+        "KHHO1xT4luaF6u0rXj/TlOJ4Dvw7L7c1jmv8SHlc1e6q5BIWelFPhz5f2By3kkrm7EKHME1x29J7"
+        "WuKB9x17Zf2JI4JQR+BSSKpCSe/RiyPc+Y/uiQvQTutqudZBovEokNydyp5/I72QxYUFZ2xlAagq"
+        "441XYOu07t+kf0G9coBV1a0CGpB17k590Gg9KcFVXrX1PEhrdbW6+3iUztBf6Ab7ms6jdcQTPDSG"
+        "D28DR6Osrr0IF9JqxAr8AGvdHxGvAQAA",
     "consumi_finali_2021":
-        "H4sIACw9dGoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
+        "H4sIADZ6dGoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
         "MWhtaJDeGyupW9YA6rbMGj3sOOMN7c31PDuPZ1RInFE4ID2NFi9G+dkCkWSS7gKUPTD64eVUTvUY"
         "UMkN4LMe4iOLQPmxCr9ZcJOxHu8Gv0hvI2Gyso88zy6KDevy75PZYZ8nko4QK/IjOGdc/iSbemzx"
         "FILV2eQsGK/jaQP8/yE8aWlHlMRiLE6AW2iDfi612Lcdq6JJfl+fW1R/xXecPRJtdFWfbUpmu1yC"
         "0ybaTXyp0v3X5SSDtBjAmy3X8C7x0+9mlUq+DWtXyZLp99eJVir+V6Ik5JvCK6FFlx9q4J+Ot8cK"
         "m5y737GfM88a7gwFAAA=",
     "demografia_scenari":
-        "H4sIACw9dGoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
+        "H4sIADZ6dGoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
         "ej7uKzOSboxMQCsJdwSJwXydBYEooZEtTpbCx2GxWmJ1DkzyszqL+M9iZY3OL4kTO1p+AAAA",
     "parco_impianti_2023":
-        "H4sIACw9dGoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
+        "H4sIADZ6dGoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
         "aCQxb0bzPSXX+NCFI1k4RutbN44WBk/JwimGdkgpRAI7pHBxPZyPYL0PT9s2Bte5lCI1Abb9iaxP"
         "BM/AVclKMHlxNceSiyv1LiTnR1u4w4Eacj65oguxtfC6B8kFUyAZzyfD9D/Lfc4t5aiZXCPnudWt"
         "BhNPQx/UUfr+KnrXki0y1WDhZf8JaBBZ/beJkpmlzbuL/W1q1DyzLpFX1cp9VfDmRgp+dqmclHWd"
         "gyjxjvyRTyi1msZa3jWVuTPjI7NQinlSJbLRqGu9+r0J3RXfpINfrN35Mpe7cJlTusZpGIVC6Avl"
         "IwqtFBOAKPN3GYMrww+AYRR3mwIAAA==",
     "pv_province":
-        "H4sIACw9dGoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
+        "H4sIADZ6dGoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
         "MvIA/Jh5KBvDvNTp8+Bacv+x33pCIpjrlssx9I8dplxW3ob+h9r74e0fed/7+4P+Wq1zHvmdx6bd"
         "5KrnhfO6ZSDvrEawpAPYTpDpkjZgPApO3uioLnXhQyo6CkHILoruTFsK2EYxaAups9qol4mLeKaE"
         "zcomEt36FhCQtIPQoMGImtS1LtJbykmkOecJo07ni+CDREMyupN5Ua16er1IbLKnGkXF32PAO9+6"
         "kROH2D5j0Cbt1TcyexuAYgEAAA==",
     "pv_traiettoria":
-        "H4sIACw9dGoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
+        "H4sIADZ6dGoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
         "dpoIyPsAL+pDtJC8G+lwiaFLkwvesgwTAXJEUBoLDqf28YuXHISqqm2h4oCo9Y4gAZXiqxBG6ydi"
         "nWODMyYsCVJlfm6HX3xOKIXcFnKC0CXfEXKCQL0IR2LOP0fqe4qWeduzwUYXumVLyeYPMW/Kb9Ou"
         "mLebdfqaMrg54ywLxqSBxuUDrOtCw4M2jJxVYlOobWO+Qda7hgRR6c/KGw3m+bwlAgAA",
     "scenari_fer_elettriche":
-        "H4sIACw9dGoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
+        "H4sIADZ6dGoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
         "yDC7iZOHTwzZHe6c3eSb/nxr/ORzTmEYPRCSAKmEOiJcHuNmSiIoq3EnpRA0UbuXakEbqo09Z555"
         "yi4M/J+j0a6zMkJ0tluHxUoWK7w+E9fSRSusNhu0iEmg3qA/M0mx0FNgH316h+V5Ruo1Uo6ENhV9"
         "AasMBmqVAQAA",
     "scenari_industria_vettori":
-        "H4sIACw9dGoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
+        "H4sIADZ6dGoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
         "z/PMDJ4oJg+u7yMMrhvPv30gB5fG9y6FuDrGLrQBJEoBSq4Rfsif4cC3zbXa/GOFIEwea4T6DTWA"
         "M7rr2C6FJtD9NtU36nMpxRpaiaUU22ixWJGttLSz1PavT1XrUxgcxUlNoCoIsp3VBTn2s1iSM6/e"
         "+9p9T1K1yLBxWLXJQC4uPzAHDSicT2HvLs8RocxArimtyEA9CqkcNCBerN4hxTYShersKfHlifsy"
         "Sdi6NMxSpjg8bo0uDvPyzH/7AP3i63xxAwAA",
     "scenari_settori":
-        "H4sIACw9dGoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
+        "H4sIADZ6dGoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
         "ZyV345iGTuRtF8OASYQYk/gZQtx153MQp9BfXx8jjuGlwRP2nfi8fIHbJBQoKZoU83GPi2+MoUch"
         "VV1XIH7H7vDgm/b1QjVQKoGlhlLpPU8tpfV01RU/XkrFQGY4LDUH6WhQ072v+dHgHAPpaO8U58hk"
         "r5YP9xZ3xzwOGO4nxFSktS5ptiVZ0lxRYIrazp3Dvy7V5YG3XGPeFiyXgVm31Jv0vGWq07JAaXva"
@@ -83,7 +94,7 @@ _DATI: dict[str, str] = {
         "THHd+QxfQ8iHNIwoPtoNe4mUN5Wsb3VPNXM9ja2U4TXZoQNdeVuKQoJbVzm6x9m/O/vrePpi7rr+"
         "AZui5jptBgAA",
     "terna_long":
-        "H4sIACw9dGoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
+        "H4sIADZ6dGoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
         "Jbtlqfv0eUi2Ip/iGQxm19bD9WsW68Vi8d1qt7pb7y4/bO4+3a4uVzc328t3mw/rm7vN9mZ9+cf2"
         "an30Z9r/Rfnf1fX2dn356WazW13ert/vv3e3+bh9e7X6uLqqf7v/08fb7btP/9p/9ffN9e52U//P"
         "+v+sy7+2/31vP65v315tP/z26W63+a186e2H65u37zZvd9ubm/X19Wq3vvz7/TdvLgmALt8cfffl"
@@ -261,6 +272,24 @@ _DATI: dict[str, str] = {
         "z+RIizYHLdq3b0eEkhmmtNjNdfNufXO3Ouyj9cXdx8319erD+qaqDUvAhX4uv3y6LZtnffHdxQ+r"
         "u2FzU5QnlMgVl72zjlToEjVgziK23A21u93WyxN3h8+D66X1hHHBGlI30/ZiffdxdXP/oQRJ+qQ5"
         "HO3umvX19Xrvo6tX+m1zvXnaC6zf4AP5X7RyDSo8YgMA",
+    "trasporti_alimentazione":
+        "H4sIADZ6dGoC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
+        "DBc4TO90M907NK/doe1Pzbkb+jZq+n6Int+a/ld7PjfRn+Z1eGuj9747NZ/M1tT1rsiL+t/fSDDJ"
+        "onzoj++HLpISYhG9nNrfIShWDqQVZDTIdjKH7ni0CrqIAbOgu7wSRC8SVjzsqo0pK6wpBh2PbF7d"
+        "kyMSkGIGWJKCe5CQe1P+KMo1VsE5A6FGmhvAnwqkPCwjEVKmINM5CZJhPyZRH5jNel9ti3AcHLJ0"
+        "JLrVPR0M+KyMdHCRAddzjmAcijvIty2WoIFnE8W1hNiZX0HEQkAicNMlCzZl/nlTBrRW9jThW9mj"
+        "VqB1WA755ZwASeAxxO678/Xuvqqf7COIgh3ONGIE8bRw4IpAYB8YaJormEriMlNUZDYVxMkUPR+B"
+        "bdEEAuuxbSRJFbrEPdRDYfYmMMp2SrijcwikJ9ZzAJbjWxG08dVwd12+fA+MEiAmlrHkLw0XFneK"
+        "DKI7SG+KbrgE6eflFcxA2nXxMYMAhTKbLYBCa4RaIl0St18/Ltoy1khD3DGP3i4ujdsukZoVmdDk"
+        "evMuP4wVmU8J6byONWjQimLB95cDS28ocoEykE4MuUEFpMkcECREUix4lY8jvYK+mvrOrB6fwpti"
+        "JzftCYRAxmgCEMY1JokCk1K3fP8Dih8TBCsIAAA=",
+    "trasporti_modo":
+        "H4sIADZ6dGoC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
+        "GrWpScTFmMipc7Hx0+TIxZ1T58kYw+CePofONY5wKig5ptiPbSC8llBL8j34nxuXauOMWbCs4PP3"
+        "z23o+5BiIEopEH8TquM7RzNuGaFB2zVyGIdUSAgFjF9LFpopWAUWMVQvLQcjitmonDGQW/lbKsuZ"
+        "BqWv8xeY/74ELhHE5Qx0XYzG3QYMXwNfH6/VKbVtsYLZzy4deSI/AdD6PoBMOAWt9oqQjgZp1tCL"
+        "77p0CYWMgXrZdsYzFQPM3nFkQoGJnQ7kQYFux3aY+TS/9VX8f7qzx0o11GbZ/240s9PA1aMoEp1v"
+        "NrOPLfAu57ug1/wvTrn4XG0DAAA=",
 }
 
 
@@ -423,6 +452,153 @@ IDRO_PARCO = {
     "Producibilità media annua (GWh)": 1830.8,
 }
 
+# ---------------------------------------------------------------- province
+FONTE_PROVINCE = "Terna, Statistiche Regionali 2024 (dati al 31/12/2024)"
+
+# Produzione lorda totale e rinnovabile per fonte, GWh, 2024
+PRODUZIONE_PROVINCE = {
+    "Gorizia": {"totale": 500.5, "Idrico": 52.2, "Fotovoltaico": 74.1, "Bioenergie": 191.4},
+    "Pordenone": {"totale": 1511.8, "Idrico": 946.5, "Fotovoltaico": 286.9, "Bioenergie": 196.3},
+    "Trieste": {"totale": 379.7, "Idrico": 0.0, "Fotovoltaico": 41.0, "Bioenergie": 70.9},
+    "Udine": {"totale": 4342.7, "Idrico": 1164.4, "Fotovoltaico": 559.4, "Bioenergie": 223.3},
+}
+
+POTENZA_PROVINCE = {  # MW lordi, 2024
+    "Gorizia": {"totale": 253.9, "rinnovabile": 147.1},
+    "Pordenone": {"totale": 616.4, "rinnovabile": 600.8},
+    "Trieste": {"totale": 349.4, "rinnovabile": 68.9},
+    "Udine": {"totale": 2262.8, "rinnovabile": 1063.5},
+}
+
+# Consumi elettrici 2024, GWh
+CONSUMI_ELETTRICI_PROVINCE = {"Gorizia": 691.9, "Pordenone": 2059.3,
+                              "Trieste": 1042.9, "Udine": 5510.4}
+CONSUMI_ELETTRICI_SETTORE = {"Industria": 5751.7, "Servizi": 2187.1, "Domestico": 1365.8}
+CONSUMI_ELETTRICI_TOTALE = 9304.6
+CONSUMI_FS_TRAZIONE = 190.9
+
+POTENZA_FONTE_2024 = {  # MW lordi
+    "Fotovoltaico": 1210.8, "Idrico": 528.9, "Termoelettrico": 1530.9,
+    "Accumuli stand alone": 212.0,
+}
+
+# ---------------------------------------------------------------- reti, dettaglio
+FONTE_RETI_REPORT = "Audizioni IV Commissione consiliare, 21/04/2026 (Terna, e-distribuzione, AcegasApsAmga, SECAB)"
+
+# Avanzamento verso il target 2030, in MW
+BURDEN_SHARING_MW = {
+    "In esercizio (2021–2025)": 940,
+    "Autorizzato in alta tensione": 310,
+    "Autorizzato in media tensione": 350,
+    "Quota residua al 2030": 360,
+}
+BURDEN_SHARING_TARGET_MW = 1960
+
+BESS = {
+    "Impianti autorizzati o in istruttoria": 26,
+    "Potenza richiesta (MW)": 1405.5,
+    "Fabbisogno stimato dal piano (MW)": 300,
+    "Impianto già attivo a Pavia di Udine (MW)": 200,
+}
+
+INTERCONNESSIONI = {
+    "Redipuglia–Divaccia (Slovenia), 380 kV": {"attuale": 700, "prevista": 1200},
+    "Merchant line Tarvisio–Arnoldstein (Austria), 132 kV": {"attuale": 160, "prevista": 160},
+}
+
+DISTRIBUTORI = {
+    "e-distribuzione": {"clienti": 630_000, "energia_gwh": None,
+                        "nota": "quasi tutto il territorio non urbano"},
+    "AcegasApsAmga – Trieste": {"clienti": 142_000, "energia_gwh": 615,
+                                "nota": "picco 130–140 MW; il porto chiede 160 MW, di cui 80 per il cold ironing"},
+    "AcegasApsAmga – Gorizia": {"clienti": 22_500, "energia_gwh": 120,
+                                "nota": "oltre 40 MW di richieste fotovoltaiche, più della punta cittadina"},
+    "SECAB (Alto Bût)": {"clienti": 5_500, "energia_gwh": 45,
+                         "nota": "5 centrali idroelettriche, surplus strutturale immesso in rete"},
+}
+
+SATURAZIONE_PROVINCE = {"Udine": 50, "Pordenone": 25}  # % di trasformatori in zona rossa
+TASSO_REALIZZAZIONE = 50  # % di impianti autorizzati che viene davvero costruito
+
+DECRETO_BOLLETTE = {
+    "riferimento": "D.L. 21/2026, art. 7",
+    "misure": [
+        ("First ready, first connect",
+         "La priorità di allacciamento premia i progetti già autorizzati e pronti a partire, "
+         "non chi ha presentato domanda per primo. Le istanze speculative decadono."),
+        ("Overbooking",
+         "Terna e i distributori possono rilasciare preventivi oltre la capacità reale del nodo, "
+         "contando statisticamente sul 50% di rinunce."),
+        ("Open season",
+         "Assegnazione competitiva della capacità di rete a cadenza trimestrale, "
+         "prima edizione attesa a novembre 2026."),
+    ],
+}
+
+# ---------------------------------------------------------------- idrogeno
+FONTE_H2 = "Regione FVG, Strategia Regionale per l'Idrogeno"
+
+H2_NAHV = {
+    "Finanziamento europeo (mln €)": 25,
+    "Organizzazioni partner": 37,
+    "Durata (mesi)": 72,
+    "Paesi coinvolti": 3,
+}
+
+H2_PROGETTI = [
+    {"nome": "Hydrogen Hub Trieste", "soggetto": "AcegasApsAmga",
+     "finanziamento_mln": 15.8, "elettrolisi_mw": 5.0, "fv_dedicato_mwp": 4.85,
+     "produzione_ton_anno": 370, "da_fv_ton_anno": 116, "stoccaggio_ton": 2,
+     "stato": "AIA rilasciata a febbraio 2025, avvio previsto entro metà 2026",
+     "nota": "Area ex Esso sul Canale Navigabile, acqua dal termovalorizzatore vicino."},
+    {"nome": "Stazione di rifornimento di Monfalcone", "soggetto": "APT Gorizia",
+     "finanziamento_mln": None, "elettrolisi_mw": None, "fv_dedicato_mwp": None,
+     "produzione_ton_anno": None, "da_fv_ton_anno": None, "stoccaggio_ton": None,
+     "stato": "PNRR investimento 3.3",
+     "nota": "Alimenta 15 autobus a idrogeno sulla linea Monfalcone–Staranzano–Ronchi."},
+    {"nome": "Stazione di rifornimento di Porpetto", "soggetto": "PNRR",
+     "finanziamento_mln": None, "elettrolisi_mw": None, "fv_dedicato_mwp": None,
+     "produzione_ton_anno": None, "da_fv_ton_anno": None, "stoccaggio_ton": None,
+     "stato": "PNRR investimento 3.3", "nota": "Attivazione della domanda locale di idrogeno."},
+]
+
+H2_MEZZI_TPL = {"Trieste": 10, "Monfalcone": 15}
+
+H2_CRITICITA = [
+    ("Rinnovabili insufficienti",
+     "La capacità FER regionale potrebbe non bastare per produrre idrogeno rinnovabile "
+     "senza sottrarlo ad altri usi: serve coordinare nuova capacità, flessibilità di rete "
+     "e priorità d'impiego."),
+    ("Competenze nelle PMI",
+     "Gestione e manutenzione di impianti complessi richiedono formazione mirata, "
+     "che oggi manca soprattutto nelle piccole imprese."),
+    ("Localizzazione e accettabilità",
+     "Servono aree idonee individuate in anticipo, riuso di siti industriali e "
+     "co-localizzazione con infrastrutture esistenti."),
+    ("Rete gas disomogenea",
+     "In alcune porzioni di territorio l'accesso alla rete gas è irregolare, "
+     "il che impone soluzioni logistiche alternative con costi maggiori."),
+]
+
+# Consumi elettrici industriali per settore merceologico, GWh (Terna, elaborazione Regione FVG)
+CONSUMI_INDUSTRIA_MERCEOLOGICO = {
+    2022: {"Siderurgia": 1980.0, "Legno e mobilio": 741.1, "Cartaria": 514.1,
+           "Prodotti in metallo": 348.4, "Plastica e gomma": 320.5, "Alimentari": 298.2,
+           "Chimica": 258.9, "Ceramiche e vetrarie": 235.7},
+    2023: {"Siderurgia": 2018.4, "Legno e mobilio": 650.0, "Cartaria": 277.8,
+           "Prodotti in metallo": 337.3, "Plastica e gomma": 305.2, "Alimentari": 293.2,
+           "Chimica": 246.0, "Ceramiche e vetrarie": 274.6},
+}
+INDUSTRIA_TOTALE_GWH = {2022: 5827.9, 2023: 5536.9}
+
+# ---------------------------------------------------------------- contesto regionale
+CONTESTO = {
+    "popolazione_2021": 1_201_510,
+    "popolazione_2045": 1_133_201,
+    "aziende_manifatturiere": 8_300,
+    "quota_export_top5": 75,  # % del valore dell'export da siderurgia, meccanica, mezzi di trasporto, ...
+}
+
 
 # ------------------------------------------------- funzioni di supporto
 def serie(
@@ -451,6 +627,18 @@ def serie(
         .sum()
         .assign(unita=out["unita"].iat[0])
     )
+
+
+def senza_zeri(s: pd.DataFrame, col: str = "valore", voce: str = "voce") -> pd.DataFrame:
+    """Toglie le voci che valgono zero su tutto il periodo.
+
+    In FVG serve soprattutto per l'eolico, che è a zero in ogni anno della serie:
+    tenerlo produce legende e assi con una categoria sempre invisibile.
+    """
+    if s.empty:
+        return s
+    vive = s.groupby(voce)[col].sum()
+    return s[s[voce].isin(vive[vive != 0].index)]
 
 
 def totale(df: pd.DataFrame, dataset: str, anno: int, **kwargs) -> float:
@@ -531,6 +719,13 @@ calore = D.serie(df, "produzione_di_calore_per_impianto_cogenerativo_gwh")
 emissioni = D.serie(df, "emissione_per_combustibile_mln_di_tonnellate")
 idrico = D.serie(df, "produzione_per_impianto_idrico_gwh")
 
+# L'eolico in FVG è a zero in tutta la serie: fuori dai grafici, ma detto a parole
+# nella panoramica, perché la sua assenza è essa stessa un dato.
+prod_fonte, prod_fer, pot_fonte, pot_fer = (
+    D.senza_zeri(x) for x in (prod_fonte, prod_fer, pot_fonte, pot_fer)
+)
+prod_comb, prod_cat, idrico = (D.senza_zeri(x) for x in (prod_comb, prod_cat, idrico))
+
 
 def anno_di(s: pd.DataFrame, a: int = None) -> pd.DataFrame:
     return s[s["anno"] == (a or anno)]
@@ -579,9 +774,12 @@ tabs = st.tabs([
     "🏭 Consumi finali",
     "⚡ Elettricità",
     "🔌 Reti",
+    "☀️ Fotovoltaico",
     "🌱 Rinnovabili",
     "💧 Idroelettrico",
+    "🔥 Gas",
     "🔥 Termo & CO₂",
+    "🧪 Idrogeno",
     "🔮 Scenari",
     "🌡️ Clima",
     "📈 Transizione",
@@ -590,6 +788,34 @@ tabs = st.tabs([
 
 # ================================================================ 1. PANORAMICA
 with tabs[0]:
+    st.markdown(
+        """
+Il Friuli-Venezia Giulia è una regione piccola e industriale. Poco meno di
+**1,2 milioni di abitanti** su un territorio che va dalla laguna alle Alpi Giulie,
+e una struttura produttiva che pesa molto più della sua taglia demografica:
+oltre **8.300 imprese manifatturiere**, con siderurgia, meccanica, mezzi di
+trasporto, legno-arredo e cartario a fare circa tre quarti dell'export.
+
+Questo si vede nei consumi. L'industria assorbe da sola circa **il 62% dell'elettricità**
+regionale, e la sola siderurgia vale più di 2 TWh l'anno — più di tutto il settore
+domestico del Friuli-Venezia Giulia messo insieme. È un profilo energetico da regione
+manifatturiera, non da regione di servizi.
+
+Sul lato dell'offerta il quadro è particolare. L'**idroelettrico** alpino è la
+dorsale storica, il **fotovoltaico** è cresciuto in fretta fino a superarlo per
+potenza installata, le **bioenergie** hanno un peso non banale. E poi c'è
+un'assenza: **l'eolico in FVG è sostanzialmente zero**. Non pochi impianti —
+zero produzione in tutta la serie storica. È il motivo per cui non lo trovi nei
+grafici di questa app: non c'è una barra da disegnare. Per una regione che deve
+aggiungere quasi 2 GW di rinnovabili entro il 2030, significa che il peso ricade
+quasi interamente su solare e su quel poco di margine che resta all'idroelettrico.
+
+Infine il dato che tiene insieme tutto: il FVG **importa circa il 91%** della
+sua energia primaria, e consuma più elettricità di quanta ne produca.
+        """
+    )
+    st.divider()
+
     c1, c2 = st.columns([1, 1.4])
 
     with c1:
@@ -662,7 +888,7 @@ with tabs[3]:
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 3. RINNOVABILI
-with tabs[5]:
+with tabs[6]:
     c1, c2 = st.columns(2)
 
     with c1:
@@ -687,7 +913,7 @@ with tabs[5]:
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 4. TERMO & CO2
-with tabs[7]:
+with tabs[9]:
     c1, c2 = st.columns(2)
 
     with c1:
@@ -896,7 +1122,7 @@ with tabs[1]:
     )
 
 # ================================================================ 6. TREND
-with tabs[10]:
+with tabs[13]:
     st.subheader("Sostituzione tra fonti (grafico di Marchetti)")
     st.caption("Asse y: log₁₀(f / (1−f)), con f = quota della fonte. Una retta = sostituzione a ritmo costante.")
 
@@ -930,7 +1156,7 @@ with tabs[10]:
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 7. DATI
-with tabs[11]:
+with tabs[14]:
     st.subheader("Dati sottostanti")
     st.caption(
         "Tutto quello che vedi nell'app viene da questa tabella unica, prodotta da "
@@ -1031,7 +1257,7 @@ with tabs[2]:
         )
 
 # ================================================================ SCENARI
-with tabs[8]:
+with tabs[11]:
     sc = D.carica_per("scenari_settori")
     fer_sc = D.carica_per("scenari_fer_elettriche")
     ind_v = D.carica_per("scenari_industria_vettori")
@@ -1212,7 +1438,7 @@ with tabs[4]:
     )
 
 # ================================================================ IDROELETTRICO
-with tabs[6]:
+with tabs[7]:
     st.subheader("Il parco idroelettrico regionale")
     st.caption(f"Fonte: {DOC.FONTE_IDRO}, integrata con la serie storica Terna.")
 
@@ -1276,7 +1502,7 @@ with tabs[6]:
     )
 
 # ================================================================ CLIMA
-with tabs[9]:
+with tabs[12]:
     st.subheader("Il clima che cambia il sistema energetico")
     st.caption(f"Fonte: {DOC.FONTE_CLIMA}.")
 
@@ -1351,3 +1577,419 @@ with tabs[9]:
         "- **Reti**: eventi intensi e concentrati mettono sotto stress le linee aeree, "
         "in una regione che ha 13.400 km di bassa tensione da mantenere."
     )
+
+# ================================================================ FOTOVOLTAICO
+with tabs[5]:
+    pv_prov = D.carica_per("pv_province")
+    pv_tra = D.carica_per("pv_traiettoria")
+
+    pv_serie = prod_fer[prod_fer["voce"] == "Fotovoltaico"]
+    pv_pot = pot_fonte[pot_fonte["voce"] == "Fotovoltaico"]
+    pv_gwh = anno_di(pv_serie)["valore"].sum()
+    pv_mw = anno_di(pv_pot)["valore"].sum()
+
+    st.subheader("Il fotovoltaico in Friuli-Venezia Giulia")
+    k = st.columns(4)
+    k[0].metric(f"Potenza {anno}", f"{pv_mw:,.0f} MW".replace(",", "."))
+    k[1].metric(f"Produzione {anno}", f"{pv_gwh:,.0f} GWh".replace(",", "."))
+    if pv_mw:
+        k[2].metric("Ore equivalenti", f"{pv_gwh * 1000 / pv_mw:,.0f} h".replace(",", "."))
+    k[3].metric("Quota sulla produzione regionale", f"{pv_gwh / p_tot * 100:.1f}%" if p_tot else "—")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Crescita della potenza installata**")
+        fig = px.bar(pv_pot.sort_values("anno"), x="anno", y="valore",
+                     color_discrete_sequence=["#FACC15"])
+        fig.update_layout(height=340, yaxis_title="MW", xaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+    with c2:
+        st.markdown("**Produzione annua**")
+        fig = px.bar(pv_serie.sort_values("anno"), x="anno", y="valore",
+                     color_discrete_sequence=["#F59E0B"])
+        fig.update_layout(height=340, yaxis_title="GWh", xaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+
+    st.subheader("Distribuzione sul territorio")
+    st.caption(f"Fonte: {DOC.FONTE_PROVINCE}, integrata con il PER FVG 2024.")
+
+    prov_pv = pd.DataFrame([
+        {"Provincia": p, "Produzione (GWh)": v["Fotovoltaico"]}
+        for p, v in DOC.PRODUZIONE_PROVINCE.items()
+    ])
+    c3, c4 = st.columns(2)
+    with c3:
+        fig = px.bar(prov_pv.sort_values("Produzione (GWh)"), x="Produzione (GWh)", y="Provincia",
+                     orientation="h", text_auto=".0f", color_discrete_sequence=["#FACC15"])
+        fig.update_layout(height=300, yaxis_title=None,
+                          title="Produzione fotovoltaica 2024", **PLOT)
+        st.plotly_chart(fig, width="stretch")
+    with c4:
+        if not pv_prov.empty:
+            dens = pv_prov.dropna(subset=["densita_potenza_w_ab"])
+            fig = px.bar(dens.sort_values("densita_potenza_w_ab"), x="densita_potenza_w_ab",
+                         y="provincia", orientation="h", text_auto=".0f",
+                         color_discrete_sequence=["#F59E0B"])
+            fig.update_layout(height=300, yaxis_title=None, xaxis_title="W per abitante",
+                              title="Potenza per abitante", **PLOT)
+            st.plotly_chart(fig, width="stretch")
+
+    if not pv_prov.empty:
+        st.markdown("**Dettaglio provinciale**")
+        tab = pv_prov.rename(columns={
+            "provincia": "Provincia", "impianti": "Impianti",
+            "produzione_gwh_2022": "Produzione 2022 (GWh)", "potenza_mw": "Potenza (MW)",
+            "densita_potenza_w_ab": "W/abitante", "densita_potenza_kw_km2": "kW/km²",
+            "produzione_specifica_kwh_kw": "kWh per kW installato"})
+        st.dataframe(tab, hide_index=True, width="stretch")
+        st.caption(
+            "L'ultima colonna è la produttività specifica: quanto rende un kW installato. "
+            "Varia poco tra province — l'irraggiamento in regione è abbastanza uniforme, "
+            "le differenze vere sono di quanto si è installato, non di quanto rende."
+        )
+
+    if not pv_tra.empty:
+        st.subheader("La traiettoria del PER")
+        prod = pv_tra[pv_tra["grandezza"] == "Produzione annua"]
+        pot = pv_tra[pv_tra["grandezza"] == "Potenza di picco"]
+        sup = pv_tra[pv_tra["grandezza"] == "Superficie occupata"]
+        fig = go.Figure()
+        fig.add_bar(x=pot["anno"], y=pot["valore"], name="Potenza di picco (MWp)",
+                    marker_color="#FACC15")
+        fig.add_scatter(x=prod["anno"], y=prod["valore"], name="Produzione (GWh)",
+                        mode="lines+markers", line=dict(color="#111827", width=3), yaxis="y2")
+        fig.update_layout(height=380, template="plotly_white",
+                          yaxis=dict(title="MWp"),
+                          yaxis2=dict(title="GWh", overlaying="y", side="right"),
+                          margin=dict(t=30, b=10, l=10, r=10),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0))
+        st.plotly_chart(fig, width="stretch")
+        if not sup.empty:
+            st.caption(
+                "Superficie stimata dal PER per ospitare questa crescita: "
+                + " · ".join(f"**{int(r.anno)}: {r.valore:,.0f} ha**".replace(",", ".")
+                             for r in sup.itertuples())
+            )
+
+    st.info(
+        "**Cosa manca ancora.** Qui c'è la distribuzione per provincia, ma non la "
+        "mappatura vera: georeferenziazione degli impianti, distinzione tra tetti "
+        "e impianti a terra, superficie agricola occupata, prossimità alle cabine "
+        "primarie. Quei dati stanno in Atlaimpianti del GSE e nel catasto regionale "
+        "degli impianti: quando li recuperiamo, questa scheda diventa una mappa."
+    )
+
+# ================================================================ GAS
+with tabs[8]:
+    st.subheader("Il gas naturale nel sistema energetico regionale")
+    bil = D.carica_per("bilancio_2021")
+    consumi_f = D.carica_per("consumi_finali_2021")
+
+    if not bil.empty:
+        v = bil.set_index("voce")["valore"]
+        gas_import = v.get("Combustibili gassosi", 0)
+        gas_finali = consumi_f[consumi_f["vettore"].str.contains("gassos", case=False, na=False)]
+        gas_fin_tot = gas_finali["valore"].sum()
+        gas_trasf = max(0.0, gas_import - gas_fin_tot)
+
+        g = st.columns(4)
+        g[0].metric("Gas in ingresso (2021)", f"{gas_import:,.0f} ktep".replace(",", "."))
+        g[1].metric("Agli usi finali", f"{gas_fin_tot:,.0f} ktep".replace(",", "."),
+                    f"{gas_fin_tot / gas_import * 100:.0f}% del totale" if gas_import else None)
+        g[2].metric("Alla trasformazione", f"{gas_trasf:,.0f} ktep".replace(",", "."),
+                    f"{gas_trasf / gas_import * 100:.0f}% del totale" if gas_import else None)
+        g[3].metric("Quota sul consumo interno lordo",
+                    f"{gas_import / v.get('Consumo interno lordo', 1) * 100:.0f}%")
+
+        st.caption(
+            "Il gas è il primo vettore del sistema regionale. Circa due terzi vanno "
+            "direttamente agli usi finali — soprattutto riscaldamento civile e calore "
+            "di processo — e un terzo entra in centrale per produrre elettricità e calore."
+        )
+
+        # Sankey del solo gas
+        nodi_g = ["Gas naturale in ingresso", "Usi finali diretti", "Generazione e cogenerazione"]
+        nodi_g += [f"{r.settore} (diretto)" for r in gas_finali.itertuples() if r.valore > 0]
+        nodi_g += ["Elettricità e calore", "Perdite di conversione"]
+        ig = {n: i for i, n in enumerate(nodi_g)}
+        colori_g = ["#9CA3AF", "#6B7280", "#F97316"] + \
+                   ["#2563EB"] * len([r for r in gas_finali.itertuples() if r.valore > 0]) + \
+                   ["#FACC15", "#EF4444"]
+        sg, tg, vg, cg = [], [], [], []
+
+        def lg(a, b_, val, col):
+            if val and val > 0:
+                sg.append(ig[a]); tg.append(ig[b_]); vg.append(float(val)); cg.append(col)
+
+        lg("Gas naturale in ingresso", "Usi finali diretti", gas_fin_tot, "rgba(107,114,128,0.35)")
+        lg("Gas naturale in ingresso", "Generazione e cogenerazione", gas_trasf, "rgba(249,115,22,0.35)")
+        for r in gas_finali.itertuples():
+            lg("Usi finali diretti", f"{r.settore} (diretto)", r.valore, "rgba(37,99,235,0.3)")
+        rend_gas = v.get("Rendimento", 0.64)
+        utile = gas_trasf * rend_gas
+        lg("Generazione e cogenerazione", "Elettricità e calore", utile, "rgba(250,204,21,0.45)")
+        lg("Generazione e cogenerazione", "Perdite di conversione", gas_trasf - utile,
+           "rgba(239,68,68,0.3)")
+
+        fig = go.Figure(go.Sankey(
+            node=dict(pad=18, thickness=20, label=nodi_g, color=colori_g,
+                      line=dict(color="rgba(0,0,0,0.15)", width=0.5)),
+            link=dict(source=sg, target=tg, value=vg, color=cg,
+                      hovertemplate="%{value:.0f} ktep<extra></extra>"),
+        ))
+        fig.update_layout(height=440, font_size=12, margin=dict(t=20, b=20, l=10, r=10))
+        st.plotly_chart(fig, width="stretch")
+        st.caption(
+            f"Il rendimento applicato al ramo di trasformazione è quello medio del "
+            f"sistema regionale ({rend_gas * 100:.0f}%), non misurato sul solo gas."
+        )
+
+        st.subheader("Dove va il gas che non passa dalla centrale")
+        fig = px.bar(gas_finali.sort_values("valore"), x="valore", y="settore", orientation="h",
+                     text_auto=".0f", color_discrete_sequence=["#9CA3AF"])
+        fig.update_layout(height=300, xaxis_title="ktep", yaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+
+    st.divider()
+    st.subheader("Il lato elettrico: produzione da gas")
+    gas_el = prod_comb[prod_comb["voce"].str.contains("gas", case=False, na=False)]
+    if not gas_el.empty:
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = px.area(gas_el.sort_values("anno"), x="anno", y="valore",
+                          color_discrete_sequence=["#9CA3AF"])
+            fig.update_layout(height=340, yaxis_title="GWh elettrici", xaxis_title=None,
+                              title="Produzione elettrica da gas naturale", **PLOT)
+            st.plotly_chart(fig, width="stretch")
+        with c2:
+            em_gas = emissioni[emissioni["voce"].str.contains("gas", case=False, na=False)]
+            fig = px.area(em_gas.sort_values("anno"), x="anno", y="valore",
+                          color_discrete_sequence=["#EF4444"])
+            fig.update_layout(height=340, yaxis_title="Mt CO₂", xaxis_title=None,
+                              title="Emissioni dalla generazione a gas", **PLOT)
+            st.plotly_chart(fig, width="stretch")
+
+        picco = gas_el.loc[gas_el["valore"].idxmax()]
+        ultimo = gas_el[gas_el["anno"] == gas_el["anno"].max()]["valore"].sum()
+        st.info(
+            f"La generazione elettrica a gas ha toccato il massimo nel **{int(picco['anno'])}** "
+            f"con {picco['valore']:,.0f} GWh ed è scesa a **{ultimo:,.0f} GWh** nell'ultimo anno "
+            "disponibile: circa ".replace(",", ".")
+            + f"{(1 - ultimo / picco['valore']) * 100:.0f}% in meno. "
+            "È il singolo fattore che spiega quasi tutto il calo delle emissioni elettriche "
+            "regionali. La scheda «Termo & CO₂» disaggrega per categoria di impianto."
+        )
+
+# ================================================================ IDROGENO
+with tabs[10]:
+    st.subheader("Idrogeno: a che punto è il Friuli-Venezia Giulia")
+    st.caption(f"Fonte: {DOC.FONTE_H2}.")
+
+    n = DOC.H2_NAHV
+    h = st.columns(4)
+    h[0].metric("Finanziamento NAHV", f"{n['Finanziamento europeo (mln €)']} mln €")
+    h[1].metric("Organizzazioni partner", n["Organizzazioni partner"])
+    h[2].metric("Durata del progetto", f"{n['Durata (mesi)']} mesi")
+    h[3].metric("Autobus a idrogeno previsti", sum(DOC.H2_MEZZI_TPL.values()))
+
+    st.markdown(
+        "La **North Adriatic Hydrogen Valley** è il progetto che tiene insieme "
+        "Friuli-Venezia Giulia, Slovenia e Croazia, finanziato da Horizon Europe e "
+        "avviato a settembre 2023. Attorno ci sono i progetti PNRR e una filiera "
+        "industriale regionale già interessata: siderurgia, trasporti, chimica, "
+        "oltre 120 attori mappati nella consultazione del 2022, polarizzati su Udine e Trieste."
+    )
+
+    st.subheader("I progetti concreti")
+    prog = pd.DataFrame(DOC.H2_PROGETTI)
+    hub = DOC.H2_PROGETTI[0]
+    p1, p2, p3, p4 = st.columns(4)
+    p1.metric("Elettrolisi Hydrogen Hub Trieste", f"{hub['elettrolisi_mw']:.0f} MW")
+    p2.metric("Fotovoltaico dedicato", f"{hub['fv_dedicato_mwp']:.2f} MWp")
+    p3.metric("Produzione attesa", f"{hub['produzione_ton_anno']} t/anno",
+              f"di cui {hub['da_fv_ton_anno']} t da FV")
+    p4.metric("Finanziamento PNRR", f"{hub['finanziamento_mln']} mln €")
+
+    for pr in DOC.H2_PROGETTI:
+        with st.expander(f"{pr['nome']} — {pr['soggetto']}"):
+            st.markdown(f"**Stato:** {pr['stato']}\n\n{pr['nota']}")
+
+    st.subheader("Le criticità dichiarate dalla Regione")
+    for titolo, testo in DOC.H2_CRITICITA:
+        st.markdown(f"**{titolo}** — {testo}")
+
+    st.warning(
+        "Il vincolo più stringente è il primo: l'idrogeno rinnovabile richiede elettricità "
+        "rinnovabile in eccesso, e il FVG non ne ha. Con 5 MW di elettrolisi si producono "
+        "370 tonnellate l'anno; per confronto, la sola siderurgia regionale consuma oltre "
+        "2 TWh elettrici. L'idrogeno qui è una scommessa industriale e infrastrutturale "
+        "di lungo periodo, non una voce del bilancio energetico di oggi."
+    )
+
+# ---- aggiunte alla scheda Scenari: il Sankey 2045
+with tabs[11]:
+    st.divider()
+    st.subheader("Come cambiano i consumi finali: 2021 e 2045 a confronto")
+
+    cons21 = D.carica_per("consumi_finali_2021")
+    ind_v = D.carica_per("scenari_industria_vettori")
+    tra_al = D.carica_per("trasporti_alimentazione")
+    sc_all = D.carica_per("scenari_settori")
+
+    if not (cons21.empty or ind_v.empty or tra_al.empty):
+        st.caption(
+            "A sinistra il vettore, a destra il settore. Il PER disaggrega i vettori al 2045 "
+            "per industria e trasporti; per il civile fornisce solo il totale, quindi resta "
+            "un flusso unico. Scenario: Policy B per l'industria."
+        )
+
+        def sankey_consumi(coppie: list[tuple[str, str, float]], titolo: str) -> go.Figure:
+            vettori = sorted({v for v, _, val in coppie if val > 0})
+            settori = sorted({s for _, s, val in coppie if val > 0})
+            nodi = vettori + settori
+            idx_ = {n: i for i, n in enumerate(nodi)}
+            palette = {"Gas": "#9CA3AF", "Combustibili gassosi": "#9CA3AF",
+                       "Elettricità": "#FACC15", "Energia elettrica": "#FACC15",
+                       "FER": "#22C55E", "Energie rinnovabili": "#22C55E",
+                       "Calore derivato": "#F97316", "Solidi": "#111827",
+                       "Combustibili solidi": "#111827", "Petrolio": "#4B5563",
+                       "Prodotti petroliferi": "#4B5563", "Idrogeno": "#06B6D4"}
+            colori = [palette.get(v, "#D1D5DB") for v in vettori] + ["#2563EB"] * len(settori)
+            fig_ = go.Figure(go.Sankey(
+                node=dict(pad=16, thickness=18, label=nodi, color=colori,
+                          line=dict(color="rgba(0,0,0,0.15)", width=0.5)),
+                link=dict(source=[idx_[v] for v, s, val in coppie if val > 0],
+                          target=[idx_[s] for v, s, val in coppie if val > 0],
+                          value=[val for _, _, val in coppie if val > 0],
+                          color=["rgba(37,99,235,0.22)"] * len([c for c in coppie if c[2] > 0]),
+                          hovertemplate="%{value:.0f} ktep<extra></extra>"),
+            ))
+            fig_.update_layout(height=420, font_size=12, title=titolo,
+                               margin=dict(t=40, b=20, l=10, r=10))
+            return fig_
+
+        c21 = [(r.vettore, r.settore, r.valore) for r in cons21.itertuples()]
+
+        # 2045: industria e trasporti per vettore, civile aggregato
+        c45 = [(r.vettore, "Industria", r.valore)
+               for r in ind_v[ind_v["anno"] == 2045].itertuples()]
+        agg_tra = {"ELETTRICITÁ": "Elettricità", "IDROGENO": "Idrogeno"}
+        for r in tra_al[(tra_al["anno"] == 2045) & (tra_al["grandezza"] == "Consumi")].itertuples():
+            nome = agg_tra.get(r.alimentazione.upper())
+            if nome is None:
+                nome = "Biocarburanti ed e-fuel" if any(
+                    x in r.alimentazione.upper() for x in ("BIO", "E-", "HVO", "SAF")
+                ) else "Prodotti petroliferi"
+            c45.append((nome, "Trasporti", r.valore))
+        civ45 = sc_all[(sc_all["settore"] == "Civile") & (sc_all["anno"] == 2045)
+                       & (sc_all["scenario"] == "B")]["valore"].sum()
+        if civ45:
+            c45.append(("Vettori non disaggregati", "Civile", civ45))
+
+        agg45: dict[tuple[str, str], float] = {}
+        for v_, s_, val in c45:
+            agg45[(v_, s_)] = agg45.get((v_, s_), 0) + val
+        c45 = [(v_, s_, val) for (v_, s_), val in agg45.items()]
+
+        cc1, cc2 = st.columns(2)
+        with cc1:
+            st.plotly_chart(sankey_consumi(c21, "2021 — dato di bilancio"), width="stretch")
+        with cc2:
+            st.plotly_chart(sankey_consumi(c45, "2045 — scenario del PER"), width="stretch")
+
+        tot21 = sum(v for _, _, v in c21)
+        tot45 = sum(v for _, _, v in c45)
+        st.info(
+            f"I consumi finali passano da **{tot21:,.0f}** a **{tot45:,.0f} ktep**, "
+            f"circa {(1 - tot45 / tot21) * 100:.0f}% in meno. ".replace(",", ".")
+            + "Nei trasporti compare l'idrogeno, che oggi vale zero. Nell'industria il gas "
+            "arretra e crescono elettricità e rinnovabili dirette. Il confronto non è "
+            "perfettamente simmetrico: il 2021 è un bilancio consuntivo, il 2045 uno scenario, "
+            "e il civile resta aggregato perché il PER non ne disaggrega i vettori."
+        )
+
+# ---- aggiunte alla scheda Reti: avanzamento, accumuli, distributori
+with tabs[4]:
+    st.divider()
+    st.subheader("Avanzamento verso il target 2030, in dettaglio")
+    st.caption(f"Fonte: {DOC.FONTE_RETI_REPORT}.")
+
+    bsm = pd.DataFrame(DOC.BURDEN_SHARING_MW.items(), columns=["Voce", "MW"])
+    bsm["Quota"] = bsm["MW"] / DOC.BURDEN_SHARING_TARGET_MW * 100
+    fig = px.bar(bsm, x="MW", y=["Target"] * len(bsm), color="Voce", orientation="h",
+                 text=bsm.apply(lambda r: f"{r['Voce']}<br>{r['MW']} MW", axis=1),
+                 color_discrete_sequence=["#22C55E", "#2563EB", "#60A5FA", "#E5E7EB"])
+    fig.update_traces(textposition="inside", insidetextanchor="middle")
+    fig.update_layout(height=220, barmode="stack", showlegend=False, yaxis_title=None,
+                      xaxis_title=f"MW sul target di {DOC.BURDEN_SHARING_TARGET_MW} MW", **PLOT)
+    st.plotly_chart(fig, width="stretch")
+    st.caption(
+        f"Gli impianti già in esercizio coprono il {bsm.iloc[0]['Quota']:.0f}% del target. "
+        "Sommando la pipeline autorizzata si arriva a poco più dell'80%: "
+        f"mancano {DOC.BURDEN_SHARING_MW['Quota residua al 2030']} MW."
+    )
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Accumuli: richieste contro fabbisogno**")
+        b = DOC.BESS
+        bess = pd.DataFrame([
+            {"Voce": "Richiesto", "MW": b["Potenza richiesta (MW)"]},
+            {"Voce": "Fabbisogno stimato", "MW": b["Fabbisogno stimato dal piano (MW)"]},
+            {"Voce": "Già attivo (Pavia di Udine)", "MW": b["Impianto già attivo a Pavia di Udine (MW)"]},
+        ])
+        fig = px.bar(bess, x="Voce", y="MW", text_auto=".0f",
+                     color="Voce", color_discrete_sequence=["#A855F7", "#22C55E", "#2563EB"])
+        fig.update_layout(showlegend=False, height=320, xaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+        st.caption(
+            f"{b['Impianti autorizzati o in istruttoria']} impianti tra autorizzati e in "
+            "istruttoria. Le richieste valgono quasi cinque volte il fabbisogno stimato dal "
+            "piano: è il segnale di una corsa a prenotare capacità più che di un bisogno reale."
+        )
+
+    with c2:
+        st.markdown("**Interconnessioni transfrontaliere**")
+        inter = pd.DataFrame([
+            {"Linea": k.split(",")[0], "Attuale": v["attuale"], "Prevista": v["prevista"]}
+            for k, v in DOC.INTERCONNESSIONI.items()
+        ])
+        fig = go.Figure()
+        fig.add_bar(x=inter["Linea"], y=inter["Attuale"], name="Capacità attuale",
+                    marker_color="#6B7280", text=inter["Attuale"])
+        fig.add_bar(x=inter["Linea"], y=inter["Prevista"] - inter["Attuale"],
+                    name="Incremento previsto", marker_color="#22C55E")
+        fig.update_layout(barmode="stack", height=320, yaxis_title="MW", xaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+        st.caption(
+            "Il FVG è un ponte elettrico verso Slovenia e Austria. La capacità di importazione "
+            "da Redipuglia sale da 700 a 1.200 MW con la razionalizzazione della "
+            "Redipuglia–Udine Ovest."
+        )
+
+    st.subheader("Chi distribuisce l'energia")
+    st.caption(
+        "La distribuzione non è di un solo operatore: accanto a e-distribuzione ci sono "
+        "le utility urbane e le cooperative storiche alpine, con problemi opposti."
+    )
+    for nome, d in DOC.DISTRIBUTORI.items():
+        riga = f"**{nome}** — {d['clienti']:,} utenze".replace(",", ".")
+        if d["energia_gwh"]:
+            riga += f", {d['energia_gwh']} GWh/anno"
+        st.markdown(riga + f". {d['nota']}.")
+
+    st.subheader("Il nodo della saturazione virtuale")
+    sat = pd.DataFrame(DOC.SATURAZIONE_PROVINCE.items(),
+                       columns=["Provincia", "% trasformatori in zona rossa"])
+    fig = px.bar(sat, x="Provincia", y="% trasformatori in zona rossa", text_auto=".0f",
+                 color_discrete_sequence=["#EF4444"])
+    fig.update_layout(height=280, xaxis_title=None, yaxis_range=[0, 60], **PLOT)
+    st.plotly_chart(fig, width="stretch")
+    st.markdown(
+        f"Una parte della saturazione è **virtuale**: capacità prenotata da richieste che non "
+        f"diventeranno mai impianti. Storicamente solo il **{DOC.TASSO_REALIZZAZIONE}%** "
+        "di quanto viene autorizzato si costruisce davvero. "
+        f"Il **{DOC.DECRETO_BOLLETTE['riferimento']}** interviene proprio su questo:"
+    )
+    for titolo, testo in DOC.DECRETO_BOLLETTE["misure"]:
+        st.markdown(f"- **{titolo}** — {testo}")

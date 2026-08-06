@@ -104,3 +104,150 @@ IDRO_PARCO = {
     "Potenza efficiente lorda (MW)": 528.7,
     "Producibilità media annua (GWh)": 1830.8,
 }
+
+# ---------------------------------------------------------------- province
+FONTE_PROVINCE = "Terna, Statistiche Regionali 2024 (dati al 31/12/2024)"
+
+# Produzione lorda totale e rinnovabile per fonte, GWh, 2024
+PRODUZIONE_PROVINCE = {
+    "Gorizia": {"totale": 500.5, "Idrico": 52.2, "Fotovoltaico": 74.1, "Bioenergie": 191.4},
+    "Pordenone": {"totale": 1511.8, "Idrico": 946.5, "Fotovoltaico": 286.9, "Bioenergie": 196.3},
+    "Trieste": {"totale": 379.7, "Idrico": 0.0, "Fotovoltaico": 41.0, "Bioenergie": 70.9},
+    "Udine": {"totale": 4342.7, "Idrico": 1164.4, "Fotovoltaico": 559.4, "Bioenergie": 223.3},
+}
+
+POTENZA_PROVINCE = {  # MW lordi, 2024
+    "Gorizia": {"totale": 253.9, "rinnovabile": 147.1},
+    "Pordenone": {"totale": 616.4, "rinnovabile": 600.8},
+    "Trieste": {"totale": 349.4, "rinnovabile": 68.9},
+    "Udine": {"totale": 2262.8, "rinnovabile": 1063.5},
+}
+
+# Consumi elettrici 2024, GWh
+CONSUMI_ELETTRICI_PROVINCE = {"Gorizia": 691.9, "Pordenone": 2059.3,
+                              "Trieste": 1042.9, "Udine": 5510.4}
+CONSUMI_ELETTRICI_SETTORE = {"Industria": 5751.7, "Servizi": 2187.1, "Domestico": 1365.8}
+CONSUMI_ELETTRICI_TOTALE = 9304.6
+CONSUMI_FS_TRAZIONE = 190.9
+
+POTENZA_FONTE_2024 = {  # MW lordi
+    "Fotovoltaico": 1210.8, "Idrico": 528.9, "Termoelettrico": 1530.9,
+    "Accumuli stand alone": 212.0,
+}
+
+# ---------------------------------------------------------------- reti, dettaglio
+FONTE_RETI_REPORT = "Audizioni IV Commissione consiliare, 21/04/2026 (Terna, e-distribuzione, AcegasApsAmga, SECAB)"
+
+# Avanzamento verso il target 2030, in MW
+BURDEN_SHARING_MW = {
+    "In esercizio (2021–2025)": 940,
+    "Autorizzato in alta tensione": 310,
+    "Autorizzato in media tensione": 350,
+    "Quota residua al 2030": 360,
+}
+BURDEN_SHARING_TARGET_MW = 1960
+
+BESS = {
+    "Impianti autorizzati o in istruttoria": 26,
+    "Potenza richiesta (MW)": 1405.5,
+    "Fabbisogno stimato dal piano (MW)": 300,
+    "Impianto già attivo a Pavia di Udine (MW)": 200,
+}
+
+INTERCONNESSIONI = {
+    "Redipuglia–Divaccia (Slovenia), 380 kV": {"attuale": 700, "prevista": 1200},
+    "Merchant line Tarvisio–Arnoldstein (Austria), 132 kV": {"attuale": 160, "prevista": 160},
+}
+
+DISTRIBUTORI = {
+    "e-distribuzione": {"clienti": 630_000, "energia_gwh": None,
+                        "nota": "quasi tutto il territorio non urbano"},
+    "AcegasApsAmga – Trieste": {"clienti": 142_000, "energia_gwh": 615,
+                                "nota": "picco 130–140 MW; il porto chiede 160 MW, di cui 80 per il cold ironing"},
+    "AcegasApsAmga – Gorizia": {"clienti": 22_500, "energia_gwh": 120,
+                                "nota": "oltre 40 MW di richieste fotovoltaiche, più della punta cittadina"},
+    "SECAB (Alto Bût)": {"clienti": 5_500, "energia_gwh": 45,
+                         "nota": "5 centrali idroelettriche, surplus strutturale immesso in rete"},
+}
+
+SATURAZIONE_PROVINCE = {"Udine": 50, "Pordenone": 25}  # % di trasformatori in zona rossa
+TASSO_REALIZZAZIONE = 50  # % di impianti autorizzati che viene davvero costruito
+
+DECRETO_BOLLETTE = {
+    "riferimento": "D.L. 21/2026, art. 7",
+    "misure": [
+        ("First ready, first connect",
+         "La priorità di allacciamento premia i progetti già autorizzati e pronti a partire, "
+         "non chi ha presentato domanda per primo. Le istanze speculative decadono."),
+        ("Overbooking",
+         "Terna e i distributori possono rilasciare preventivi oltre la capacità reale del nodo, "
+         "contando statisticamente sul 50% di rinunce."),
+        ("Open season",
+         "Assegnazione competitiva della capacità di rete a cadenza trimestrale, "
+         "prima edizione attesa a novembre 2026."),
+    ],
+}
+
+# ---------------------------------------------------------------- idrogeno
+FONTE_H2 = "Regione FVG, Strategia Regionale per l'Idrogeno"
+
+H2_NAHV = {
+    "Finanziamento europeo (mln €)": 25,
+    "Organizzazioni partner": 37,
+    "Durata (mesi)": 72,
+    "Paesi coinvolti": 3,
+}
+
+H2_PROGETTI = [
+    {"nome": "Hydrogen Hub Trieste", "soggetto": "AcegasApsAmga",
+     "finanziamento_mln": 15.8, "elettrolisi_mw": 5.0, "fv_dedicato_mwp": 4.85,
+     "produzione_ton_anno": 370, "da_fv_ton_anno": 116, "stoccaggio_ton": 2,
+     "stato": "AIA rilasciata a febbraio 2025, avvio previsto entro metà 2026",
+     "nota": "Area ex Esso sul Canale Navigabile, acqua dal termovalorizzatore vicino."},
+    {"nome": "Stazione di rifornimento di Monfalcone", "soggetto": "APT Gorizia",
+     "finanziamento_mln": None, "elettrolisi_mw": None, "fv_dedicato_mwp": None,
+     "produzione_ton_anno": None, "da_fv_ton_anno": None, "stoccaggio_ton": None,
+     "stato": "PNRR investimento 3.3",
+     "nota": "Alimenta 15 autobus a idrogeno sulla linea Monfalcone–Staranzano–Ronchi."},
+    {"nome": "Stazione di rifornimento di Porpetto", "soggetto": "PNRR",
+     "finanziamento_mln": None, "elettrolisi_mw": None, "fv_dedicato_mwp": None,
+     "produzione_ton_anno": None, "da_fv_ton_anno": None, "stoccaggio_ton": None,
+     "stato": "PNRR investimento 3.3", "nota": "Attivazione della domanda locale di idrogeno."},
+]
+
+H2_MEZZI_TPL = {"Trieste": 10, "Monfalcone": 15}
+
+H2_CRITICITA = [
+    ("Rinnovabili insufficienti",
+     "La capacità FER regionale potrebbe non bastare per produrre idrogeno rinnovabile "
+     "senza sottrarlo ad altri usi: serve coordinare nuova capacità, flessibilità di rete "
+     "e priorità d'impiego."),
+    ("Competenze nelle PMI",
+     "Gestione e manutenzione di impianti complessi richiedono formazione mirata, "
+     "che oggi manca soprattutto nelle piccole imprese."),
+    ("Localizzazione e accettabilità",
+     "Servono aree idonee individuate in anticipo, riuso di siti industriali e "
+     "co-localizzazione con infrastrutture esistenti."),
+    ("Rete gas disomogenea",
+     "In alcune porzioni di territorio l'accesso alla rete gas è irregolare, "
+     "il che impone soluzioni logistiche alternative con costi maggiori."),
+]
+
+# Consumi elettrici industriali per settore merceologico, GWh (Terna, elaborazione Regione FVG)
+CONSUMI_INDUSTRIA_MERCEOLOGICO = {
+    2022: {"Siderurgia": 1980.0, "Legno e mobilio": 741.1, "Cartaria": 514.1,
+           "Prodotti in metallo": 348.4, "Plastica e gomma": 320.5, "Alimentari": 298.2,
+           "Chimica": 258.9, "Ceramiche e vetrarie": 235.7},
+    2023: {"Siderurgia": 2018.4, "Legno e mobilio": 650.0, "Cartaria": 277.8,
+           "Prodotti in metallo": 337.3, "Plastica e gomma": 305.2, "Alimentari": 293.2,
+           "Chimica": 246.0, "Ceramiche e vetrarie": 274.6},
+}
+INDUSTRIA_TOTALE_GWH = {2022: 5827.9, 2023: 5536.9}
+
+# ---------------------------------------------------------------- contesto regionale
+CONTESTO = {
+    "popolazione_2021": 1_201_510,
+    "popolazione_2045": 1_133_201,
+    "aziende_manifatturiere": 8_300,
+    "quota_export_top5": 75,  # % del valore dell'export da siderurgia, meccanica, mezzi di trasporto, ...
+}
