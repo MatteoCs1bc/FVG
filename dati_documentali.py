@@ -251,3 +251,94 @@ CONTESTO = {
     "aziende_manifatturiere": 8_300,
     "quota_export_top5": 75,  # % del valore dell'export da siderurgia, meccanica, mezzi di trasporto, ...
 }
+
+# ---------------------------------------------------------------- emissioni totali
+FONTE_EMISSIONI = "ISPRA, annuario statistico (serie regionale); ARPA FVG, inventario GHG 2021"
+
+# Gas serra totali regionali, kt CO2eq. Attenzione: ISPRA avverte che la sequenza
+# non e' una vera serie storica, perche' la metodologia e' cambiata nel tempo.
+EMISSIONI_TOTALI_FVG = {
+    1990: 15015.9, 1995: 15129.2, 2000: 14312.5, 2005: 16208.3,
+    2010: 14895.0, 2015: 11706.5, 2017: 11772.5, 2019: 11297.2,
+}
+EMISSIONI_QUOTA_NAZIONALE = 3          # % del totale italiano
+EMISSIONI_PRO_CAPITE_2019 = 9.3        # t CO2eq per abitante
+
+# Inventario ARPA FVG 2021, metodologia IPCC
+INVENTARIO_ARPA = {
+    "anno": 2021,
+    "quota_energia": 86,               # % del totale dalla macrocategoria Energia
+    "quota_trasporto_strada": 25,      # % del totale dal solo trasporto su strada
+    "ambiti": ["Trasporti", "Combustione nell'industria", "Riscaldamento",
+               "Industrie energetiche"],
+}
+
+TARGET_FVGREEN = {
+    "riferimento": "Legge regionale 4/2023 (FVGreen)",
+    "anno_neutralita": 2045,
+}
+
+# ---------------------------------------------------------------- idrogeno, conti
+# Resa fotovoltaica regionale usata per i confronti: media FVG da Terna 2024
+# (961,4 GWh su 1.210,8 MW installati). Serve a tradurre TWh in MWp e in ettari.
+# Media FVG 2019-2022 (Terna), anni in cui il parco era stabile e il rapporto
+# produzione/potenza non e' falsato dalla crescita. Dal 2023 il fotovoltaico
+# regionale e' raddoppiato in due anni: dividere per la potenza di fine anno
+# darebbe 794 kWh/kWp, che non e' la resa ma l'effetto degli impianti entrati
+# in esercizio a dicembre. Coerente con le 1.100 kWh/kWp indicate da Giusti
+# per il Nord Italia su tetto.
+PV_ORE_EQUIVALENTI = 1040      # kWh per kWp installato, all'anno
+PV_ETTARI_PER_MWP = 1.38       # da progetti autorizzati: 2.268 ha per 1.645,8 MW
+H2_KWH_PER_KG = 55             # consumo elettrico dell'elettrolisi, stima corrente
+
+# ---------------------------------------------------------------- costi ed energia
+FONTE_PREZZI = "ARERA, Relazione annuale (PUN medio 2025); GSE, prezzi minimi garantiti"
+
+PUN_MEDIO_2025 = 115.9      # €/MWh, il più alto tra le principali borse europee
+PREZZO_MINIMO_GARANTITO = {2025: 46.4, 2026: 47.5}   # €/MWh, ritiro dedicato ARERA
+RITIRO_DEDICATO_FV_NORD = (75, 115)                  # €/MWh percepiti al Nord nel 2026
+
+# CAPEX di riferimento, €/kW. Valori d'uso corrente sul mercato italiano:
+# vanno cambiati dall'interfaccia, non sono un dato ufficiale.
+CAPEX_DEFAULT = {
+    "Fotovoltaico utility scale": 700,
+    "Fotovoltaico su capannoni": 1000,
+    "Fotovoltaico residenziale": 1300,
+    "Eolico onshore": 1500,
+}
+# Ore equivalenti annue. Il fotovoltaico è misurato sul FVG (Terna 2024);
+# l'eolico è un valore di letteratura, perché in regione non ce n'è.
+ORE_EQUIVALENTI = {
+    "Fotovoltaico utility scale": 1200,     # a terra al Nord, con tracker su una parte
+    "Fotovoltaico su capannoni": 1040,      # misurato in FVG, 2019-2022
+    "Fotovoltaico residenziale": 1000,      # falde non ottimali, ombreggiamenti
+    "Eolico onshore": 2200,                 # sito di crinale a 5,5 m/s su 100 m
+}
+OPEX_QUOTA = {  # % del CAPEX all'anno
+    "Fotovoltaico utility scale": 1.5, "Fotovoltaico su capannoni": 1.8,
+    "Fotovoltaico residenziale": 2.0, "Eolico onshore": 2.5,
+}
+# Suolo occupato, ha/MW. Il PV a terra viene dai 175 progetti autorizzati in FVG.
+# Per l'eolico si contano solo piazzole e viabilità, non l'area interclusa.
+SUOLO_HA_MW = {
+    "Fotovoltaico utility scale": 1.38, "Fotovoltaico su capannoni": 0.0,
+    "Fotovoltaico residenziale": 0.0, "Eolico onshore": 0.024,
+}
+# Per l'eolico il suolo davvero sottratto ad altri usi e' plinto piu' piazzola:
+# circa 1.000 m2 per un aerogeneratore da 4,2 MW. La "servitu' di sorvolo" -
+# la proiezione a terra del rotore - e' 15.000 m2, ma resta terreno coltivabile.
+EOLICO_SERVITU_HA_MW = 0.36
+
+# Emissioni di ciclo di vita, gCO2/kWh (Politecnico di Milano, Renewable Energy
+# Report 2022). Piu' basse dei valori IPCC usati nel simulatore nazionale.
+LCA_POLIMI = {
+    "Carbone": 1023, "Gas": 436, "Fotovoltaico": 19,
+    "Eolico": 12, "Idroelettrico": 11, "Nucleare": 5,
+}
+EPBT_ANNI = {"Fotovoltaico": 0.43, "Eolico": 1.04}   # tempo di ritorno energetico
+
+# Bilancio elettrico regionale 2024 (Terna): la regione consuma molto piu' di
+# quanto produce, ed e' il dato che rende concreta la parola "import".
+RICHIESTA_ELETTRICA_2024 = 9814.7      # GWh
+DEFICIT_ELETTRICO_2024 = -3341.4       # GWh, pari al -34,0% della richiesta
+IMPIANTI_EOLICI_FVG = 4                # potenza non rilevabile nelle statistiche Terna

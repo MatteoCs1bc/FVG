@@ -26,7 +26,7 @@ import streamlit as st
 # --------------------------------------------------------------------- dati
 _DATI: dict[str, str] = {
     "aree_cabine_primarie":
-        "H4sIAF7EdGoC/22WzY4TQQyE7zxL07L7x9M+hlV4AbivhuwQjdglaGZz4elxFBDpLueaT267quzk"
+        "H4sIAMjudGoC/22WzY4TQQyE7zxL07L7x9M+hlV4AbivhuwQjdglaGZz4elxFBDpLueaT267quzk"
         "dHlZT0s4L/v7ZVvCvC3z84+3FL5fL9v6vC3n9fJz+XB4IuIjMVENy8eXdX/f1m/X37fvgmiU8Hl+"
         "3R8xBSynGuvIcQautpgBK4AlabH95zgp2YfDl+PT4VNg6avk4+1bCofTcp73w6/98HaeQ5aYAOIB"
         "Yn585y+UBihRN9sdygNU2OmpjM+Jo2aD8bVFAmwCbJLII5YIvcnUDXkXHV8VEodDr4t6JmJ0eMpY"
@@ -36,7 +36,7 @@ _DATI: dict[str, str] = {
         "nAXkVuA6kLP3dpTwtDraZTjBpOpsA02jxsZNbj0Grjn1BFNc1K03QT3UOMMNNky8ZU2AYQJqdobN"
         "3qMMW+H8GeA6+G/xdE8rGiver9w/7A+oEe0CzwgAAA==",
     "aree_disponibili_fv":
-        "H4sIAF7EdGoC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
+        "H4sIAMjudGoC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
         "RNwAMpGgumdhiZZEEAhE3LhxI/JxOl3Pw/3zPL2O58exv+/nof/H6Z/4/vgy/+Ok5eW5vKJfKq2W"
         "l6Z6ufyBvNDn4eVlWVEr+Uv6Tj8vP+374+6v88t0N9x96C+X6f63aT4M54n25PTe6vtu33n6on0X"
         "+fXyT+21oRfK1T/dfe0fx+NQLWL0Plj642Du3V55Xi+uC2mzd/RbvXfqXin6/b3fR5tXOtOOzm8j"
@@ -144,7 +144,7 @@ _DATI: dict[str, str] = {
         "Jo/r8sjPMjti2Rc5zJT4S3427uG0tki4fMmaDE8soJSuRnSN1LtbJAYz+/k4rcjbjgaUj5IHR9qc"
         "5Lh9i9oud+xENZLeywNlzZe56L+xzIukLZLlSc6lK7Pu7f8AgPOfMQo/AAA=",
     "bilancio_2021":
-        "H4sIAF7EdGoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
+        "H4sIAMjudGoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
         "i9/8+77BV0NVRbKjCmSnDTmQ2lqSwSLrh1PTkmP5TM01eMYrGhSeDNYo1U59TGSapEq+MrQTegZ2"
         "ESCpkkOxBsxy3bX35GOyYp+uwS8W3B1BOIw9dbqPkWmZr6EXvGFgFJbsDE9WmxgmFTU47DTTOjQW"
         "1wIMMDustEzzOXhBT86DQMvgLMhT7WiiowJ5uUl/IqaODOseztJN9isZHRuOh2ZIrTbpz0ATudsE"
@@ -154,18 +154,20 @@ _DATI: dict[str, str] = {
         "tiK/BO5Da1iJXf73i9AzuBp58HoRuD+orcBjYKqGOVGAaP+kcRA9Koq/64LihtHr0UPorwBgrFDu"
         "y616F7A1NmCHuyTfq/RQZirN8jy+78awDw+/AIVMnrNsBQAA",
     "biomassa_province":
-        "H4sIAF7EdGoC/42PMQ7CMAxFd07RA0QoTZukrCyMMJQDhNQCS5FdJVEHTk9QVYmhFd3+8Pz8f/JA"
-        "LiKLMfKE5NGJzEQQgstwOHPyL6yc95ASPjCUHKoxQkCYWNw4DkBMIExTd/Io/x1cOOK7vGg7s4O+"
-        "D1jUtdGq3UH3ESFlEFad9tDXXhSttl+25+wCVBGeyFTSzzAljZSrzLKl1tqsAnN93bQbgqWwaraA"
-        "0tHabtZ/AEr5VoOpAQAA",
+        "H4sIAMjudGoC/4WQQWrDMBBF9zlFDiAGzWg0I2+76bJduAdwHZGKGivYJoWevuO4gUIK1kJIoP/0"
+        "5819HrupVHeZ6rWMfencUscxD0O3ZHf++nCfS74cnurcf5Rj1/d5nst7Gew8HC9THkq+Vvdap1Me"
+        "65idBEwevCNkSEgOE7B68U0if1u8x3quU/m2GpxkBaFAJHYITD6hIG8Yj3uct1OxPiiWXjlR0AqJ"
+        "YSF4VU4qe4R2Knk2C0rNbSQGTeIIMCAR026D9qW1kI+6phMqNCE5u4TgQ5OacGjr0g35OOVzqaOd"
+        "/ngkc+bXnNrOzlQQhdTwY+buC2O8CYsEjWfHEDk10fNdWHyMbopi4O0rTBhBDCSAyEHkMXFXQuG3"
+        "XQJyAmpjkv7z3Ayopq0YCSugVSNSEEQKynz4AbhMiB+BAgAA",
     "bosco":
-        "H4sIAF7EdGoC/3WQPW/DIBCG9/4KlKmVaHR8HTBm8uYu3i3qUgfJDlVM+vt70A5Woi4nAc9z9x5T"
-        "KHHO1xT4luaF6u0rXj/TlOJ4Dvw7L7c1jmv8SHlc1e6q5BIWelFPhz5f2By3kkrm7EKHME1x29J7"
-        "WuKB9x17Zf2JI4JQR+BSSKpCSe/RiyPc+Y/uiQvQTutqudZBovEokNydyp5/I72QxYUFZ2xlAagq"
-        "441XYOu07t+kf0G9coBV1a0CGpB17k590Gg9KcFVXrX1PEhrdbW6+3iUztBf6Ab7ms6jdcQTPDSG"
-        "D28DR6Osrr0IF9JqxAr8AGvdHxGvAQAA",
+        "H4sIAMjudGoC/3WQvW7DIBSF9z4FypRI1Lpw+R0zeXMX7xZ1aYKEQ2WTPn+BdrASdTkS3PNxzmV2"
+        "2V/SGhzdwiUWvX/59TPMwU9XR79TvC9+WvxHSNOCu6ucsotlgi+HId3IxW855ETJrRzcPPttC+8h"
+        "+gMdevJKhjNVChh2QDnjRRlya5VlHTzwz+yZMhBGiEqZ9gJX0iqmCrtDyfG30qlQlGkwUlcvQFGU"
+        "VloEXdP6f5v+FbVoQFVUNAUlgdfcHfqElfU4B1P92NazwLUWleof65V2svyFaGZb21mlTfEX89g8"
+        "5LiG2cU5RZfTiY5vI0WujGYNYR1aw5jgArRRDKmWCjViDfsBveRVws4BAAA=",
     "centrali_idro":
-        "H4sIAF7EdGoC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
+        "H4sIAMjudGoC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
         "diTDCGI5K1vz3vC9mWHGvOrFIq92Yy/WU75L4yJFsc7bfvwRv67+LQ+Xu0W6SUPaxq+3/34X27TO"
         "Io5jFps4bPPXFX582ka8u9Ib8S2P214MeRRD3DZnq3X/40cW969/XghrOymUsV0QZ+2mn27iNqcs"
         "VDAsDMvOWaFcZ8V5P27Sqh+3ub2d4rhMbVqtUxy3qSVJ+AjqPGvN3mjjyBphXGc0ac9OhWCUds2b"
@@ -198,21 +200,21 @@ _DATI: dict[str, str] = {
         "j7zg/ZwMbm5ie7WccB8tqWp+sA+Yh0pT/4/iVKrWsmoNQT2hYm7Oe87gumSQO51B3uuKJ+P34MkP"
         "ESWU5MHJQqbEUSQKrIHG0FEvbW0QERopEzEa9wiH28J/CNgJKsgRAAA=",
     "consumi_finali_2021":
-        "H4sIAF7EdGoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
+        "H4sIAMjudGoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
         "MWhtaJDeGyupW9YA6rbMGj3sOOMN7c31PDuPZ1RInFE4ID2NFi9G+dkCkWSS7gKUPTD64eVUTvUY"
         "UMkN4LMe4iOLQPmxCr9ZcJOxHu8Gv0hvI2Gyso88zy6KDevy75PZYZ8nko4QK/IjOGdc/iSbemzx"
         "FILV2eQsGK/jaQP8/yE8aWlHlMRiLE6AW2iDfi612Lcdq6JJfl+fW1R/xXecPRJtdFWfbUpmu1yC"
         "0ybaTXyp0v3X5SSDtBjAmy3X8C7x0+9mlUq+DWtXyZLp99eJVir+V6Ik5JvCK6FFlx9q4J+Ot8cK"
         "m5y737GfM88a7gwFAAA=",
     "demografia_scenari":
-        "H4sIAF7EdGoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
+        "H4sIAMjudGoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
         "ej7uKzOSboxMQCsJdwSJwXydBYEooZEtTpbCx2GxWmJ1DkzyszqL+M9iZY3OL4kTO1p+AAAA",
     "geo_indicatori":
-        "H4sIAF7EdGoC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
+        "H4sIAMjudGoC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
         "eqBWju23qTSoGrGDqbGag7gU69mjZEqWo+M+vKyibBwr/GnQbnFJHF06276q2L+Z6W+wW8UK6Oyy"
         "quyvKNiEd5dPYzrMYVxoCtNMxxMtYxjenBpBvMgAAAA=",
     "inversioni_flusso":
-        "H4sIAF7EdGoC/5WVu3LbMBBF+3yFujQYjSVLlFz6EatJbEaUGzeeNYlQOwNiOQDIQl8f6GGKcYiF"
+        "H4sIAMjudGoC/5WVu3LbMBBF+3yFujQYjSVLlFz6EatJbEaUGzeeNYlQOwNiOQDIQl8f6GGKcYiF"
         "3HBAzuG9+wJQG2pR5wjCYqlA5PCO2r/IHZKWgpQz8m3yVufutJ4f1qA1fVuRwZ3/c/Us7slUpK2Y"
         "LMTGNFI8grJSTK+m8z71sVzMj9ThEYQSBlrLAuumVD2xYcs+yAlm+Rahlc7hkGBKppB6X5D0SdyB"
         "ydFGsRXCnlp8Nh2ClpdANyz0CzRCSWI6uwib8XGlpJ00ZC0NNCtIJhHS7OcsueHrdsJi5T2/fIFM"
@@ -223,14 +225,14 @@ _DATI: dict[str, str] = {
         "xiv0GWmNnFufCgedOQN+kB0beA8KK23AtHg4oeYXMJxOux/lPCe2CBtS1fHoCdsdFqMnf+yNflj3"
         "FTKJkFlTDDXyL5+6qMf4CQAA",
     "parco_impianti_2023":
-        "H4sIAF7EdGoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
+        "H4sIAMjudGoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
         "aCQxb0bzPSXX+NCFI1k4RutbN44WBk/JwimGdkgpRAI7pHBxPZyPYL0PT9s2Bte5lCI1Abb9iaxP"
         "BM/AVclKMHlxNceSiyv1LiTnR1u4w4Eacj65oguxtfC6B8kFUyAZzyfD9D/Lfc4t5aiZXCPnudWt"
         "BhNPQx/UUfr+KnrXki0y1WDhZf8JaBBZ/beJkpmlzbuL/W1q1DyzLpFX1cp9VfDmRgp+dqmclHWd"
         "gyjxjvyRTyi1msZa3jWVuTPjI7NQinlSJbLRqGu9+r0J3RXfpINfrN35Mpe7cJlTusZpGIVC6Avl"
         "IwqtFBOAKPN3GYMrww+AYRR3mwIAAA==",
     "progetti_bioenergie":
-        "H4sIAF7EdGoC/41Wy27bRhTd5ysGWQQpMBnM+7GUDTVQ4dStZXSRjTGWJ84AFEcgqRbR1/Rf+mM9"
+        "H4sIAMjudGoC/41Wy27bRhTd5ysGWQQpMBnM+7GUDTVQ4dStZXSRjTGWJ84AFEcgqRbR1/Rf+mM9"
         "Q/oJS2wJG6YImffec89jNnFI96XLkQ55V2hbtonuypDaQ7zZ/kX7/S513/Imp5vvkfZDHMrNfZcO"
         "hzJ9oE1paROHd2e5pDZ19zlR3G7TENtCP/9ySb4srlZLsr48Z2Tx+Wp1fnmxIGt2xS4oZ8pTybTw"
         "2jga9wPaOBzqSxcv7oVkQWnP6480xlpLtWHBBWGNMNLJ4OyJ6qvLP5ZkWZ//IOuyQQP3HUPxjjWM"
@@ -252,7 +254,7 @@ _DATI: dict[str, str] = {
         "u4yDYCR9wcmvPeSIE8vt08HmE55DMmf7DshwKj1zXjvtn/14Lm/QltI6IMwhVTUZMrIGngwNgan/"
         "N/C+lt2u/sV37mP/HPWVrDiDYNezbXjLlYH/I7VkGHMXuzM4gBkcQYUL7/4FgEPpkC4LAAA=",
     "progetti_fer":
-        "H4sIAF7EdGoC/9Vc23LcRpZ8n69A6GHCjmh11P3yNEHRlIY7IsUhZXpjXiagJkRhp9ngortpW1+z"
+        "H4sIAMjudGoC/9Vc23LcRpZ8n69A6GHCjmh11P3yNEHRlIY7IsUhZXpjXiagJkRhp9ngortpW1+z"
         "/7I/tplV6AslAN1SODZ2ZVmyaKqBqjonT+a51KxcVfdNW5eTVf3YTBbNQzV5bFbV4nP5z4dfJ8v1"
         "Y9V+rGd19c9P5WS5KlfNP+/b6vPnJv9hMm8Wk3m5+tNNMy/banJy39ZPzXxV1rNmclk1i+K6WlS/"
         "lh/m1bKoV+W8Loubdj6JUzdRYhp81MJPyvUKr/D5Mz/wZO+/pZ4KZ4TW2islRFRyYuzUR+m9Mkoq"
@@ -400,7 +402,7 @@ _DATI: dict[str, str] = {
         "93gtbXjzCCumuVCBqOsNhz8dLPXYgLe5Uwffc18ud6Gexqp5f+74awTHrDeQKWzHFhxvUPI2UgbE"
         "P/0PaVYk8hhgAAA=",
     "progetti_solare":
-        "H4sIAF7EdGoC/9Vc23LcRpJ9n69A+MmOgBB1vzxNUDLlYYxFcUmZ3piXCagJUdhpNrh9oW19zf7L"
+        "H4sIAMjudGoC/9Vc23LcRpJ9n69A+MmOgBB1vzxNUDLlYYxFcUmZ3piXCagJUdhpNrh9oW19zf7L"
         "/tieU4W+UALQLYVjY1eWJYumulBZmSfPyczCrF43992yrct1+9iVi+6hKR+7dbP4VP/z4bdytXls"
         "lh/aWdv882Ndrtb1uvvn/bL59KnLfyjn3aKc1+u/3HTzetmUZ/fL9qmbr+t21pWXTbcorptF81v9"
         "ft6sinZdz9u6uFnOy1i5Uokq+KiFL+vNGo/w6RM/8Ozgv6WuhDNCa+2VEiIqWRpb+Si9V0ZJZbWX"
@@ -530,29 +532,29 @@ _DATI: dict[str, str] = {
         "WnlNgm9HcDA8LKjtsZdNIg/r9H4v2U8RIRT4RpOY3kr050xIIj2JpCwQb7Dt9EMZGD+IdAUr6Hzl"
         "lvKIl5sBYqP3oQbeInHwsiC4Kd/PxObY+O0hw6Ed+DYkFUs8Wd9wkN55zgGp6P7yP7TAQxwyVQAA",
     "pv_province":
-        "H4sIAF7EdGoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
+        "H4sIAMjudGoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
         "MvIA/Jh5KBvDvNTp8+Bacv+x33pCIpjrlssx9I8dplxW3ob+h9r74e0fed/7+4P+Wq1zHvmdx6bd"
         "5KrnhfO6ZSDvrEawpAPYTpDpkjZgPApO3uioLnXhQyo6CkHILoruTFsK2EYxaAups9qol4mLeKaE"
         "zcomEt36FhCQtIPQoMGImtS1LtJbykmkOecJo07ni+CDREMyupN5Ua16er1IbLKnGkXF32PAO9+6"
         "kROH2D5j0Cbt1TcyexuAYgEAAA==",
     "pv_traiettoria":
-        "H4sIAF7EdGoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
+        "H4sIAMjudGoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
         "dpoIyPsAL+pDtJC8G+lwiaFLkwvesgwTAXJEUBoLDqf28YuXHISqqm2h4oCo9Y4gAZXiqxBG6ydi"
         "nWODMyYsCVJlfm6HX3xOKIXcFnKC0CXfEXKCQL0IR2LOP0fqe4qWeduzwUYXumVLyeYPMW/Kb9Ou"
         "mLebdfqaMrg54ywLxqSBxuUDrOtCw4M2jJxVYlOobWO+Qda7hgRR6c/KGw3m+bwlAgAA",
     "scenari_fer_elettriche":
-        "H4sIAF7EdGoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
+        "H4sIAMjudGoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
         "yDC7iZOHTwzZHe6c3eSb/nxr/ORzTmEYPRCSAKmEOiJcHuNmSiIoq3EnpRA0UbuXakEbqo09Z555"
         "yi4M/J+j0a6zMkJ0tluHxUoWK7w+E9fSRSusNhu0iEmg3qA/M0mx0FNgH316h+V5Ruo1Uo6ENhV9"
         "AasMBmqVAQAA",
     "scenari_industria_vettori":
-        "H4sIAF7EdGoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
+        "H4sIAMjudGoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
         "z/PMDJ4oJg+u7yMMrhvPv30gB5fG9y6FuDrGLrQBJEoBSq4Rfsif4cC3zbXa/GOFIEwea4T6DTWA"
         "M7rr2C6FJtD9NtU36nMpxRpaiaUU22ixWJGttLSz1PavT1XrUxgcxUlNoCoIsp3VBTn2s1iSM6/e"
         "+9p9T1K1yLBxWLXJQC4uPzAHDSicT2HvLs8RocxArimtyEA9CqkcNCBerN4hxTYShersKfHlifsy"
         "Sdi6NMxSpjg8bo0uDvPyzH/7AP3i63xxAwAA",
     "scenari_settori":
-        "H4sIAF7EdGoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
+        "H4sIAMjudGoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
         "ZyV345iGTuRtF8OASYQYk/gZQtx153MQp9BfXx8jjuGlwRP2nfi8fIHbJBQoKZoU83GPi2+MoUch"
         "VV1XIH7H7vDgm/b1QjVQKoGlhlLpPU8tpfV01RU/XkrFQGY4LDUH6WhQ072v+dHgHAPpaO8U58hk"
         "r5YP9xZ3xzwOGO4nxFSktS5ptiVZ0lxRYIrazp3Dvy7V5YG3XGPeFiyXgVm31Jv0vGWq07JAaXva"
@@ -560,7 +562,7 @@ _DATI: dict[str, str] = {
         "THHd+QxfQ8iHNIwoPtoNe4mUN5Wsb3VPNXM9ja2U4TXZoQNdeVuKQoJbVzm6x9m/O/vrePpi7rr+"
         "AZui5jptBgAA",
     "terna_long":
-        "H4sIAF7EdGoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
+        "H4sIAMjudGoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
         "Jbtlqfv0eUi2Ip/iGQxm19bD9WsW68Vi8d1qt7pb7y4/bO4+3a4uVzc328t3mw/rm7vN9mZ9+cf2"
         "an30Z9r/Rfnf1fX2dn356WazW13ert/vv3e3+bh9e7X6uLqqf7v/08fb7btP/9p/9ffN9e52U//P"
         "+v+sy7+2/31vP65v315tP/z26W63+a186e2H65u37zZvd9ubm/X19Wq3vvz7/TdvLgmALt8cfffl"
@@ -739,7 +741,7 @@ _DATI: dict[str, str] = {
         "u2FzU5QnlMgVl72zjlToEjVgziK23A21u93WyxN3h8+D66X1hHHBGlI30/ZiffdxdXP/oQRJ+qQ5"
         "HO3umvX19Xrvo6tX+m1zvXnaC6zf4AP5X7RyDSo8YgMA",
     "trasporti_alimentazione":
-        "H4sIAF7EdGoC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
+        "H4sIAMjudGoC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
         "DBc4TO90M907NK/doe1Pzbkb+jZq+n6Int+a/ld7PjfRn+Z1eGuj9747NZ/M1tT1rsiL+t/fSDDJ"
         "onzoj++HLpISYhG9nNrfIShWDqQVZDTIdjKH7ni0CrqIAbOgu7wSRC8SVjzsqo0pK6wpBh2PbF7d"
         "kyMSkGIGWJKCe5CQe1P+KMo1VsE5A6FGmhvAnwqkPCwjEVKmINM5CZJhPyZRH5jNel9ti3AcHLJ0"
@@ -750,14 +752,14 @@ _DATI: dict[str, str] = {
         "evMuP4wVmU8J6byONWjQimLB95cDS28ocoEykE4MuUEFpMkcECREUix4lY8jvYK+mvrOrB6fwpti"
         "JzftCYRAxmgCEMY1JokCk1K3fP8Dih8TBCsIAAA=",
     "trasporti_modo":
-        "H4sIAF7EdGoC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
+        "H4sIAMjudGoC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
         "GrWpScTFmMipc7Hx0+TIxZ1T58kYw+CePofONY5wKig5ptiPbSC8llBL8j34nxuXauOMWbCs4PP3"
         "z23o+5BiIEopEH8TquM7RzNuGaFB2zVyGIdUSAgFjF9LFpopWAUWMVQvLQcjitmonDGQW/lbKsuZ"
         "BqWv8xeY/74ELhHE5Qx0XYzG3QYMXwNfH6/VKbVtsYLZzy4deSI/AdD6PoBMOAWt9oqQjgZp1tCL"
         "77p0CYWMgXrZdsYzFQPM3nFkQoGJnQ7kQYFux3aY+TS/9VX8f7qzx0o11GbZ/240s9PA1aMoEp1v"
         "NrOPLfAu57ug1/wvTrn4XG0DAAA=",
     "geo__aree_cabine_primarie":
-        "H4sIAF7EdGoC/7W9TY8uu3Em+F+01lyQQQaD9E5jeHYNNDBLQ2ho5NuCMHLLuLpauA3/98lMPlEV"
+        "H4sIAMjudGoC/7W9TY8uu3Em+F+01lyQQQaD9E5jeHYNNDBLQ2ho5NuCMHLLuLpauA3/98lMPlEV"
         "T76Rp+qUz5xlHBZfJj/iO574j9/8+u//9vNv/uE3/9fPf/j177/8/I9//ctffv7jr3/+6//6zW9/"
         "8z837W+/+Yd//o/f/PlfjlG/+8dS6j+VWooe/89/ehD+7Ze//tvPv/z65/NP/uM3f/zrv/z5jz+/"
         "/NWffv7br3/95aT//H/8y5//9usvf/5//v6/jx88J/jDLz//4X/8v/8qv/mHsX4axwr+/tdf/vw/"
@@ -1183,7 +1185,7 @@ _DATI: dict[str, str] = {
         "lpHehazKZVxyBhRKEq2tbm9XKcTm6jbpjus8PlT9Ui0x1yhz7TPXVHOttkPLu4GEQ0migHbT5sob"
         "FS8QAztZ8u//8/8DGBt44AXNAQA=",
     "geo__aree_disponibili_fv":
-        "H4sIAF7EdGoC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
+        "H4sIAMjudGoC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
         "UXcVkWNm6sEZd26qKrRMzc3U9HEeckT+/Tfv//b99Jv/9pu/OT29/3w7/dXr8/Pp8/v59eU3f/6b"
         "f5ltP37z3/7p339z/jKu+n/e3l8/nT791dOPH6/jgn3f0fD97fX76e39fOnz77/5/Prt58vp2O0/"
         "/vw3X0+v307vb/92uQj3+IfX53/7ev3Vz6+vb1/OL0/v1x/+p3/y4S9iS/HPU/mLGPo///mlIbnQ"
@@ -1830,7 +1832,7 @@ _DATI: dict[str, str] = {
         "s9zLKyyxcmOFq0J2OEvVrgLmXYRhrXv0WYJuL+5J7vbtmiwg5wCvmzFvmkbwwlUMnCbk7RP59//5"
         "X+xXINwYNgIA",
     "geo__progetti_bioenergie":
-        "H4sIAF7EdGoC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
+        "H4sIAMjudGoC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
         "hNmsMTwRTqqr3UdVdaqKH7P+blXMDmbvCtev2+K4qapi2ZdNPZvPvnmsmx18/jErr2cHZP6TORit"
         "2mZVtH05mP2Y1c3t8N/vfztHHw4vTk/Q4vwYo8P3F6fH52eHaIEv8Bkc6stVA2ZHJZj3rm4A6nrX"
         "D9jhum/a8v5++A28N31R37svt//A7ZgbsFvDdd/KZVl8+e5mBwyLh/nsphgctXfDJ4Qv/NhUdzeb"
@@ -1860,7 +1862,7 @@ _DATI: dict[str, str] = {
         "YzxL09l2i2fZng0g27MBlHEDKLdnw0ioxJ6RMKeaPm9F86lZrYafQOaN6/ZuDJ+rOFMWNdpI5v8A"
         "osL2fsD8GtoqlrYyRgnfLikRp2Jj/DILzKiJmK+t4IzFBe3uBQOjVw//Akx93JG9GwAA",
     "geo__progetti_solare":
-        "H4sIAF7EdGoC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
+        "H4sIAMjudGoC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
         "n0hmRGQmuyQXi/RlgQH8YEXnjVF5iesX/3y0//Guf/Tpo+f9cn+/7Z9uVqv+Zj9s1o8eP/ou03aP"
         "Pv37Px8Nbx99Kh4fNYdGd9vNXb/dD6nZPx+tN7fpzy/7zbp71a/7H5bfrvpdN+yXq2HZXW9X0GM/"
         "3G2gzZN32+H9ZrVfDjcboO72y/2BfL/fbIeffkr/gtE3+3790/K/bn949GlcOGh2D7N9N9wM/X99"
@@ -2443,9 +2445,67 @@ TARGET_FVGREEN = {
 # ---------------------------------------------------------------- idrogeno, conti
 # Resa fotovoltaica regionale usata per i confronti: media FVG da Terna 2024
 # (961,4 GWh su 1.210,8 MW installati). Serve a tradurre TWh in MWp e in ettari.
-PV_ORE_EQUIVALENTI = 794       # kWh per kWp installato, all'anno
+# Media FVG 2019-2022 (Terna), anni in cui il parco era stabile e il rapporto
+# produzione/potenza non e' falsato dalla crescita. Dal 2023 il fotovoltaico
+# regionale e' raddoppiato in due anni: dividere per la potenza di fine anno
+# darebbe 794 kWh/kWp, che non e' la resa ma l'effetto degli impianti entrati
+# in esercizio a dicembre. Coerente con le 1.100 kWh/kWp indicate da Giusti
+# per il Nord Italia su tetto.
+PV_ORE_EQUIVALENTI = 1040      # kWh per kWp installato, all'anno
 PV_ETTARI_PER_MWP = 1.38       # da progetti autorizzati: 2.268 ha per 1.645,8 MW
 H2_KWH_PER_KG = 55             # consumo elettrico dell'elettrolisi, stima corrente
+
+# ---------------------------------------------------------------- costi ed energia
+FONTE_PREZZI = "ARERA, Relazione annuale (PUN medio 2025); GSE, prezzi minimi garantiti"
+
+PUN_MEDIO_2025 = 115.9      # €/MWh, il più alto tra le principali borse europee
+PREZZO_MINIMO_GARANTITO = {2025: 46.4, 2026: 47.5}   # €/MWh, ritiro dedicato ARERA
+RITIRO_DEDICATO_FV_NORD = (75, 115)                  # €/MWh percepiti al Nord nel 2026
+
+# CAPEX di riferimento, €/kW. Valori d'uso corrente sul mercato italiano:
+# vanno cambiati dall'interfaccia, non sono un dato ufficiale.
+CAPEX_DEFAULT = {
+    "Fotovoltaico utility scale": 700,
+    "Fotovoltaico su capannoni": 1000,
+    "Fotovoltaico residenziale": 1300,
+    "Eolico onshore": 1500,
+}
+# Ore equivalenti annue. Il fotovoltaico è misurato sul FVG (Terna 2024);
+# l'eolico è un valore di letteratura, perché in regione non ce n'è.
+ORE_EQUIVALENTI = {
+    "Fotovoltaico utility scale": 1200,     # a terra al Nord, con tracker su una parte
+    "Fotovoltaico su capannoni": 1040,      # misurato in FVG, 2019-2022
+    "Fotovoltaico residenziale": 1000,      # falde non ottimali, ombreggiamenti
+    "Eolico onshore": 2200,                 # sito di crinale a 5,5 m/s su 100 m
+}
+OPEX_QUOTA = {  # % del CAPEX all'anno
+    "Fotovoltaico utility scale": 1.5, "Fotovoltaico su capannoni": 1.8,
+    "Fotovoltaico residenziale": 2.0, "Eolico onshore": 2.5,
+}
+# Suolo occupato, ha/MW. Il PV a terra viene dai 175 progetti autorizzati in FVG.
+# Per l'eolico si contano solo piazzole e viabilità, non l'area interclusa.
+SUOLO_HA_MW = {
+    "Fotovoltaico utility scale": 1.38, "Fotovoltaico su capannoni": 0.0,
+    "Fotovoltaico residenziale": 0.0, "Eolico onshore": 0.024,
+}
+# Per l'eolico il suolo davvero sottratto ad altri usi e' plinto piu' piazzola:
+# circa 1.000 m2 per un aerogeneratore da 4,2 MW. La "servitu' di sorvolo" -
+# la proiezione a terra del rotore - e' 15.000 m2, ma resta terreno coltivabile.
+EOLICO_SERVITU_HA_MW = 0.36
+
+# Emissioni di ciclo di vita, gCO2/kWh (Politecnico di Milano, Renewable Energy
+# Report 2022). Piu' basse dei valori IPCC usati nel simulatore nazionale.
+LCA_POLIMI = {
+    "Carbone": 1023, "Gas": 436, "Fotovoltaico": 19,
+    "Eolico": 12, "Idroelettrico": 11, "Nucleare": 5,
+}
+EPBT_ANNI = {"Fotovoltaico": 0.43, "Eolico": 1.04}   # tempo di ritorno energetico
+
+# Bilancio elettrico regionale 2024 (Terna): la regione consuma molto piu' di
+# quanto produce, ed e' il dato che rende concreta la parola "import".
+RICHIESTA_ELETTRICA_2024 = 9814.7      # GWh
+DEFICIT_ELETTRICO_2024 = -3341.4       # GWh, pari al -34,0% della richiesta
+IMPIANTI_EOLICI_FVG = 4                # potenza non rilevabile nelle statistiche Terna
 
 
 # ------------------------------------------------- funzioni di supporto
@@ -2655,17 +2715,18 @@ st.divider()
 
 tabs = st.tabs([
     "📊 Panoramica",
-    "🔄 Bilancio",
-    "🏭 Consumi finali",
     "⚡ Elettricità",
     "🔌 Reti",
     "☀️ Fotovoltaico",
     "🌱 Rinnovabili",
+    "🌲 Biomasse",
+    "♻️ Biometano",
     "💧 Idroelettrico",
     "🔥 Gas",
     "🔥 Termo & CO₂",
     "🧪 Idrogeno",
     "🔮 Scenari",
+    "🌍 Emissioni",
     "🌡️ Clima",
     "📈 Transizione",
     "🗂 Dati",
@@ -2735,7 +2796,7 @@ sua energia primaria, e consuma più elettricità di quanta ne produca.
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 2. ELETTRICITÀ
-with tabs[3]:
+with tabs[1]:
     c1, c2 = st.columns(2)
 
     with c1:
@@ -2773,7 +2834,7 @@ with tabs[3]:
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 3. RINNOVABILI
-with tabs[6]:
+with tabs[4]:
     c1, c2 = st.columns(2)
 
     with c1:
@@ -2840,7 +2901,7 @@ with tabs[9]:
         st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 5. SANKEY
-with tabs[1]:
+with tabs[0]:
     bil = D.carica_per("bilancio_2021")
     consumi_f = D.carica_per("consumi_finali_2021")
 
@@ -3007,7 +3068,7 @@ with tabs[1]:
     )
 
 # ================================================================ 6. TREND
-with tabs[13]:
+with tabs[14]:
     st.subheader("Sostituzione tra fonti (grafico di Marchetti)")
     st.caption("Asse y: log₁₀(f / (1−f)), con f = quota della fonte. Una retta = sostituzione a ritmo costante.")
 
@@ -3041,7 +3102,7 @@ with tabs[13]:
     st.plotly_chart(fig, width="stretch")
 
 # ================================================================ 7. DATI
-with tabs[14]:
+with tabs[15]:
     st.subheader("Dati sottostanti")
     st.caption(
         "Tutto quello che vedi nell'app viene da questa tabella unica, prodotta da "
@@ -3071,7 +3132,7 @@ st.divider()
 st.caption("Fonte: Terna – Dati Statistici (dati.terna.it) · Elaborazione: FVG Energy Explorer")
 
 # ================================================================ CONSUMI FINALI
-with tabs[2]:
+with tabs[0]:
     consumi_f = D.carica_per("consumi_finali_2021")
     if consumi_f.empty:
         st.info("Lancia `python -m src.etl_per` per generare i dati del Piano Energetico Regionale.")
@@ -3221,7 +3282,7 @@ with tabs[11]:
             )
 
 # ================================================================ RETI
-with tabs[4]:
+with tabs[2]:
     st.subheader("La rete di distribuzione")
     st.caption(f"Fonte: {DOC.FONTE_EDIST}.")
 
@@ -3387,7 +3448,7 @@ with tabs[7]:
     )
 
 # ================================================================ CLIMA
-with tabs[12]:
+with tabs[13]:
     st.subheader("Il clima che cambia il sistema energetico")
     st.caption(f"Fonte: {DOC.FONTE_CLIMA}.")
 
@@ -3464,7 +3525,7 @@ with tabs[12]:
     )
 
 # ================================================================ FOTOVOLTAICO
-with tabs[5]:
+with tabs[3]:
     pv_prov = D.carica_per("pv_province")
     pv_tra = D.carica_per("pv_traiettoria")
 
@@ -3853,7 +3914,7 @@ with tabs[11]:
         )
 
 # ---- aggiunte alla scheda Reti: avanzamento, accumuli, distributori
-with tabs[4]:
+with tabs[2]:
     st.divider()
     st.subheader("Avanzamento verso il target 2030, in dettaglio")
     st.caption(f"Fonte: {DOC.FONTE_RETI_REPORT}.")
@@ -3939,7 +4000,7 @@ with tabs[4]:
         st.markdown(f"- **{titolo}** — {testo}")
 
 # ---- mappa delle aree di influenza delle cabine primarie
-with tabs[4]:
+with tabs[2]:
     st.divider()
     st.subheader("Le aree di influenza delle cabine primarie")
 
@@ -4022,7 +4083,7 @@ with tabs[4]:
         )
 
 # ---- Fotovoltaico: dove si potrebbe installare (dati RSE)
-with tabs[5]:
+with tabs[3]:
     st.divider()
     aree_fv = D.carica_per("aree_disponibili_fv")
     geo_fv = D.carica_geojson("aree_disponibili_fv")
@@ -4195,7 +4256,7 @@ with tabs[7]:
         )
 
 # ---- Reti: le inversioni di flusso
-with tabs[4]:
+with tabs[2]:
     st.divider()
     inv = D.carica_per("inversioni_flusso")
     if not inv.empty:
@@ -4253,9 +4314,8 @@ with tabs[4]:
             "risultano più saturi."
         )
 
-# ---- Emissioni totali regionali (scheda Termo & CO2)
-with tabs[9]:
-    st.divider()
+# ---- Emissioni: il quadro completo
+with tabs[12]:
     st.subheader("Le emissioni di tutta la regione, non solo dell'elettrico")
     st.caption(f"Fonte: {DOC.FONTE_EMISSIONI}.")
 
@@ -4290,7 +4350,7 @@ with tabs[9]:
     )
 
 # ---- Fotovoltaico: la pipeline autorizzativa e il suolo
-with tabs[5]:
+with tabs[3]:
     st.divider()
     prog = D.carica_per("progetti_solare")
     geo_prog = D.carica_geojson("progetti_solare")
@@ -4373,46 +4433,452 @@ with tabs[5]:
             f"circa il {DOC.TASSO_REALIZZAZIONE}%."
         )
 
-# ---- Bioenergie: i progetti (scheda Rinnovabili)
-with tabs[6]:
-    st.divider()
-    bio = D.carica_per("progetti_bioenergie")
-    if not bio.empty:
-        st.subheader("Biomasse e biometano: i progetti in corso")
-        b = st.columns(4)
-        b[0].metric("Progetti", len(bio))
-        b[1].metric("Potenza", f"{bio['potenza_mw'].sum():.1f} MW")
-        b[2].metric("Superficie", f"{bio['superficie_ha'].sum():,.0f} ha".replace(",", "."))
-        b[3].metric("Quota biometano",
-                    f"{(bio['tipo'] == 'Biometano').sum()}/{len(bio)}")
+# ================================================================ BIOMASSE
+with tabs[5]:
+    bosco = D.carica_per("bosco")
+    disp = D.carica_per("biomassa_province")
 
-        c1, c2 = st.columns([1.2, 1])
+    st.subheader("La risorsa forestale del Friuli-Venezia Giulia")
+    st.caption(
+        "Dati PRI.FOR.MAN dal portale dei consorzi forestali, ripresi nel PER FVG 2024. "
+        "Il bosco è classificato su due assi: se è **gestito** (con un piano di gestione "
+        "attivo) e se è **accessibile** al prelievo."
+    )
+
+    if not bosco.empty:
+        tot = bosco[bosco["sigla"] == "TOT"].iloc[0]
+        gest = bosco[bosco["sigla"] == "G"]["superficie_ha"].sum()
+        acc = bosco[bosco["sigla"].isin(["G - A", "NG - A"])]["superficie_ha"].sum()
+
+        b = st.columns(4)
+        b[0].metric("Superficie boscata", f"{tot['superficie_ha']:,.0f} ha".replace(",", "."))
+        b[1].metric("Volume in piedi", f"{tot['volume_totale_m3'] / 1e6:.1f} mln m³",
+                    f"{tot['volume_medio_m3_ha']:.0f} m³/ha")
+        b[2].metric("Bosco gestito", f"{gest / tot['superficie_ha'] * 100:.0f}%",
+                    f"{gest:,.0f} ha".replace(",", "."))
+        b[3].metric("Bosco accessibile", f"{acc / tot['superficie_ha'] * 100:.0f}%",
+                    f"{acc:,.0f} ha".replace(",", "."))
+
+        st.error(
+            "**Due errori nel foglio di calcolo del PER, qui corretti.** Il totale sommava "
+            "anche i subtotali, contando ogni categoria due volte: 653.742 ha invece di "
+            f"{tot['superficie_ha']:,.0f}. ".replace(",", ".")
+            + "E i ktep del potenziale erano sbagliati di un fattore mille (0,07 invece di 70). "
+            "Vale la pena segnalarlo a chi ha curato il piano."
+        )
+
+        dett = bosco[bosco["sigla"].isin(["NG - NA", "NG - A", "G - NA", "G - A"])].copy()
+        c1, c2 = st.columns(2)
         with c1:
-            mappa_bio = bio.copy()
-            mappa_bio["size_ha"] = mappa_bio["superficie_ha"].fillna(0).clip(lower=0)
-            fig = px.scatter_map(
-                mappa_bio, lat="lat", lon="lon", size="size_ha", color="tipo",
-                hover_name="nome",
-                hover_data={"potenza_mw": ":.2f", "superficie_ha": ":.0f", "stato": True,
-                            "lat": False, "lon": False, "size_ha": False},
-                size_max=26, zoom=7.4, center={"lat": 45.95, "lon": 13.10},
-                map_style="carto-positron",
-                color_discrete_map={"Biometano": "#8B4513", "Biomasse": "#A16207"})
-            fig.update_layout(height=400, margin=dict(t=10, b=10, l=0, r=0),
-                              legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0,
-                                          title=None))
+            fig = px.bar(dett.sort_values("superficie_ha"), x="superficie_ha", y="categoria",
+                         orientation="h", text_auto=".0f", color="categoria",
+                         color_discrete_map={
+                             "Gestito, accessibile": "#22C55E",
+                             "Gestito, non accessibile": "#65A30D",
+                             "Non gestito, accessibile": "#F97316",
+                             "Non gestito, non accessibile": "#9CA3AF"})
+            fig.update_layout(showlegend=False, height=320, yaxis_title=None,
+                              xaxis_title="ettari", title="Superficie per categoria", **PLOT)
             st.plotly_chart(fig, width="stretch")
         with c2:
-            per_tipo = bio.groupby(["tipo", "stato"]).size().reset_index(name="n")
-            fig = px.bar(per_tipo, x="tipo", y="n", color="stato", text="n",
-                         color_discrete_map={"Autorizzato": "#22C55E",
-                                             "In istruttoria": "#F97316"})
-            fig.update_layout(height=400, xaxis_title=None, yaxis_title="progetti",
-                              title="Stato dei procedimenti", **PLOT)
+            fig = px.bar(dett.sort_values("volume_medio_m3_ha"), x="volume_medio_m3_ha",
+                         y="categoria", orientation="h", text_auto=".0f",
+                         color_discrete_sequence=["#8B4513"])
+            fig.update_layout(height=320, yaxis_title=None, xaxis_title="m³ per ettaro",
+                              title="Densità di massa legnosa", **PLOT)
             st.plotly_chart(fig, width="stretch")
 
         st.caption(
-            "Il biometano domina per numero di progetti ma pesa poco in potenza elettrica: "
-            "è pensato per essere immesso in rete gas o usato nei trasporti pesanti, non per "
-            "produrre elettricità. Sono impianti piccoli e diffusi nella pianura agricola."
+            "Il paradosso del bosco friulano: la densità più alta è nel **gestito ma non "
+            "accessibile** (246 m³/ha), cioè dove il legname c'è ed è pianificato ma manca la "
+            "viabilità per portarlo fuori. Il **non gestito accessibile** — 104.844 ha, la "
+            "categoria più estesa — ha invece la densità più bassa: bosco raggiungibile ma "
+            "abbandonato."
         )
+
+    if not disp.empty:
+        st.divider()
+        st.subheader("Quanta energia ci sarebbe, e quanta se ne usa")
+        st.caption(
+            "Due scenari di prelievo dal PER. Conversione con i parametri dichiarati nel "
+            "piano: 3,4 MWh per tonnellata, 0,085985 tep per MWh."
+        )
+
+        tot_sc = (disp[disp["provincia"] == "TOT"]
+                  .set_index("scenario")[["tonnellate", "gwh", "ktep"]])
+        prov = disp[disp["provincia"] != "TOT"]
+
+        c1, c2 = st.columns([1.2, 1])
+        with c1:
+            fig = px.bar(prov, x="provincia", y="ktep", color="scenario", barmode="group",
+                         text_auto=".0f",
+                         color_discrete_map={"Boschi accessibili al prelievo": "#22C55E",
+                                             "Totale regionale": "#065F46"})
+            fig.update_layout(height=340, xaxis_title=None, yaxis_title="ktep/anno",
+                              title="Potenziale per provincia", **PLOT)
+            st.plotly_chart(fig, width="stretch")
+        with c2:
+            bil_b = D.carica_per("bilancio_2021")
+            usato = 0.0
+            if not bil_b.empty:
+                usato = bil_b.set_index("voce")["valore"].get("Biomasse", 0)
+            conf = pd.DataFrame([
+                {"Voce": "Usato oggi (bilancio 2021)", "ktep": usato},
+                {"Voce": "Scenario prudente", "ktep": tot_sc.loc["Boschi accessibili al prelievo", "ktep"]},
+                {"Voce": "Scenario esteso", "ktep": tot_sc.loc["Totale regionale", "ktep"]},
+            ])
+            fig = px.bar(conf, x="ktep", y="Voce", orientation="h", text_auto=".0f",
+                         color="Voce",
+                         color_discrete_sequence=["#8B4513", "#22C55E", "#065F46"])
+            fig.update_layout(showlegend=False, height=340, yaxis_title=None,
+                              title="Potenziale contro consumo", **PLOT)
+            st.plotly_chart(fig, width="stretch")
+
+        prud = tot_sc.loc["Boschi accessibili al prelievo", "ktep"]
+        est = tot_sc.loc["Totale regionale", "ktep"]
+        st.info(
+            f"Il bilancio 2021 registra **{usato:.0f} ktep** di biomasse tra le risorse interne. "
+            f"Il potenziale forestale stimato va da **{prud:.0f} ktep** (solo boschi accessibili) "
+            f"a **{est:.0f} ktep** (tutto il prelievo teorico). "
+            f"Anche nell'ipotesi prudente ci sarebbe margine, ma il vincolo non è la risorsa: è "
+            "l'accessibilità, la viabilità forestale e la filiera locale. Udine da sola vale i "
+            "due terzi del potenziale regionale."
+        )
+
+    st.warning(
+        "**Cautela su questi numeri.** Il potenziale teorico non è disponibilità reale: "
+        "prelevare tutto l'incremento annuo non è sostenibile né dal punto di vista "
+        "ecologico né economico, e una parte del legname ha usi più pregiati dell'energia "
+        "(edilizia, arredo). Il PER non distingue tra incremento annuo e massa in piedi, "
+        "distinzione che cambia radicalmente il senso della cifra."
+    )
+
+# ================================================================ BIOMETANO
+with tabs[6]:
+    bio = D.carica_per("progetti_bioenergie")
+    st.subheader("Biogas e biometano")
+
+    if not bio.empty:
+        b = st.columns(4)
+        b[0].metric("Progetti autorizzati o in corso", len(bio))
+        b[1].metric("Di cui biometano", int((bio["tipo"] == "Biometano").sum()))
+        b[2].metric("Potenza elettrica", f"{bio['potenza_mw'].sum():.1f} MW")
+        b[3].metric("Superficie degli impianti",
+                    f"{bio['superficie_ha'].sum():,.0f} ha".replace(",", "."))
+
+        bil_b = D.carica_per("bilancio_2021")
+        if not bil_b.empty:
+            vb = bil_b.set_index("voce")["valore"]
+            st.caption(
+                f"Nel bilancio 2021 il biogas vale **{vb.get('Biogas', 0):.0f} ktep** tra le "
+                f"risorse interne, più delle biomasse solide ({vb.get('Biomasse', 0):.0f} ktep). "
+                "È la bioenergia più rilevante della regione, e quasi tutta di origine agricola."
+            )
+
+        mappa_bio2 = bio.copy()
+        mappa_bio2["size_ha"] = mappa_bio2["superficie_ha"].fillna(0).clip(lower=0)
+        fig = px.scatter_map(
+            mappa_bio2, lat="lat", lon="lon", size="size_ha", color="tipo",
+            hover_name="nome",
+            hover_data={"potenza_mw": ":.2f", "superficie_ha": ":.0f", "stato": True,
+                        "lat": False, "lon": False, "size_ha": False},
+            size_max=28, zoom=7.4, center={"lat": 45.95, "lon": 13.10},
+            map_style="carto-positron",
+            color_discrete_map={"Biometano": "#8B4513", "Biomasse": "#A16207"})
+        fig.update_layout(height=460, margin=dict(t=10, b=10, l=0, r=0),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
+        st.plotly_chart(fig, width="stretch")
+
+        elenco = bio[["nome", "tipo", "potenza_mw", "superficie_ha", "stato"]].copy()
+        elenco.columns = ["Impianto", "Tipo", "MW", "Ettari", "Stato"]
+        st.dataframe(elenco.sort_values("Ettari", ascending=False).round(2),
+                     hide_index=True, width="stretch", height=320)
+
+    st.divider()
+    st.subheader("Il nodo del suolo: quanto rende un ettaro")
+    st.caption(
+        "Confronto tra produrre elettricità da mais insilato e produrla dal fotovoltaico "
+        "sulla stessa superficie. I parametri sono modificabili: servono a mostrare "
+        "l'ordine di grandezza, non a stimare un impianto specifico."
+    )
+
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        resa_mais = st.slider("Resa del mais (t/ha di insilato)", 30, 70, 50)
+    with m2:
+        metano_t = st.slider("Biogas (m³ di metano per t di insilato)", 80, 130, 105)
+    with m3:
+        rend_cog = st.slider("Rendimento elettrico del cogeneratore (%)", 30, 45, 38) / 100
+
+    kwh_m3_metano = 9.97  # potere calorifico del metano, kWh per m3
+    mwh_ha_bio = resa_mais * metano_t * kwh_m3_metano * rend_cog / 1000
+    mwh_ha_pv = DOC.PV_ORE_EQUIVALENTI * (1000 / DOC.PV_ETTARI_PER_MWP) / 1000
+
+    r = st.columns(3)
+    r[0].metric("Biogas da mais", f"{mwh_ha_bio:,.0f} MWh/ha".replace(",", "."))
+    r[1].metric("Fotovoltaico", f"{mwh_ha_pv:,.0f} MWh/ha".replace(",", "."))
+    r[2].metric("Rapporto", f"{mwh_ha_pv / mwh_ha_bio:.0f}×",
+                "a favore del fotovoltaico")
+
+    conf = pd.DataFrame([
+        {"Tecnologia": "Biogas da mais insilato", "MWh per ettaro": mwh_ha_bio},
+        {"Tecnologia": "Fotovoltaico a terra", "MWh per ettaro": mwh_ha_pv},
+    ])
+    fig = px.bar(conf, x="MWh per ettaro", y="Tecnologia", orientation="h", text_auto=".0f",
+                 color="Tecnologia",
+                 color_discrete_map={"Biogas da mais insilato": "#8B4513",
+                                     "Fotovoltaico a terra": "#FACC15"})
+    fig.update_layout(showlegend=False, height=240, yaxis_title=None, **PLOT)
+    st.plotly_chart(fig, width="stretch")
+
+    st.info(
+        "È il calcolo che David Pimentel e altri hanno reso familiare nel dibattito sui "
+        "biocarburanti: la fotosintesi converte in biomassa una frazione minima "
+        "dell'energia solare incidente, e ogni passaggio successivo — insilamento, "
+        "digestione, combustione — ne perde ancora. Un pannello salta tutti quei passaggi. "
+        f"Sulla stessa superficie il fotovoltaico rende circa **{mwh_ha_pv / mwh_ha_bio:.0f} volte** "
+        "l'elettricità del mais da biogas.\n\n"
+        "Questo **non** rende il biogas inutile: i digestori che trattano deiezioni zootecniche "
+        "e scarti agroindustriali non occupano suolo dedicato, gestiscono un rifiuto che "
+        "altrimenti emette metano, e producono digestato che torna al campo. Il confronto "
+        "colpisce le colture dedicate, non la filiera degli scarti."
+    )
+
+    st.warning(
+        "**Manca il dato che servirebbe davvero**: l'alimentazione di ciascun impianto — "
+        "mais e colture dedicate, deiezioni, fanghi, FORSU, scarti agroindustriali. "
+        "Lo shapefile regionale riporta solo tipo, potenza e superficie. Senza quella "
+        "colonna non si può dire quanta parte del biogas friulano stia sul lato "
+        "«colture dedicate» e quanta sul lato «scarti», che è la distinzione decisiva."
+    )
+
+# ---- Ipotesi di copertura (scheda Transizione)
+with tabs[14]:
+    st.divider()
+    st.subheader("Ipotesi di copertura: quanto costa e quanto suolo serve")
+    st.caption(
+        "Un modello parametrico, non una previsione. Si sceglie quanta domanda elettrica "
+        "coprire con produzione regionale e con quale mix, e si vede cosa comporta in "
+        "investimento, costo dell'energia e suolo occupato. Tutti i parametri sono modificabili."
+    )
+
+    dom_att = DOC.CONSUMI_ELETTRICI_TOTALE
+    prod_att = anno_di(prod_fonte)["valore"].sum()
+    fer_att = anno_di(prod_fer)["valore"].sum()
+
+    q = st.columns(4)
+    q[0].metric("Domanda elettrica attuale", f"{dom_att:,.0f} GWh".replace(",", "."))
+    q[1].metric("Produzione regionale", f"{prod_att:,.0f} GWh".replace(",", "."),
+                f"{prod_att / dom_att * 100:.0f}% della domanda")
+    q[2].metric("di cui rinnovabile", f"{fer_att:,.0f} GWh".replace(",", "."),
+                f"{fer_att / dom_att * 100:.0f}% della domanda")
+    q[3].metric("Importato", f"{max(0, dom_att - prod_att):,.0f} GWh".replace(",", "."))
+
+    st.markdown("**1. Quanta domanda coprire con rinnovabili regionali**")
+    cc = st.columns(2)
+    with cc[0]:
+        domanda_2045 = st.slider("Domanda elettrica al 2045 (GWh)", 8000, 20000,
+                                 int(dom_att * 1.35), 500,
+                                 help="L'elettrificazione di trasporti e calore fa crescere "
+                                      "la domanda anche se i consumi finali totali calano.")
+    with cc[1]:
+        copertura = st.slider("Quota da coprire con nuove rinnovabili regionali (%)",
+                              0, 100, 60, 5)
+
+    da_produrre = domanda_2045 * copertura / 100
+    nuovo_gwh = max(0.0, da_produrre - fer_att)
+
+    st.markdown("**2. Con quale mix**")
+    mx = st.columns(4)
+    tecnologie = list(DOC.CAPEX_DEFAULT)
+    quote = {}
+    default_quote = [50, 25, 15, 10]
+    for col, tec, dq in zip(mx, tecnologie, default_quote):
+        with col:
+            quote[tec] = st.slider(tec.replace("Fotovoltaico ", "FV "), 0, 100, dq, 5,
+                                   key=f"q_{tec}")
+    somma_q = sum(quote.values()) or 1
+
+    with st.expander("Parametri economici e tecnici"):
+        pc = st.columns(3)
+        with pc[0]:
+            wacc = st.slider("Costo del capitale (%)", 2.0, 12.0, 6.0, 0.5) / 100
+        with pc[1]:
+            vita = st.slider("Vita utile (anni)", 15, 35, 25)
+        with pc[2]:
+            prezzo_rif = st.number_input("Prezzo di riferimento (€/MWh)", 40, 250,
+                                         int(DOC.PUN_MEDIO_2025))
+        capex = {}
+        cx = st.columns(4)
+        for col, tec in zip(cx, tecnologie):
+            with col:
+                capex[tec] = st.number_input(f"CAPEX {tec.split()[-1]} (€/kW)", 300, 3000,
+                                             DOC.CAPEX_DEFAULT[tec], 50, key=f"c_{tec}")
+
+    def annualita(w: float, n: int) -> float:
+        return w / (1 - (1 + w) ** -n) if w else 1 / n
+
+    righe = []
+    for tec in tecnologie:
+        quota = quote[tec] / somma_q
+        gwh = nuovo_gwh * quota
+        ore = DOC.ORE_EQUIVALENTI[tec]
+        mw = gwh * 1000 / ore if ore else 0
+        capex_tot = mw * 1000 * capex[tec] / 1e6            # milioni di €
+        opex_anno = capex_tot * DOC.OPEX_QUOTA[tec] / 100
+        lcoe = ((capex_tot * annualita(wacc, vita) + opex_anno) * 1e6 / (gwh * 1000)
+                if gwh else 0)
+        righe.append({
+            "Tecnologia": tec, "GWh/anno": gwh, "MW": mw,
+            "Investimento (mln €)": capex_tot, "LCOE (€/MWh)": lcoe,
+            "Suolo (ha)": mw * DOC.SUOLO_HA_MW[tec],
+        })
+    mix = pd.DataFrame(righe)
+    mix = mix[mix["GWh/anno"] > 0]
+
+    if not mix.empty:
+        inv_tot = mix["Investimento (mln €)"].sum()
+        suolo_tot = mix["Suolo (ha)"].sum()
+        lcoe_medio = ((mix["LCOE (€/MWh)"] * mix["GWh/anno"]).sum() / mix["GWh/anno"].sum())
+        import_res = max(0.0, domanda_2045 - da_produrre - (prod_att - fer_att))
+
+        r = st.columns(4)
+        r[0].metric("Nuova potenza", f"{mix['MW'].sum():,.0f} MW".replace(",", "."))
+        r[1].metric("Investimento", f"{inv_tot / 1000:,.1f} mld €".replace(",", "."))
+        r[2].metric("Costo medio dell'energia", f"{lcoe_medio:.0f} €/MWh",
+                    f"{lcoe_medio - prezzo_rif:+.0f} vs riferimento")
+        r[3].metric("Suolo occupato", f"{suolo_tot:,.0f} ha".replace(",", "."),
+                    f"{suolo_tot / 100:.0f} km²")
+
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = px.bar(mix, x="Tecnologia", y="GWh/anno", color="Tecnologia",
+                         text_auto=".0f",
+                         color_discrete_sequence=["#FACC15", "#F59E0B", "#FBBF24", "#22C55E"])
+            fig.update_layout(showlegend=False, height=320, xaxis_title=None,
+                              title="Produzione per tecnologia", **PLOT)
+            fig.update_xaxes(tickangle=-20)
+            st.plotly_chart(fig, width="stretch")
+        with c2:
+            fig = px.bar(mix, x="Tecnologia", y="LCOE (€/MWh)", color="Tecnologia",
+                         text_auto=".0f",
+                         color_discrete_sequence=["#FACC15", "#F59E0B", "#FBBF24", "#22C55E"])
+            fig.add_hline(y=prezzo_rif, line_dash="dash", line_color="#111827",
+                          annotation_text=f"prezzo di riferimento {prezzo_rif} €/MWh")
+            fig.update_layout(showlegend=False, height=320, xaxis_title=None,
+                              title="Costo dell'energia per tecnologia", **PLOT)
+            fig.update_xaxes(tickangle=-20)
+            st.plotly_chart(fig, width="stretch")
+
+        st.markdown("**Il conto del suolo**")
+        suolo = mix[["Tecnologia", "Suolo (ha)", "MW"]].copy()
+        suolo["Su superfici già costruite"] = suolo["Suolo (ha)"] == 0
+        aree_fv_t = D.carica_per("aree_disponibili_fv")
+        fig = px.bar(suolo, x="Suolo (ha)", y="Tecnologia", orientation="h", text_auto=".0f",
+                     color="Su superfici già costruite",
+                     color_discrete_map={True: "#22C55E", False: "#F97316"})
+        fig.update_layout(height=280, yaxis_title=None, **PLOT)
+        st.plotly_chart(fig, width="stretch")
+
+        if not aree_fv_t.empty:
+            agri_disp = aree_fv_t["area2netta"].sum() * 100      # km² -> ha
+            costruito = aree_fv_t["areacnkm2"].sum() * 100
+            st.caption(
+                f"Il suolo richiesto è **{suolo_tot:,.0f} ha**, il ".replace(",", ".")
+                + f"**{suolo_tot / agri_disp * 100:.1f}%** delle aree agricole disponibili al "
+                f"netto dei vincoli ({agri_disp:,.0f} ha) e il ".replace(",", ".")
+                + f"**{suolo_tot / costruito * 100:.1f}%** della superficie già impermeabilizzata "
+                f"({costruito:,.0f} ha). ".replace(",", ".")
+                + "Spostare quote verso capannoni e tetti azzera il consumo di suolo ma alza "
+                "il costo dell'energia: è il vero scambio di questa scheda."
+            )
+
+        st.dataframe(mix.round(1), hide_index=True, width="stretch")
+
+        st.info(
+            f"Con questo mix il FVG coprirebbe il **{copertura}%** di una domanda di "
+            f"{domanda_2045:,.0f} GWh, importando ancora circa ".replace(",", ".")
+            + f"**{import_res:,.0f} GWh**. ".replace(",", ".")
+            + f"L'investimento è di **{inv_tot / 1000:.1f} miliardi**, spalmato su vent'anni "
+            f"fa circa {inv_tot / 20:.0f} milioni l'anno. "
+            f"Il costo medio dell'energia prodotta è **{lcoe_medio:.0f} €/MWh** contro un "
+            f"prezzo di riferimento di {prezzo_rif}: "
+            + ("**sotto** il mercato, quindi l'autoproduzione conviene anche senza incentivo."
+               if lcoe_medio < prezzo_rif else
+               "**sopra** il mercato, quindi servirebbe un contratto per differenza o un "
+               "incentivo per colmare il divario.")
+        )
+
+    st.warning(
+        "**Cosa questo modello non fa.** Non considera l'intermittenza: coprire il 60% della "
+        "domanda su base annua non significa coprirla ora per ora, e la quota di accumulo "
+        "necessaria non è nel conto. Non include i costi di rete, che nel FVG sono il collo "
+        "di bottiglia vero. Non tiene conto della curva di apprendimento sui costi né "
+        "dell'inflazione. E il LCOE non è il prezzo pagato: un contratto per differenza "
+        "sposta il rischio, non il costo. Serve a confrontare ordini di grandezza tra "
+        "opzioni, non a valutare un investimento."
+    )
+
+# ---- Eolico: perché in FVG non c'è, e cosa cambierebbe
+with tabs[14]:
+    st.divider()
+    st.subheader("La casella vuota: l'eolico")
+    st.caption(
+        "In FVG risultano 4 impianti eolici con potenza non rilevabile nelle statistiche "
+        "Terna, e produzione nulla su tutta la serie. È l'unica regione del Nord con questa "
+        "situazione, e pesa sul resto del ragionamento."
+    )
+
+    e1, e2, e3, e4 = st.columns(4)
+    e1.metric("Impianti eolici in FVG", DOC.IMPIANTI_EOLICI_FVG, "potenza non rilevabile")
+    e2.metric("Produzione eolica", "0 GWh")
+    e3.metric("Deficit elettrico 2024", f"{DOC.DEFICIT_ELETTRICO_2024:,.0f} GWh".replace(",", "."),
+              f"{DOC.DEFICIT_ELETTRICO_2024 / DOC.RICHIESTA_ELETTRICA_2024 * 100:.0f}% della richiesta")
+    e4.metric("Richiesta 2024", f"{DOC.RICHIESTA_ELETTRICA_2024:,.0f} GWh".replace(",", "."))
+
+    st.markdown("**Perché l'eolico cambierebbe il conto: il suolo**")
+    energia_rif = st.slider("Energia annua da produrre (GWh)", 50, 2000, 500, 50,
+                            key="suolo_eol")
+    mw_eol = energia_rif * 1000 / DOC.ORE_EQUIVALENTI["Eolico onshore"]
+    mw_pv = energia_rif * 1000 / DOC.ORE_EQUIVALENTI["Fotovoltaico utility scale"]
+    ha_eol = mw_eol * DOC.SUOLO_HA_MW["Eolico onshore"]
+    ha_eol_serv = mw_eol * DOC.EOLICO_SERVITU_HA_MW
+    ha_pv = mw_pv * DOC.SUOLO_HA_MW["Fotovoltaico utility scale"]
+
+    conf_suolo = pd.DataFrame([
+        {"Opzione": "Eolico, suolo sottratto (plinti e piazzole)", "Ettari": ha_eol},
+        {"Opzione": "Eolico, servitù di sorvolo", "Ettari": ha_eol_serv},
+        {"Opzione": "Fotovoltaico a terra", "Ettari": ha_pv},
+    ])
+    fig = px.bar(conf_suolo, x="Ettari", y="Opzione", orientation="h", text_auto=".1f",
+                 color="Opzione",
+                 color_discrete_sequence=["#22C55E", "#86EFAC", "#FACC15"])
+    fig.update_layout(showlegend=False, height=260, yaxis_title=None, **PLOT)
+    st.plotly_chart(fig, width="stretch")
+
+    s1, s2, s3 = st.columns(3)
+    s1.metric("Potenza eolica", f"{mw_eol:,.0f} MW".replace(",", "."))
+    s2.metric("Potenza fotovoltaica equivalente", f"{mw_pv:,.0f} MW".replace(",", "."))
+    s3.metric("Suolo risparmiato", f"{ha_pv / max(ha_eol, 0.01):.0f}×",
+              "a parità di energia")
+
+    st.info(
+        "A parità di energia prodotta, l'eolico sottrae al suolo una frazione minima di "
+        "quello che serve al fotovoltaico a terra: contano solo plinti e piazzole, mentre "
+        "la servitù di sorvolo resta terreno coltivabile. Ma il vantaggio più rilevante è un "
+        "altro: **l'eolico produce d'inverno e di notte**, quando il fotovoltaico non c'è. "
+        "In una regione che importa il 34% dell'elettricità e ha il picco di domanda nelle "
+        "ore serali d'inverno, quella complementarità vale più del risparmio di suolo.\n\n"
+        "Il costo è la visibilità: gli aerogeneratori si vedono da lontano, e i siti ventosi "
+        "in FVG sono sui crinali alpini e prealpini, cioè in aree di pregio paesaggistico."
+    )
+
+    st.warning(
+        "**Qui manca il dato decisivo e non l'ho voluto inventare.** Per dire se in FVG "
+        "l'eolico sia possibile servono le mappe di ventosità e di producibilità specifica "
+        "dell'**Atlante Eolico RSE** (atlanteeolico.rse-web.it), alle quote di 75, 100 e 125 m, "
+        "incrociate con i vincoli. È lo stesso portale da cui provengono gli altri dati RSE "
+        "già in questa app. Le 2.200 ore equivalenti usate qui sopra sono un valore di "
+        "letteratura per un sito di crinale a 5,5 m/s su 100 metri: plausibile per le Prealpi "
+        "Giulie e Carniche, ma da verificare sito per sito, non un dato regionale misurato."
+    )
