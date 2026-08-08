@@ -528,6 +528,71 @@ def _scheda_1():
     grafico(fig, DOC.F_TERNA)
 
 
+
+    # ------------------------------------------------- il profilo della domanda
+    st.divider()
+    st.subheader("Quando consumano le famiglie friulane")
+    pre = D.carica_per("prelievi_orari_fvg")
+    fas = D.carica_per("prelievi_fasce_fvg")
+
+    if not pre.empty:
+        st.caption(
+            "Prelievo medio orario dei clienti domestici, misurato. È l'unico profilo "
+            "orario reale disponibile per la regione, e riguarda il solo settore "
+            f"domestico (circa il 15% dei consumi elettrici). Fonte: {DOC.FONTE_ARERA}."
+        )
+
+        prof = (pre.groupby(["tipo_giorno", "ora_n"])["kwh"].mean().reset_index())
+        prof["tipo_giorno"] = prof["tipo_giorno"].str.replace("_", " ").str.capitalize()
+        fig = px.line(prof, x="ora_n", y="kwh", color="tipo_giorno", markers=True,
+                      color_discrete_map={"Giorno feriale": "#2563EB",
+                                          "Giorno festivo": "#F97316"})
+        fig.add_vrect(x0=10, x1=16, fillcolor="#FACC15", opacity=0.18, line_width=0,
+                      annotation_text="ore di sole", annotation_position="top left")
+        fig.update_layout(height=380, xaxis_title="ora del giorno",
+                          yaxis_title="kWh medi per cliente", **PLOT)
+        grafico(fig, DOC.FONTE_ARERA)
+
+        picco = prof.loc[prof["kwh"].idxmax()]
+        solare = prof[(prof["ora_n"] >= 10) & (prof["ora_n"] <= 16)]["kwh"].mean()
+        st.info(
+            f"**Il picco domestico è alle {int(picco['ora_n'])}**, quando il fotovoltaico "
+            f"ha ormai finito. Nelle ore centrali, quando il sole produce, il consumo medio "
+            f"è di {solare:.3f} kWh contro i {picco['kwh']:.3f} della punta serale: "
+            f"**{(1 - solare / picco['kwh']) * 100:.0f}% in meno**. "
+            + (f"Il {fas['f3'].mean() * 100:.0f}% dell'energia domestica viene prelevato in "
+               "fascia F3, cioè di sera, di notte e nei festivi. " if not fas.empty else "")
+            + "È la ragione per cui l'autoconsumo fotovoltaico senza accumulo si ferma "
+            "intorno al 30%, e perché batterie e comunità energetiche non sono un "
+            "accessorio ma la condizione perché il solare residenziale serva a qualcosa."
+        )
+
+        st.markdown("**Come cambia nell'arco dell'anno**")
+        mens = pre.groupby(["mese_n", "ora_n"])["kwh"].mean().reset_index()
+        fig = px.density_heatmap(mens, x="ora_n", y="mese_n", z="kwh",
+                                 color_continuous_scale="YlOrRd", nbinsx=24, nbinsy=12)
+        fig.update_layout(height=360, xaxis_title="ora del giorno", yaxis_title="mese",
+                          coloraxis_colorbar=dict(title="kWh"), template="plotly_white",
+                          margin=dict(t=48, b=10, l=10, r=24))
+        fig.update_yaxes(autorange="reversed", tickmode="array", tickvals=list(range(1, 13)),
+                         ticktext=["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago",
+                                   "set", "ott", "nov", "dic"])
+        grafico(fig, DOC.FONTE_ARERA,
+                "Più scuro significa più consumo. Si vedono la punta serale invernale "
+                "e la coda estiva del condizionamento.")
+
+        classi = (pre.groupby("classe")["kwh"].mean().reset_index()
+                  .sort_values("kwh"))
+        fig = px.bar(classi, x="kwh", y="classe", orientation="h", text_auto=".3f",
+                     color_discrete_sequence=["#2563EB"])
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=300, yaxis_title=None,
+                          xaxis_title="kWh medi orari per cliente", **PLOT)
+        grafico(fig, DOC.FONTE_ARERA,
+                "Classe di potenza impegnata: chi ha più potenza consuma di più, ed è "
+                "il cliente per cui una pompa di calore o un'auto elettrica cambiano il profilo.")
+
+
 def _scheda_2():
     st.subheader("La rete di distribuzione")
     st.caption(f"Fonte: {DOC.FONTE_EDIST}.")
@@ -958,99 +1023,97 @@ def _scheda_3():
     geo_fv = D.carica_geojson("aree_disponibili_fv")
 
     if not aree_fv.empty:
-        st.subheader("Dove si potrebbe installare")
+        st.subheader("Il fotovoltaico occupa davvero il suolo agricolo?")
         st.caption(
-            "Elaborazione RSE sulla base della Corine Land Cover 2018, al netto dei vincoli "
-            "ambientali, paesaggistici e culturali. Sono superfici *eleggibili*, non aree "
-            "idonee ai sensi di legge: dicono dove il territorio lo permetterebbe, non dove "
-            "è consentito o conveniente."
+            "È la domanda che blocca più progetti, e si può rispondere con i numeri. "
+            f"Fonte del denominatore: {DOC.FONTE_SAU}."
         )
 
-        tot_com = aree_fv["areakmq"].sum()
-        s = st.columns(4)
-        s[0].metric("Superficie regionale", f"{tot_com:,.0f} km²".replace(",", "."))
-        s[1].metric("Aree agricole", f"{aree_fv['areakmq2'].sum():,.0f} km²".replace(",", "."),
-                    f"{aree_fv['areakmq2'].sum() / tot_com * 100:.0f}% del territorio")
-        s[2].metric("Agricole al netto dei vincoli",
-                    f"{aree_fv['area2netta'].sum():,.0f} km²".replace(",", "."))
-        s[3].metric("Superficie costruita",
-                    f"{aree_fv['areacnkm2'].sum():,.0f} km²".replace(",", "."),
-                    "il potenziale sui tetti")
+        prog_s = D.carica_per("progetti_solare")
+        ha_terra = 0.0
+        if not prog_s.empty:
+            att = prog_s[prog_s["stato"].isin(
+                ["Autorizzato", "In costruzione", "In istruttoria", "Realizzato"])]
+            ha_terra = float(att["superficie_ha"].sum())
 
-        categorie = [
-            ("Aree agricole al netto dei vincoli", "area2netta", "#22C55E"),
-            ("di cui seminativi non irrigui", "area211net", "#65A30D"),
-            ("Superficie impermeabilizzata", "areacnkm2", "#6B7280"),
-            ("Superficie costruita (CTR)", "areactrkm2", "#9CA3AF"),
-            ("Aree industriali e commerciali", "areakmq121", "#4B5563"),
-            ("Agricole entro 500 m da aree industriali", "areakmqaal", "#F97316"),
-            ("Aree estrattive", "areakmq131", "#A855F7"),
-            ("Discariche", "areakmq132", "#EF4444"),
-        ]
-        cat = pd.DataFrame([
-            {"Categoria": nome, "km²": aree_fv[col].sum(), "colore": c}
-            for nome, col, c in categorie
-        ]).sort_values("km²")
+        q = st.columns(4)
+        q[0].metric("Superficie agricola utilizzata",
+                    f"{DOC.SAU_FVG_HA:,.0f} ha".replace(",", "."))
+        q[1].metric("Suolo dei progetti fotovoltaici", f"{ha_terra:,.0f} ha".replace(",", "."),
+                    "autorizzati, in costruzione o realizzati")
+        q[2].metric("Quota sulla SAU", f"{ha_terra / DOC.SAU_FVG_HA * 100:.2f}%")
+        q[3].metric("Quota sul territorio regionale",
+                    f"{ha_terra / DOC.SUPERFICIE_FVG_HA * 100:.2f}%")
 
-        fig = px.bar(cat, x="km²", y="Categoria", orientation="h", text_auto=".0f",
-                     color="Categoria",
-                     color_discrete_map=dict(zip(cat["Categoria"], cat["colore"])))
-        fig.update_layout(showlegend=False, height=380, yaxis_title=None,
-                          xaxis_type="log", xaxis_title="km² (scala logaritmica)", **PLOT)
-        grafico(fig, DOC.F_AUDIZIONI)
+        st.success(
+            f"**Tutti i progetti fotovoltaici della regione occupano lo "
+            f"{ha_terra / DOC.SAU_FVG_HA * 100:.1f}% della superficie agricola.** "
+            "Non è una quota trascurabile in assoluto, ma va confrontata con quello che "
+            "sta davvero succedendo: nel 2026 il **89,6% della nuova potenza installata "
+            "è residenziale**, su tetti. Il campo a terra che si vede dalla strada è "
+            "l'eccezione visibile di un fenomeno che avviene quasi tutto sui tetti."
+        )
+
+        # ---- che cosa si sta installando davvero
+        st.markdown("**Cosa si sta installando: le nuove connessioni del 2026**")
+        nuove = pd.DataFrame([
+            {"Categoria": k, "MW": v["mw"], "Impianti": v["impianti"],
+             "kW medi": v["mw"] * 1000 / v["impianti"]}
+            for k, v in DOC.PV_NUOVE_2026.items()
+        ])
+        cc1, cc2 = st.columns(2)
+        with cc1:
+            fig = px.pie(nuove, values="MW", names="Categoria", hole=0.5,
+                         color_discrete_sequence=["#FACC15", "#F59E0B", "#F97316", "#65A30D"])
+            fig.update_traces(textinfo="percent")
+            fig.update_layout(height=340, title="Potenza per categoria",
+                              legend=dict(orientation="h", yanchor="top", y=-0.05, x=0),
+                              margin=dict(t=48, b=10, l=10, r=24), template="plotly_white")
+            grafico(fig, DOC.F_TERNA)
+        with cc2:
+            fig = px.bar(nuove.sort_values("kW medi"), x="kW medi", y="Categoria",
+                         orientation="h", text_auto=".0f", log_x=True,
+                         color_discrete_sequence=["#F59E0B"])
+            fig.update_traces(cliponaxis=False)
+            fig.update_layout(height=340, yaxis_title=None,
+                              xaxis_title="kW medi per impianto (scala log)", **PLOT)
+            grafico(fig, DOC.F_TERNA)
+
+        # ---- rese diverse per tipologia
+        st.markdown("**Non tutti i tetti rendono uguale**")
+        rese = pd.DataFrame([
+            {"Tipologia": k, "Ore equivalenti": v} for k, v in DOC.PV_ORE_PER_TIPO.items()
+        ])
+        fig = px.bar(rese, x="Ore equivalenti", y="Tipologia", orientation="h",
+                     text_auto=".0f", color="Ore equivalenti",
+                     color_continuous_scale="YlOrRd")
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=300, yaxis_title=None, coloraxis_showscale=False,
+                          xaxis_title="kWh per kWp all'anno", **PLOT)
+        grafico(fig, "elaborazione su dati Terna 2019-2022 e letteratura",
+                "Il residenziale rende meno per falde non ottimali e ombreggiamenti; "
+                "l'utility scale usa inseguitori su una parte del campo.")
+
         st.caption(
-            "Scala logaritmica: le categorie differiscono di tre ordini di grandezza. "
-            "Cave e discariche insieme fanno 6,6 km², le agricole al netto dei vincoli 1.887."
+            "La differenza tra 1.000 e 1.200 ore equivalenti è del 20%: per produrre la "
+            "stessa energia servono il 20% di pannelli in più sui tetti residenziali che "
+            "in un campo ben progettato. È il vero costo del «facciamoli solo sui tetti»."
         )
 
-        vista = st.selectbox(
-            "Cosa mostrare sulla mappa",
-            ["Aree agricole al netto dei vincoli", "Seminativi non irrigui al netto dei vincoli",
-             "Superficie impermeabilizzata", "Agricole entro 500 m da aree industriali"],
-        )
-        colmap = {"Aree agricole al netto dei vincoli": ("area2netta", "Greens"),
-                  "Seminativi non irrigui al netto dei vincoli": ("area211net", "YlGn"),
-                  "Superficie impermeabilizzata": ("areacnkm2", "Greys"),
-                  "Agricole entro 500 m da aree industriali": ("areakmqaal", "Oranges")}
-        col, scala = colmap[vista]
-        mappa = aree_fv.copy()
-        mappa["quota"] = mappa[col] / mappa["areakmq"] * 100
-
-        if geo_fv is not None:
-            fig = px.choropleth_map(
-                mappa, geojson=geo_fv, locations="comune", color="quota",
-                color_continuous_scale=scala, map_style="carto-positron", zoom=7.2,
-                center={"lat": 46.11, "lon": 13.10}, opacity=0.7,
-                hover_name="comune",
-                hover_data={col: ":.1f", "quota": ":.1f", "provincia": True, "comune": False},
-                labels={"quota": "% del comune"},
-            )
-            fig.update_layout(height=560, margin=dict(t=10, b=10, l=0, r=0),
-                              coloraxis_colorbar=dict(title="% del<br>comune"))
-            grafico(fig, DOC.F_AUDIZIONI)
-
-        top = mappa.nlargest(10, col)[["comune", "provincia", col, "quota"]]
-        top.columns = ["Comune", "Provincia", "km²", "% del comune"]
-        c1, c2 = st.columns([1, 1])
-        with c1:
-            st.markdown(f"**I dieci comuni con più superficie: {vista.lower()}**")
-            st.dataframe(top.round(1), hide_index=True, width="stretch")
-        with c2:
-            prov = mappa.groupby("provincia")[col].sum().reset_index()
-            fig = px.bar(prov.sort_values(col), x=col, y="provincia", orientation="h",
-                         text_auto=".0f", color_discrete_sequence=["#22C55E"])
-            fig.update_layout(height=260, yaxis_title=None, xaxis_title="km²",
-                              title="Per provincia", **PLOT)
-            grafico(fig, DOC.F_AUDIZIONI)
-
-        st.info(
-            "Il confronto che conta è tra le due strade. Le **aree agricole disponibili** sono "
-            f"**{aree_fv['area2netta'].sum():,.0f} km²**: sfruttarne anche solo l'1% con un ".replace(",", ".")
-            + "coefficiente di 11 m²/kW darebbe circa 1,7 GW, cioè quasi l'intero target 2030. "
-            f"La **superficie impermeabilizzata** è {aree_fv['areacnkm2'].sum():,.0f} km², ".replace(",", ".")
-            + "un ottavo, ma non sottrae suolo agricolo. Le **aree agricole entro 500 m da zone "
-            f"industriali** — la categoria che il D.Lgs. 199/2021 indica come prioritaria — sono "
-            f"solo **{aree_fv['areakmqaal'].sum():.0f} km²**: da sole non bastano."
+        # ---- termini di paragone
+        st.markdown("**Quanto è grande quel suolo, in cose che si vedono**")
+        par = pd.DataFrame([
+            {"Termine di paragone": k, "Equivalenti": ha_terra / v}
+            for k, v in DOC.PARAGONI_SUOLO.items()
+        ])
+        st.dataframe(par.round(0), hide_index=True, width="stretch")
+        st.caption(
+            f"Fonte: {DOC.FONTE_SAU}. I {ha_terra:,.0f} ettari dei progetti fotovoltaici "
+            "equivalgono a circa 3.200 campi da calcio, o a un sesto della superficie "
+            "già impermeabilizzata della regione (38.380 ettari). "
+            "La competizione col cibo è reale solo se si guarda il singolo campo: "
+            "sul totale regionale, il fattore che sottrae terreno all'agricoltura è "
+            "l'urbanizzazione, non il solare.".replace(",", ".")
         )
 
     st.divider()
@@ -1280,6 +1343,83 @@ def _scheda_5():
         "(edilizia, arredo). Il PER non distingue tra incremento annuo e massa in piedi, "
         "distinzione che cambia radicalmente il senso della cifra."
     )
+
+
+
+    # ---------------------------------------------------- gli impianti sul territorio
+    st.divider()
+    st.subheader("Le caldaie a biomassa finanziate con fondi pubblici")
+    bio_c = D.carica_per("biomassa_comuni_2015")
+    bio_i = D.carica_per("biomassa_impianti_2015")
+
+    if not bio_i.empty:
+        k = st.columns(4)
+        k[0].metric("Impianti censiti", len(bio_i))
+        k[1].metric("Potenza termica", f"{bio_i['kw'].sum() / 1000:.1f} MW")
+        k[2].metric("Legname consumato",
+                    f"{bio_i['massa_t'].sum():,.0f} t/anno".replace(",", "."))
+        pub = bio_i[bio_i["proprietario"] == "Pubblico"]
+        k[3].metric("Quota pubblica", f"{pub['kw'].sum() / bio_i['kw'].sum() * 100:.0f}%",
+                    f"{len(pub)} impianti su {len(bio_i)}")
+
+        if not bio_c.empty:
+            mappa_b = bio_c.copy()
+            fig = px.scatter_map(
+                mappa_b, lat="lat", lon="lon", size="kw", color="combustibile",
+                hover_name="comune",
+                hover_data={"impianti": True, "kw": ":.0f", "massa_t": ":.0f",
+                            "lat": False, "lon": False},
+                size_max=34, zoom=7.1, center={"lat": 46.3, "lon": 13.1},
+                map_style="carto-positron",
+                color_discrete_map={"Cippato": "#8B4513", "Legna a ciocchi": "#A16207",
+                                    "Pellet": "#D97706"},
+                labels={"kw": "kW termici", "massa_t": "tonnellate/anno"})
+            fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
+                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                          x=0, title=None))
+            grafico(fig, DOC.FONTE_BIOMASSA_2015,
+                    "Le coordinate sono i centroidi comunali: gli impianti dello stesso "
+                    "comune sono aggregati in un punto.")
+
+        c1, c2 = st.columns(2)
+        with c1:
+            per_comb = (bio_i.groupby("combustibile")
+                        .agg(impianti=("kw", "count"), kw=("kw", "sum"),
+                             legname=("massa_t", "sum")).reset_index())
+            fig = px.bar(per_comb.sort_values("kw"), x="kw", y="combustibile",
+                         orientation="h", text="impianti", color="combustibile",
+                         color_discrete_map={"Cippato": "#8B4513",
+                                             "Legna a ciocchi": "#A16207",
+                                             "Pellet": "#D97706"})
+            fig.update_traces(textposition="outside", texttemplate="%{text} impianti",
+                              cliponaxis=False)
+            fig.update_layout(showlegend=False, height=300, yaxis_title=None,
+                              xaxis_title="kW termici", **PLOT)
+            grafico(fig, DOC.FONTE_BIOMASSA_2015)
+        with c2:
+            grandi = bio_i.nlargest(10, "kw")[["comune", "kw", "combustibile", "proprietario"]]
+            grandi.columns = ["Comune", "kW", "Combustibile", "Proprietà"]
+            st.markdown("**Le dieci caldaie maggiori**")
+            st.dataframe(grandi, hide_index=True, width="stretch", height=300)
+            st.caption(f"Fonte: {DOC.FONTE_BIOMASSA_2015}.")
+
+        st.info(
+            f"**Diciannove impianti pubblici fanno il "
+            f"{pub['kw'].sum() / bio_i['kw'].sum() * 100:.0f}% della potenza**, e sono quasi "
+            "tutti a cippato: sono le reti di teleriscaldamento di valle — Arta Terme, "
+            "Tarvisio, Forni di Sopra. Le 92 caldaie a legna a ciocchi sono quasi tutte da "
+            "30 kW: singole abitazioni. Il cippato è la filiera vera, la legna è "
+            "autoconsumo domestico incentivato.\n\n"
+            "La geografia è netta: **Carnia, Canal del Ferro e Valli del Natisone**. "
+            "Dove c'è bosco accessibile e non c'è metano."
+        )
+
+        st.warning(
+            "**Il dato è fermo a settembre 2015 e copre solo gli impianti finanziati.** "
+            "Non è il parco a biomassa regionale: le caldaie e le stufe domestiche non "
+            "incentivate sono decine di migliaia e pesano molto di più sui consumi — e "
+            "sulla qualità dell'aria invernale. Serve un censimento aggiornato."
+        )
 
 
 def _scheda_6():
@@ -1722,6 +1862,18 @@ def _scheda_10():
     h[2].metric("Durata del progetto", f"{n['Durata (mesi)']} mesi")
     h[3].metric("Autobus a idrogeno previsti", sum(DOC.H2_MEZZI_TPL.values()))
 
+    t = DOC.TARGET_FER_ELETTRICA_2030
+    st.info(
+        f"**Il contesto in cui l'idrogeno regionale deve stare.** La Strategia dichiara "
+        f"l'obiettivo di coprire il **{t['copertura_pct']}%** dell'elettricità regionale con "
+        f"fonti rinnovabili entro il 2030, installando circa **{t['nuova_capacita_gw']} GW** "
+        f"in più rispetto al 2020, in prevalenza fotovoltaico. "
+        f"Oggi la quota rinnovabile sulla produzione è del {quota_fer:.0f}%, ma sulla "
+        f"**domanda** regionale è molto più bassa, perché un terzo dell'elettricità viene "
+        "importata. L'idrogeno rinnovabile deve trovare posto dentro quel numero, non "
+        f"accanto. ({t['riferimento']}.)"
+    )
+
     st.markdown(
         "La **North Adriatic Hydrogen Valley** è il progetto che tiene insieme "
         "Friuli-Venezia Giulia, Slovenia e Croazia, finanziato da Horizon Europe e "
@@ -1988,36 +2140,147 @@ def _scheda_11():
 
 def _scheda_12():
     st.subheader("Le emissioni di tutta la regione, non solo dell'elettrico")
-    st.caption(f"Fonte: {DOC.FONTE_EMISSIONI}.")
+    st.caption(f"Fonti: {DOC.FONTE_EMISSIONI}; {DOC.FONTE_INVENTARIO}.")
 
     em_tot_df = pd.DataFrame(DOC.EMISSIONI_TOTALI_FVG.items(), columns=["anno", "kt"])
-    ultimo_anno = em_tot_df["anno"].max()
-    ultimo_val = em_tot_df.loc[em_tot_df["anno"].idxmax(), "kt"]
+    ultimo_anno = int(em_tot_df["anno"].max())
+    ultimo_val = float(em_tot_df.loc[em_tot_df["anno"].idxmax(), "kt"])
+    netto = ultimo_val * (1 - DOC.ASSORBIMENTI_FORESTALI / 100)
 
-    e = st.columns(4)
-    e[0].metric(f"Gas serra totali ({ultimo_anno})", f"{ultimo_val / 1000:.1f} Mt CO₂eq")
-    e[1].metric("Pro capite", f"{DOC.EMISSIONI_PRO_CAPITE_2019:.1f} t/ab",
-                "tra i più alti in Italia")
-    e[2].metric("Dalla macrocategoria Energia", f"{DOC.INVENTARIO_ARPA['quota_energia']}%",
-                f"inventario ARPA {DOC.INVENTARIO_ARPA['anno']}")
-    e[3].metric("Dal trasporto su strada", f"{DOC.INVENTARIO_ARPA['quota_trasporto_strada']}%")
+    e = st.columns(5)
+    e[0].metric(f"Gas serra lordi ({ultimo_anno})", f"{ultimo_val / 1000:.1f} Mt CO₂eq")
+    e[1].metric("Assorbimenti forestali", f"−{DOC.ASSORBIMENTI_FORESTALI}%",
+                f"media italiana −{DOC.ASSORBIMENTI_ITALIA}%")
+    e[2].metric("Emissioni nette", f"{netto / 1000:.1f} Mt CO₂eq")
+    e[3].metric("Pro capite", f"{DOC.EMISSIONI_PRO_CAPITE_2019:.1f} t/ab")
+    e[4].metric("Neutralità", DOC.TARGET_FVGREEN["anno_neutralita"], "Legge FVGreen")
 
+    # ------------------------------------------------------------ Sankey
+    st.subheader("Da dove vengono, e cosa le compensa")
+    st.caption(
+        "Ogni flusso è una quota del totale regionale. A sinistra le attività, al centro "
+        "le quattro macrocategorie IPCC, a destra il bilancio netto dopo gli assorbimenti "
+        "forestali. Inventario ARPA FVG, anno 2021."
+    )
+
+    voci, macro = [], []
+    for k, v in DOC.EMISSIONI_ENERGIA.items():
+        voci.append((k, "Energia", v))
+    voci.append(("Agricoltura e uso del suolo", "AFOLU (agricoltura e uso del suolo)",
+                 DOC.EMISSIONI_MACRO["AFOLU (agricoltura e uso del suolo)"]))
+    voci.append(("Processi industriali", "IPPU (processi industriali)",
+                 DOC.EMISSIONI_MACRO["IPPU (processi industriali)"]))
+    voci.append(("Trattamento dei rifiuti", "Rifiuti", DOC.EMISSIONI_MACRO["Rifiuti"]))
+
+    attivita = [v[0] for v in voci]
+    macrocat = list(DOC.EMISSIONI_MACRO)
+    nodi_e = attivita + macrocat + ["Emissioni lorde", "Assorbimenti forestali",
+                                    "Emissioni nette in atmosfera"]
+    ie = {n: i for i, n in enumerate(nodi_e)}
+    palette = {"Trasporti": "#EF4444", "Riscaldamento": "#F97316",
+               "Industrie manifatturiere": "#4B5563", "Industrie energetiche": "#FACC15",
+               "Emissioni fuggitive": "#9CA3AF", "Agricoltura e uso del suolo": "#22C55E",
+               "Processi industriali": "#A855F7", "Trattamento dei rifiuti": "#78716C"}
+    colori_e = [palette.get(a, "#9CA3AF") for a in attivita] + \
+               ["#DC2626", "#16A34A", "#7C3AED", "#78716C"][:len(macrocat)] + \
+               ["#111827", "#16A34A", "#DC2626"]
+
+    se, te, ve, ce = [], [], [], []
+
+    def le(a, b, v, colore):
+        if v > 0:
+            se.append(ie[a]); te.append(ie[b]); ve.append(float(v)); ce.append(colore)
+
+    for nome, mcat, quota in voci:
+        le(nome, mcat, quota, "rgba(220,38,38,0.22)")
+    for m in macrocat:
+        le(m, "Emissioni lorde", DOC.EMISSIONI_MACRO[m], "rgba(17,24,39,0.20)")
+    le("Emissioni lorde", "Assorbimenti forestali", DOC.ASSORBIMENTI_FORESTALI,
+       "rgba(22,163,74,0.35)")
+    le("Emissioni lorde", "Emissioni nette in atmosfera",
+       100 - DOC.ASSORBIMENTI_FORESTALI, "rgba(220,38,38,0.28)")
+
+    fig = go.Figure(go.Sankey(
+        node=dict(pad=16, thickness=18, label=nodi_e, color=colori_e,
+                  line=dict(color="rgba(0,0,0,0.15)", width=0.5)),
+        link=dict(source=se, target=te, value=ve, color=ce,
+                  hovertemplate="%{value:.1f}% del totale<extra></extra>"),
+    ))
+    fig.update_layout(height=520, font_size=12, margin=dict(t=20, b=20, l=10, r=10))
+    grafico(fig, DOC.FONTE_INVENTARIO,
+            "Le quote della macrocategoria Energia sommano a 84,5% e non a 86% per arrotondamenti.")
+
+    # ------------------------------------------------- dettaglio e trasporti
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**I quattro ambiti dell'Energia si equivalgono quasi**")
+        en = pd.DataFrame(DOC.EMISSIONI_ENERGIA.items(), columns=["Ambito", "% del totale"])
+        fig = px.bar(en.sort_values("% del totale"), x="% del totale", y="Ambito",
+                     orientation="h", text_auto=".1f", color="Ambito",
+                     color_discrete_map=palette)
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(showlegend=False, height=320, yaxis_title=None, **PLOT)
+        grafico(fig, DOC.FONTE_INVENTARIO)
+
+    with c2:
+        st.markdown("**Dentro il trasporto su strada comandano le automobili**")
+        tr = pd.DataFrame(DOC.TRASPORTO_STRADA.items(), columns=["Mezzo", "quota"])
+        tr["% del totale regionale"] = tr["quota"] * DOC.TRASPORTO_STRADA_QUOTA / 100
+        fig = px.pie(tr, values="quota", names="Mezzo", hole=0.5,
+                     color_discrete_sequence=["#EF4444", "#F97316", "#FBBF24", "#FCD34D"])
+        fig.update_traces(textinfo="percent")
+        fig.update_layout(height=320, **PLOT)
+        grafico(fig, DOC.FONTE_INVENTARIO,
+                f"Il trasporto su strada vale il {DOC.TRASPORTO_STRADA_QUOTA}% del totale regionale.")
+
+    st.info(
+        f"**Le automobili private da sole fanno circa il "
+        f"{DOC.TRASPORTO_STRADA['Autovetture'] * DOC.TRASPORTO_STRADA_QUOTA / 100:.0f}% "
+        "delle emissioni regionali** — più del settore elettrico intero. È il numero che "
+        "spiega perché la decarbonizzazione del FVG non si gioca sulle centrali: quelle "
+        "pesano per il 17,8%, e stanno già calando da sole con la chiusura di Monfalcone. "
+        "Si gioca su come ci si muove e su come si scaldano le case."
+    )
+
+    # ------------------------------------------------------------ serie storica
+    st.subheader("La serie storica, con le sue cautele")
     fig = px.bar(em_tot_df, x="anno", y="kt", text_auto=".0f",
                  color_discrete_sequence=["#6B7280"])
     fig.add_scatter(x=[2045], y=[0], mode="markers+text", text=["neutralità 2045"],
                     textposition="top center", marker=dict(size=14, color="#22C55E"),
                     name="Obiettivo FVGreen")
-    fig.update_layout(height=380, yaxis_title="kt CO₂eq", xaxis_title=None, **PLOT)
-    grafico(fig, DOC.F_ISPRA)
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=360, yaxis_title="kt CO₂eq", xaxis_title=None, **PLOT)
+    grafico(fig, DOC.FONTE_EMISSIONI)
 
     st.warning(
-        f"Attenzione a leggerla come una serie storica: ISPRA avverte che la metodologia è "
-        f"cambiata nel tempo, quindi i confronti fra anni lontani sono indicativi. "
-        f"Il dato solido è l'ordine di grandezza: **{ultimo_val / 1000:.1f} Mt CO₂eq** contro "
-        f"gli **{em_tot:.2f} Mt** del solo settore elettrico nel {anno}. "
-        "L'elettrico è circa un decimo del problema: il resto sono trasporti, riscaldamento "
-        "e combustione industriale. La Legge FVGreen fissa la neutralità al 2045, cinque anni "
-        "prima del termine europeo."
+        "ISPRA avverte che la metodologia è cambiata nel tempo: i confronti fra anni "
+        f"lontani sono indicativi. Il dato solido è l'ordine di grandezza — "
+        f"**{ultimo_val / 1000:.1f} Mt CO₂eq lordi** contro gli "
+        f"**{em_tot:.2f} Mt** del solo settore elettrico nel {anno}. "
+        f"Gli assorbimenti forestali ne compensano circa un quarto, contro un decimo della "
+        "media nazionale: è l'effetto dei 327.000 ettari di bosco. Ma ARPA avverte che gli "
+        "alberi non bastano, perché la loro azione può ridursi di colpo per incendi o "
+        "parassitosi."
+    )
+
+    # ------------------------------------------------ consumi finali per settore
+    st.subheader("Perché il FVG emette così: la struttura dei consumi")
+    conf = pd.DataFrame([
+        {"Settore": k, "Friuli-Venezia Giulia": v[0], "Italia": v[1]}
+        for k, v in DOC.QUOTE_SETTORE_CONFRONTO.items()
+    ]).melt(id_vars="Settore", var_name="Area", value_name="% dei consumi finali")
+    fig = px.bar(conf, x="Settore", y="% dei consumi finali", color="Area", barmode="group",
+                 text_auto=".1f",
+                 color_discrete_map={"Friuli-Venezia Giulia": "#2563EB", "Italia": "#9CA3AF"})
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=340, xaxis_title=None, **PLOT)
+    grafico(fig, "EUROSTAT ed ENEA, ripresi nel Piano Energetico Regionale FVG")
+
+    st.caption(
+        "L'industria assorbe il **40%** dei consumi finali contro il 22% italiano, i "
+        "trasporti il **19,4%** contro il 31,2%. Il FVG non emette poco nei trasporti: "
+        "emette molto nell'industria, e questo comprime la quota relativa degli altri settori."
     )
 
 
@@ -2095,6 +2358,118 @@ def _scheda_13():
         "rendimento degli impianti proprio quando servono di più.\n"
         "- **Reti**: eventi intensi e concentrati mettono sotto stress le linee aeree, "
         "in una regione che ha 13.400 km di bassa tensione da mantenere."
+    )
+
+    # ------------------------------------------------------- scenari futuri
+    st.divider()
+    st.subheader("Cosa succede se: gli scenari climatici")
+    st.caption(
+        "Gli scenari RCP descrivono traiettorie di emissioni globali fino al 2100. "
+        "Non sono previsioni: sono ipotesi su quanto il mondo deciderà di ridurre."
+    )
+    for nome, descr in DOC.SCENARI_RCP.items():
+        st.markdown(f"- **{nome}** — {descr}")
+
+    st.markdown("**L'effetto sull'energia si misura in gradi giorno**")
+    st.caption(
+        "I gradi giorno di riscaldamento (HDD) dicono quanta energia serve per scaldare, "
+        "quelli di raffrescamento (CDD) quanta per raffrescare. Riferimento 1976-2005, "
+        "proiezioni della piattaforma CLiNE di ARPA FVG."
+    )
+
+    gg = DOC.GRADI_GIORNO
+    g = st.columns(4)
+    g[0].metric("Riscaldamento in pianura, oggi",
+                f"{gg['riscaldamento_pianura_oggi']:,} HDD".replace(",", "."))
+    g[1].metric("A fine secolo (RCP8.5)",
+                f"{gg['riscaldamento_pianura_2100_rcp85']:,} HDD".replace(",", "."),
+                f"{gg['riscaldamento_pianura_2100_rcp85'] - gg['riscaldamento_pianura_oggi']:+,}"
+                .replace(",", "."))
+    g[2].metric("Raffrescamento a Fagagna", f"+{gg['cdd_fagagna_rcp85_2071_2100']} CDD",
+                "anomalia 2071-2100, RCP8.5")
+    g[3].metric("Riscaldamento a Malborghetto", f"{gg['hdd_malborghetto_rcp85_2071_2100']} HDD",
+                "anomalia 2071-2100, RCP8.5")
+
+    bilancio = pd.DataFrame([
+        {"Voce": "Riscaldamento invernale (HDD)",
+         "Variazione": gg["riscaldamento_pianura_2100_rcp85"] - gg["riscaldamento_pianura_oggi"]},
+        {"Voce": "Raffrescamento estivo (CDD)", "Variazione": gg["cdd_fagagna_rcp85_2071_2100"]},
+    ])
+    fig = px.bar(bilancio, x="Variazione", y="Voce", orientation="h", text_auto="+.0f",
+                 color="Variazione", color_continuous_scale=["#2563EB", "#F3F4F6", "#DC2626"],
+                 color_continuous_midpoint=0)
+    fig.add_vline(x=0, line_color="#111827")
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=240, yaxis_title=None, coloraxis_showscale=False,
+                      xaxis_title="gradi giorno, anomalia a fine secolo (RCP8.5)", **PLOT)
+    grafico(fig, "ARPA FVG, piattaforma CLiNE",
+            "Le due grandezze sono misurate in punti diversi e non sono direttamente sommabili.")
+
+    st.info(
+        f"**Si scalderà molto meno e si raffrescherà molto di più.** In pianura i gradi "
+        f"giorno di riscaldamento scendono da circa {gg['riscaldamento_pianura_oggi']:,} a "
+        f"{gg['riscaldamento_pianura_2100_rcp85']:,} a fine secolo nello scenario peggiore. ".replace(",", ".")
+        + "Sembra un risparmio, ed è un risparmio di **gas**. Ma l'aumento del raffrescamento "
+        "è un aumento di **elettricità**, concentrato nelle ore più calde del pomeriggio "
+        "estivo: proprio quando la rete è già sotto sforzo e il fotovoltaico comincia a "
+        "calare. Il saldo energetico può migliorare mentre il saldo **di potenza** peggiora.\n\n"
+        f"Sempre nello scenario RCP8.5, buona parte della pianura passerebbe dalla zona "
+        f"climatica **{DOC.ZONA_CLIMATICA['oggi'].split('—')[0].strip()}** alla "
+        f"**{DOC.ZONA_CLIMATICA['rcp85_fine_secolo'].split('—')[0].strip()}**, con due ore "
+        "in meno di riscaldamento consentito al giorno e due settimane in meno di stagione."
+    )
+
+    # ------------------------------------------------------- eventi estremi
+    st.divider()
+    st.subheader("Il 2025, evento per evento")
+    st.caption(
+        "Cronologia dei fenomeni meteorologici rilevanti registrati da ARPA FVG. "
+        "La colonna di destra indica la gravità relativa, non un indice ufficiale."
+    )
+
+    ev = pd.DataFrame(DOC.EVENTI_2025, columns=["quando", "cosa", "dettaglio", "gravita"])
+    fig = px.bar(ev, x="gravita", y="quando", orientation="h", color="gravita",
+                 color_continuous_scale=["#FCD34D", "#F97316", "#DC2626"],
+                 hover_name="cosa", text="cosa")
+    fig.update_traces(textposition="inside", insidetextanchor="start", cliponaxis=False)
+    fig.update_yaxes(categoryorder="array", categoryarray=list(ev["quando"])[::-1])
+    fig.update_layout(height=400, yaxis_title=None, xaxis_title="gravità relativa",
+                      coloraxis_showscale=False, **PLOT)
+    grafico(fig, DOC.FONTE_CLIMA)
+
+    for r in ev.itertuples():
+        if r.dettaglio:
+            with st.expander(f"{r.quando} — {r.cosa}"):
+                st.markdown(r.dettaglio)
+
+    st.error(
+        "**L'evento del 16-17 novembre 2025 merita di essere ricordato.** Un sistema "
+        "convettivo autorigenerante è rimasto fermo quasi dodici ore sul bacino dello Judrio, "
+        "scaricando oltre **200 mm di pioggia**. Il torrente ha esondato allagando Versa con "
+        "uno-due metri d'acqua e fango; a Brazzano di Cormòns una collina è franata sul centro "
+        "abitato, **due vittime** e tre case distrutte. I modelli non l'avevano previsto: "
+        "attendevano piogge orografiche sulle Prealpi, non in pianura. "
+        "Un evento simile non accadeva dal 29 agosto 2003, l'alluvione della Val Canale."
+    )
+
+    # --------------------------------------------- catena di impatto energia
+    st.divider()
+    st.subheader("Come il clima colpisce il sistema energetico")
+    st.caption(
+        "Catena di impatto per produzione, trasporto e consumo di energia in Europa "
+        "(EUCRA 2023, ripresa da ARPA FVG)."
+    )
+    cat = pd.DataFrame(DOC.CATENA_IMPATTO, columns=["Sottosistema", "Rischio", "Meccanismo"])
+    for sotto in cat["Sottosistema"].unique():
+        st.markdown(f"**{sotto}**")
+        for r in cat[cat["Sottosistema"] == sotto].itertuples():
+            st.markdown(f"- *{r.Rischio}* — {r.Meccanismo}")
+
+    st.caption(
+        "Fonte: EUCRA 2023 (Agenzia europea dell'ambiente), rielaborazione ARPA FVG. "
+        "Il punto che tiene insieme tutta la catena è che i rischi si presentano insieme: "
+        "l'ondata di calore riduce l'idroelettrico, abbassa il rendimento del termoelettrico, "
+        "taglia la portata delle linee e alza la domanda, tutto nello stesso pomeriggio."
     )
 
 
@@ -2463,10 +2838,10 @@ def _scheda_15():
 SEZIONI = [
     ('📊 Quadro generale', [0]),
     ('⚡ Elettricità e rinnovabili', [1, 3, 4, 7]),
-    ('🔥 Termico, gas e bioenergie', [8, 9, 5, 6, 10]),
+    ('🔥 Termico, gas e bioenergie', [8, 9, 5, 6]),
     ('🔌 Reti e territorio', [2]),
     ('🌍 Clima ed emissioni', [12, 13]),
-    ('🔮 Scenari e transizione', [11, 14]),
+    ('🔮 Scenari e transizione', [11, 14, 10]),
     ('🗂 Dati e fonti', [15]),
 ]
 NOMI_SCHEDE = ['📊 Panoramica', '⚡ Elettricità', '🔌 Reti', '☀️ Fotovoltaico', '🌱 Rinnovabili', '🌲 Biomasse', '♻️ Biometano', '💧 Idroelettrico', '🔥 Gas', '🔥 Termo & CO₂', '🧪 Idrogeno', '🔮 Scenari', '🌍 Emissioni', '🌡️ Clima', '📈 Transizione', '🗂 Dati']
