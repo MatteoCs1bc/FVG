@@ -28,6 +28,7 @@ if not (Path(__file__).resolve().parent / "src" / "data.py").exists():
     )
     st.stop()
 
+from src.scenari import CostiRete, Parco, Prezzi, esplora, frontiera, migliore
 from src import dati_documentali as DOC
 from src import data as D
 from src.config import (
@@ -137,6 +138,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 p_tot = anno_di(prod_fonte)["valore"].sum()
 p_fer = anno_di(prod_fer)["valore"].sum()
 pot_tot = anno_di(pot_fonte)["valore"].sum()
@@ -147,43 +149,48 @@ pop = POPOLAZIONE.get(anno)
 quota_fer = p_fer / p_tot * 100 if p_tot else 0
 intensita = em_tot * 1e6 / p_tot if p_tot else 0  # tCO2 / GWh = gCO2/kWh
 
-k = st.columns(5)
-k[0].metric("Produzione lorda", f"{p_tot:,.0f} GWh".replace(",", "."),
-            f"{D.variazione(prod_fonte, anno) or 0:+.1f}%" if D.variazione(prod_fonte, anno) else None)
-k[1].metric("Quota rinnovabile", f"{quota_fer:.1f}%")
-k[2].metric("Potenza efficiente", f"{pot_tot:,.0f} MW".replace(",", "."))
-k[3].metric("Emissioni CO₂ (elettrico)", f"{em_tot:.2f} Mt")
-k[4].metric("Intensità carbonica", f"{intensita:.0f} g/kWh")
 
 bil_kpi = D.carica_per("bilancio_2021")
-if not bil_kpi.empty:
-    _v = bil_kpi.set_index("voce")["valore"]
-    _imp = _v.get("Import totale", 0) - _v.get("Export totale", 0)
-    _cil = _v.get("Consumo interno lordo", 1)
-    _em_tot = max(DOC.EMISSIONI_TOTALI_FVG.items())[1]
-    _em_anno = max(DOC.EMISSIONI_TOTALI_FVG)
-    k2 = st.columns(5)
-    k2[0].metric("Energia importata", f"{_imp / _cil * 100:.0f}%",
-                 f"{_imp:,.0f} ktep su {_cil:,.0f}".replace(",", "."),
-                 help="Quota del consumo interno lordo che arriva da fuori regione. Bilancio 2021.")
-    k2[1].metric("Risorse interne", f"{_v.get('Risorse interne totale', 0):,.0f} ktep".replace(",", "."))
-    k2[2].metric(f"Emissioni totali ({_em_anno})", f"{_em_tot / 1000:.1f} Mt CO₂eq",
-                 f"{DOC.EMISSIONI_QUOTA_NAZIONALE}% del totale italiano",
-                 help="Tutti i settori e tutti i gas serra, non solo l'elettrico. Fonte ISPRA.")
-    k2[3].metric("di cui settore elettrico", f"{em_tot:.2f} Mt CO₂",
-                 f"{em_tot / (_em_tot / 1000) * 100:.0f}% del totale" if _em_tot else None)
-    k2[4].metric("Neutralità carbonica", DOC.TARGET_FVGREEN["anno_neutralita"],
-                 DOC.TARGET_FVGREEN["riferimento"].split("(")[0].strip())
 
-if pop:
-    st.caption(
-        f"Pro capite ({pop:,.0f} abitanti): ".replace(",", ".")
-        + f"**{p_tot * 1000 / pop:,.0f} kWh** prodotti · ".replace(",", ".")
-        + f"**{em_tot * 1e6 / pop:.2f} t CO₂** dal settore elettrico · "
-        + f"**{p_tot * GWH_TO_KTEP:,.0f} ktep** di produzione totale".replace(",", ".")
-    )
 
-st.divider()
+
+
+def pagina_kpi():
+    """Intestazione con i numeri chiave, mostrata solo nella pagina Esplora."""
+    k = st.columns(5)
+    k[0].metric("Produzione lorda", f"{p_tot:,.0f} GWh".replace(",", "."),
+                f"{D.variazione(prod_fonte, anno) or 0:+.1f}%" if D.variazione(prod_fonte, anno) else None)
+    k[1].metric("Quota rinnovabile", f"{quota_fer:.1f}%")
+    k[2].metric("Potenza efficiente", f"{pot_tot:,.0f} MW".replace(",", "."))
+    k[3].metric("Emissioni CO₂ (elettrico)", f"{em_tot:.2f} Mt")
+    k[4].metric("Intensità carbonica", f"{intensita:.0f} g/kWh")
+    if not bil_kpi.empty:
+        _v = bil_kpi.set_index("voce")["valore"]
+        _imp = _v.get("Import totale", 0) - _v.get("Export totale", 0)
+        _cil = _v.get("Consumo interno lordo", 1)
+        _em_tot = max(DOC.EMISSIONI_TOTALI_FVG.items())[1]
+        _em_anno = max(DOC.EMISSIONI_TOTALI_FVG)
+        k2 = st.columns(5)
+        k2[0].metric("Energia importata", f"{_imp / _cil * 100:.0f}%",
+                     f"{_imp:,.0f} ktep su {_cil:,.0f}".replace(",", "."),
+                     help="Quota del consumo interno lordo che arriva da fuori regione. Bilancio 2021.")
+        k2[1].metric("Risorse interne", f"{_v.get('Risorse interne totale', 0):,.0f} ktep".replace(",", "."))
+        k2[2].metric(f"Emissioni totali ({_em_anno})", f"{_em_tot / 1000:.1f} Mt CO₂eq",
+                     f"{DOC.EMISSIONI_QUOTA_NAZIONALE}% del totale italiano",
+                     help="Tutti i settori e tutti i gas serra, non solo l'elettrico. Fonte ISPRA.")
+        k2[3].metric("di cui settore elettrico", f"{em_tot:.2f} Mt CO₂",
+                     f"{em_tot / (_em_tot / 1000) * 100:.0f}% del totale" if _em_tot else None)
+        k2[4].metric("Neutralità carbonica", DOC.TARGET_FVGREEN["anno_neutralita"],
+                     DOC.TARGET_FVGREEN["riferimento"].split("(")[0].strip())
+    if pop:
+        st.caption(
+            f"Pro capite ({pop:,.0f} abitanti): ".replace(",", ".")
+            + f"**{p_tot * 1000 / pop:,.0f} kWh** prodotti · ".replace(",", ".")
+            + f"**{em_tot * 1e6 / pop:.2f} t CO₂** dal settore elettrico · "
+            + f"**{p_tot * GWH_TO_KTEP:,.0f} ktep** di produzione totale".replace(",", ".")
+        )
+    st.divider()
+
 
 
 def _scheda_0():
@@ -918,6 +925,96 @@ def _scheda_2():
         )
 
 
+
+    # ------------------------------------- dove preme la pipeline sulle cabine
+    st.divider()
+    st.subheader("Dove la pipeline preme sulla rete")
+    sat = D.carica_per("saturazione_aree")
+    geo_cp2 = D.carica_geojson("aree_cabine_primarie")
+    ppa = D.carica_per("progetti_per_area")
+
+    if not sat.empty and geo_cp2 is not None:
+        st.caption(
+            "Incrocio tra le aree di influenza delle cabine primarie e i progetti "
+            "autorizzati o in istruttoria. Misura la **pressione autorizzativa**, non la "
+            "saturazione elettrica: la capacità residua vera dipende dai trasformatori e "
+            "dalla contemporaneità delle immissioni, dati che non sono pubblici per area."
+        )
+
+        p = st.columns(4)
+        p[0].metric("Domanda di connessione",
+                    f"{sat['mw_richiesti'].sum():,.0f} MW".replace(",", "."))
+        p[1].metric("Aree interessate",
+                    f"{int((sat['mw_richiesti'] > 0).sum())} su {len(sat)}")
+        top5 = sat.nlargest(5, "mw_richiesti")["mw_richiesti"].sum()
+        p[2].metric("Concentrazione", f"{top5 / sat['mw_richiesti'].sum() * 100:.0f}%",
+                    "nelle prime cinque aree")
+        p[3].metric("Densità massima", f"{sat['mw_per_km2'].max():.1f} MW/km²")
+
+        vista_sat = st.radio(
+            "Cosa mostrare", ["MW richiesti", "MW per km²"], horizontal=True,
+            key="vista_sat")
+        col_sat = "mw_richiesti" if vista_sat == "MW richiesti" else "mw_per_km2"
+
+        fig = px.choropleth_map(
+            sat, geojson=geo_cp2, locations="codice", color=col_sat,
+            color_continuous_scale="Reds", map_style="carto-positron", zoom=7.2,
+            center={"lat": 46.05, "lon": 13.10}, opacity=0.72,
+            hover_name="codice",
+            hover_data={"gestore": True, "progetti": True, "mw_richiesti": ":.0f",
+                        "mw_per_km2": ":.2f", "area_km2": ":.0f", "codice": False},
+            labels={"mw_richiesti": "MW richiesti", "mw_per_km2": "MW per km²"})
+        fig.update_layout(height=560, margin=dict(t=10, b=10, l=0, r=0))
+        grafico(fig, DOC.F_REGIONE + " e portale progetti FER, " + DOC.F_ELAB)
+
+        c1, c2 = st.columns(2)
+        with c1:
+            tecnologie = [c for c in ["Solare", "Accumuli", "Bioenergie", "Idroelettrico"]
+                          if c in sat.columns]
+            comp = sat[["codice"] + tecnologie].melt(
+                id_vars="codice", var_name="Tecnologia", value_name="MW")
+            comp = comp[comp["MW"] > 0]
+            top = sat.nlargest(10, "mw_richiesti")["codice"]
+            fig = px.bar(comp[comp["codice"].isin(top)], x="MW", y="codice",
+                         color="Tecnologia", orientation="h",
+                         color_discrete_map={"Solare": "#FACC15", "Accumuli": "#A855F7",
+                                             "Bioenergie": "#8B4513",
+                                             "Idroelettrico": "#2563EB"})
+            fig.update_layout(height=380, yaxis_title=None,
+                              title="Le dieci aree più sollecitate", **PLOT)
+            grafico(fig, DOC.F_ELAB)
+        with c2:
+            fig = px.scatter(sat[sat["mw_richiesti"] > 0], x="area_km2", y="mw_richiesti",
+                             size="progetti", color="gestore", hover_name="codice",
+                             log_x=True, log_y=True,
+                             color_discrete_map={"e-distribuzione": "#2563EB",
+                                                 "AcegasApsAmga": "#F97316",
+                                                 "SECAB": "#22C55E"})
+            fig.update_layout(height=380, xaxis_title="km² dell'area (log)",
+                              yaxis_title="MW richiesti (log)",
+                              title="Aree grandi non vuol dire aree cariche", **PLOT)
+            grafico(fig, DOC.F_ELAB)
+
+        st.info(
+            f"**{sat['mw_richiesti'].sum():,.0f} MW di richieste su 43 aree**, ma le prime "
+            f"cinque ne assorbono il {top5 / sat['mw_richiesti'].sum() * 100:.0f}%. ".replace(",", ".")
+            + "La pressione non è diffusa: si concentra in poche aree della bassa pianura "
+            "friulana, dove c'è spazio, irraggiamento e vicinanza alle dorsali. "
+            "Sono le stesse zone in cui e-distribuzione segnala i trasformatori in rosso, "
+            "ed è il motivo per cui le nuove cabine primarie in programma stanno lì.\n\n"
+            "Va ricordato il tasso di realizzazione storico: circa **metà** di ciò che "
+            "viene autorizzato non si costruisce. Una parte di questa pressione è capacità "
+            "prenotata che non diventerà mai un impianto — ed è esattamente ciò che il "
+            "meccanismo *first ready, first connect* dovrebbe liberare."
+        )
+
+        with st.expander("Elenco delle aree per pressione"):
+            e = sat[sat["mw_richiesti"] > 0].sort_values("mw_richiesti", ascending=False)
+            e = e[["codice", "gestore", "area_km2", "progetti", "mw_richiesti", "mw_per_km2"]]
+            e.columns = ["Codice", "Gestore", "km²", "Progetti", "MW richiesti", "MW/km²"]
+            st.dataframe(e.round(2), hide_index=True, width="stretch", height=320)
+
+
 def _scheda_3():
     pv_prov = D.carica_per("pv_province")
     pv_tra = D.carica_per("pv_traiettoria")
@@ -1521,6 +1618,65 @@ def _scheda_6():
     )
 
 
+
+    # ------------------------------------------------------- la dieta, per quel poco che si sa
+    st.divider()
+    st.subheader("Che cosa mangiano i digestori")
+    dieta = D.carica_per("bio_impianti_dieta")
+    pipe = D.carica_per("biometano_pipeline")
+
+    st.caption(
+        "È la domanda decisiva — colture dedicate o scarti — e la risposta oggi è "
+        "parziale. Quella che segue è una ricognizione da fonti aperte, non un registro."
+    )
+
+    if not dieta.empty:
+        tab = dieta[["impianto", "comune", "provincia", "tipologia", "dieta", "stato",
+                     "fonte", "affidabilita"]].copy()
+        tab.columns = ["Impianto", "Comune", "Prov.", "Tipologia", "Alimentazione",
+                       "Stato", "Fonte", "Affidabilità"]
+        st.dataframe(tab, hide_index=True, width="stretch")
+        st.caption(
+            "Fonte: ricognizione su fonti aperte (comunicati aziendali, stampa, "
+            "documentazione regionale). La colonna «Affidabilità» dichiara quanto è solida "
+            "ciascuna riga: nessuna arriva ad «alta»."
+        )
+
+        agri = dieta["dieta"].astype(str).str.contains("agricol|zootecnic|coltur", case=False).sum()
+        scarti = dieta["dieta"].astype(str).str.contains("scart|FORSU|reflu|rifiut", case=False).sum()
+        d1, d2, d3 = st.columns(3)
+        d1.metric("Impianti tracciati", len(dieta))
+        d2.metric("Con matrici agricole", int(agri))
+        d3.metric("Con scarti o rifiuti", int(scarti))
+
+    if not pipe.empty:
+        st.markdown("**I comuni con progetti di biometano**")
+        st.caption(
+            f"{len(pipe)} comuni interessati da progetti in iter o realizzati. "
+            "L'elenco dice dove, non con quale alimentazione."
+        )
+        st.dataframe(pipe.rename(columns={"comune": "Comune"}), hide_index=True,
+                     width="stretch", height=240)
+
+    st.error(
+        "**Questo è il buco più serio dell'intera applicazione, e va detto chiaramente.** "
+        "In regione ci sono **57 comuni con impianti a biogas per 120,6 MW**, ma di questi "
+        "conosciamo l'alimentazione solo per una manciata. Senza sapere quanta parte va a "
+        "**colture dedicate** e quanta a **reflui zootecnici e scarti**, la valutazione "
+        "ambientale del biogas friulano resta sospesa: le due filiere hanno bilanci di "
+        "suolo, di acqua e di carbonio completamente diversi, e il confronto per ettaro "
+        "della sezione precedente colpisce solo la prima.\n\n"
+        "**Tre strade per chiudere il buco**, in ordine di praticabilità:\n"
+        "1. **Atlaimpianti del GSE** riporta la tipologia di alimentazione per gli impianti "
+        "incentivati. L'accesso massivo richiede una richiesta formale, che APE FVG può "
+        "presentare come ente pubblico.\n"
+        "2. Le **autorizzazioni AIA regionali** contengono la matrice in ingresso impianto "
+        "per impianto e sono pubbliche: 57 comuni sono un lavoro manuale ma finito.\n"
+        "3. Il **registro biometano del GSE** copre gli impianti convertiti, che sono i più "
+        "rilevanti per il futuro ma pochi per il presente."
+    )
+
+
 def _scheda_7():
     st.subheader("Il parco idroelettrico regionale")
     st.caption(f"Fonte: {DOC.FONTE_IDRO}, integrata con la serie storica Terna.")
@@ -1590,72 +1746,88 @@ def _scheda_7():
     centrali = D.carica_per("centrali_idro")
     if not centrali.empty:
         st.subheader("Le centrali sul territorio")
-        st.caption(
-            "Censimento RSE: grandi impianti (rilevazione 2020) e impianti per potenza e "
-            "tipologia (2024). Non è l'intero parco regionale — il PER conta 268 impianti — "
-            "ma copre le centrali con dati tecnici documentati."
-        )
+        cat = D.carica_per("centrali_idro_catasto")
+        mont = D.carica_per("idro_montagna")
 
-        c = st.columns(4)
-        c[0].metric("Impianti mappati", len(centrali))
-        c[1].metric("Potenza mappata", f"{centrali['potenza_mw'].sum():,.1f} MW".replace(",", "."))
-        c[2].metric("Il più grande", f"{centrali['potenza_mw'].max():,.0f} MW".replace(",", "."))
-        anni = centrali["anno"].dropna()
-        if len(anni):
-            c[3].metric("Anno mediano di costruzione", f"{int(anni.median())}")
+        if not cat.empty:
+            esist = cat[cat["stato"] == "Esistente"]
+            st.caption(
+                "Catasto regionale delle derivazioni idriche: ogni punto è una centrale "
+                "con la sua concessione. Attenzione, la **potenza di concessione** non è "
+                "la potenza efficiente — è la potenza nominale media legata alla portata "
+                "derivabile, e la somma regionale sta molto sotto i 528,9 MW misurati da Terna."
+            )
+            c = st.columns(4)
+            c[0].metric("Centrali censite", len(cat), f"{len(esist)} esistenti")
+            c[1].metric("Potenza di concessione", f"{esist['potenza_mw'].sum():.0f} MW")
+            c[2].metric("In progetto o realizzazione",
+                        int((cat["stato"].isin(["In progetto", "In realizzazione"])).sum()),
+                        f"{cat[cat['stato'].isin(['In progetto', 'In realizzazione'])]['potenza_mw'].sum():.1f} MW")
+            mediana = esist["potenza_mw"].median()
+            c[3].metric("Potenza mediana", f"{mediana * 1000:.0f} kW",
+                        "metà delle centrali sta sotto")
 
-        mappa_cen = centrali.copy()
-        mappa_cen["size_mw"] = mappa_cen["potenza_mw"].fillna(0).clip(lower=0)
-        fig = px.scatter_map(
-            mappa_cen, lat="lat", lon="lon", size="size_mw", color="tipo",
-            hover_name="nome",
-            hover_data={"comune": True, "potenza_mw": ":.2f", "anno": True,
-                        "salto_m": ":.0f", "lat": False, "lon": False, "size_mw": False},
-            size_max=32, zoom=7.2, center={"lat": 46.3, "lon": 13.0},
-            map_style="carto-positron",
-            labels={"potenza_mw": "MW", "salto_m": "salto (m)"},
-        )
-        fig.update_layout(height=560, margin=dict(t=10, b=10, l=0, r=0),
-                          legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
-        grafico(fig, DOC.F_RSE)
+            m = cat.copy()
+            m["size_mw"] = m["potenza_mw"].fillna(0).clip(lower=0.01)
+            fig = px.scatter_map(
+                m, lat="lat", lon="lon", size="size_mw", color="stato",
+                hover_name="nome",
+                hover_data={"potenza_mw": ":.3f", "salto_m": ":.0f", "scadenza": True,
+                            "lat": False, "lon": False, "size_mw": False},
+                size_max=30, zoom=7.1, center={"lat": 46.3, "lon": 13.0},
+                map_style="carto-positron",
+                color_discrete_map={"Esistente": "#2563EB", "In progetto": "#F97316",
+                                    "In realizzazione": "#FACC15", "Rinunciata": "#D1D5DB"},
+                labels={"potenza_mw": "MW di concessione", "salto_m": "salto (m)"})
+            fig.update_layout(height=540, margin=dict(t=10, b=10, l=0, r=0),
+                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                          x=0, title=None))
+            grafico(fig, DOC.F_REGIONE + " — catasto derivazioni idriche")
 
-        c1, c2 = st.columns(2)
-        with c1:
-            per_tipo = (centrali.groupby("tipo")
-                        .agg(n=("nome", "count"), mw=("potenza_mw", "sum"))
-                        .reset_index().sort_values("mw"))
-            fig = px.bar(per_tipo, x="mw", y="tipo", orientation="h", text="n",
-                         color_discrete_sequence=["#2563EB"])
-            fig.update_traces(textposition="outside", texttemplate="%{text} impianti",
-                              cliponaxis=False)
-            fig.update_layout(height=300, xaxis_title="MW", yaxis_title=None,
-                              title="Potenza per tipologia", **PLOT)
-            grafico(fig, DOC.F_RSE)
-        with c2:
-            con_anno = centrali.dropna(subset=["anno"])
-            if len(con_anno):
-                fig = px.scatter(con_anno, x="anno", y="potenza_mw", color="tipo",
-                                 hover_name="nome", log_y=True)
-                fig.update_layout(height=300, xaxis_title=None, yaxis_title="MW (log)",
-                                  title="Quando sono stati costruiti", showlegend=False, **PLOT)
-                grafico(fig, DOC.F_RSE)
+            c1, c2 = st.columns(2)
+            with c1:
+                fig = px.histogram(esist[esist["potenza_mw"] > 0], x="potenza_mw", nbins=40,
+                                   log_y=True, color_discrete_sequence=["#2563EB"])
+                fig.update_layout(height=300, xaxis_title="MW di concessione",
+                                  yaxis_title="centrali (scala log)",
+                                  title="Quasi tutte piccolissime", **PLOT)
+                grafico(fig, DOC.F_REGIONE)
+            with c2:
+                sal = esist.dropna(subset=["salto_m", "potenza_mw"])
+                sal = sal[(sal["salto_m"] > 0) & (sal["potenza_mw"] > 0)]
+                fig = px.scatter(sal, x="salto_m", y="potenza_mw", log_x=True, log_y=True,
+                                 hover_name="nome", color_discrete_sequence=["#2563EB"],
+                                 opacity=0.6)
+                fig.update_layout(height=300, xaxis_title="salto (m, log)",
+                                  yaxis_title="MW (log)",
+                                  title="Il salto fa la potenza", **PLOT)
+                grafico(fig, DOC.F_REGIONE)
 
-        grandi = centrali.nlargest(8, "potenza_mw")[
-            ["nome", "comune", "provincia", "potenza_mw", "tipo", "anno", "salto_m"]]
-        grandi.columns = ["Impianto", "Comune", "Prov.", "MW", "Tipo", "Anno", "Salto (m)"]
-        st.markdown("**Gli impianti maggiori**")
-        st.dataframe(grandi.round(1), hide_index=True, width="stretch")
+            piccole = (esist["potenza_mw"] < 1).sum()
+            st.info(
+                f"**{piccole} centrali su {len(esist)} stanno sotto il megawatt**, e la "
+                f"mediana è di {mediana * 1000:.0f} kW: il parco idroelettrico friulano è "
+                "fatto di una lunga coda di micro-derivazioni su rogge, canali e acquedotti, "
+                "più poche grandi centrali di montagna. "
+                f"Le nuove concessioni in progetto valgono "
+                f"{cat[cat['stato'] == 'In progetto']['potenza_mw'].sum():.1f} MW su 47 pratiche: "
+                "meno di 200 kW l'una. Il grande idro è finito, resta il capillare."
+            )
 
-        vecchi = centrali[centrali["anno"] < 1960]["potenza_mw"].sum()
-        st.info(
-            f"Il parco è vecchio e concentrato: gli impianti costruiti prima del 1960 valgono "
-            f"**{vecchi:,.0f} MW** dei {centrali['potenza_mw'].sum():,.0f} mappati. ".replace(",", ".")
-            + "Accanto a poche grandi centrali a serbatoio e bacino, costruite tra gli anni "
-            "Trenta e Cinquanta, c'è una lunga coda di impianti ad acqua fluente sotto il "
-            "megawatt, spesso su canali e rogge. È il motivo per cui il margine di crescita "
-            "è limitato: i siti buoni sono occupati da quasi un secolo."
-        )
-
+        if not mont.empty:
+            st.markdown("**Le grandi centrali di montagna**")
+            tab = mont[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
+                        "producibilita_GWh_anno", "tipo_impianto", "salto_m"]].copy()
+            tab.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
+                           "GWh/anno", "Tipo", "Salto (m)"]
+            st.dataframe(tab.sort_values("MW", ascending=False), hide_index=True,
+                         width="stretch")
+            st.caption(
+                f"Fonte: {DOC.F_PER}, dati di impianto. "
+                f"Queste {len(mont)} centrali valgono {mont['potenza_MW'].sum():.0f} MW e "
+                f"circa {mont['producibilita_GWh_anno'].sum():.0f} GWh l'anno: "
+                "la dorsale storica del sistema, quasi tutta in Carnia e Canal del Ferro."
+            )
 
 def _scheda_8():
     st.subheader("Il gas naturale nel sistema energetico regionale")
@@ -1901,6 +2073,59 @@ def _scheda_10():
         st.markdown(f"**{titolo}** — {testo}")
 
     st.divider()
+    # ------------------------------------------- dove l'idrogeno serve davvero
+    st.divider()
+    st.subheader("Dove l'idrogeno serve, e dove no")
+    st.caption(
+        "L'idrogeno non compete con la batteria né con la pompa di calore: è candidato "
+        "solo dove l'elettrificazione diretta è difficile. Isolare quei settori serve a "
+        "dimensionare il problema. Consumi elettrici per settore merceologico, Terna 2023."
+    )
+
+    # Niente accenti nei nomi di colonna: itertuples li rinomina in _1, _2...
+    hta = pd.DataFrame(DOC.HARD_TO_ABATE,
+                       columns=["Settore", "GWh elettrici", "motivo", "Rilevanza"])
+    rilevanti = hta[hta["Rilevanza"] == "alto"]
+
+    h = st.columns(4)
+    h[0].metric("Settori a rilevanza alta", len(rilevanti))
+    h[1].metric("Consumo elettrico dei settori",
+                f"{rilevanti['GWh elettrici'].sum():,.0f} GWh".replace(",", "."))
+    h[2].metric("Quota sull'industria",
+                f"{rilevanti['GWh elettrici'].sum() / DOC.INDUSTRIA_TOTALE_GWH[2023] * 100:.0f}%")
+    h[3].metric("Trasporto pesante",
+                f"{DOC.TRASPORTO_PESANTE['quota_emissioni_trasporto_strada']}%",
+                "delle emissioni del trasporto su strada")
+
+    fig = px.bar(hta.sort_values("GWh elettrici"), x="GWh elettrici", y="Settore",
+                 orientation="h", color="Rilevanza", text_auto=".0f",
+                 hover_data={"motivo": False},
+                 color_discrete_map={"alto": "#06B6D4", "basso": "#D1D5DB"})
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=340, yaxis_title=None, **PLOT)
+    grafico(fig, DOC.F_TERNA,
+            "I GWh misurano la taglia del settore, non il suo fabbisogno di idrogeno.")
+
+    for r in hta.itertuples():
+        icona = "🔵" if r.Rilevanza == "alto" else "⚪"
+        st.markdown(f"{icona} **{r.Settore}** — {r.motivo}")
+
+    st.markdown(f"🔵 **Trasporto pesante a lunga percorrenza** — {DOC.TRASPORTO_PESANTE['nota']}")
+
+    st.info(
+        f"**Il perimetro vero è più stretto di quanto si dica.** Dei "
+        f"{DOC.INDUSTRIA_TOTALE_GWH[2023]:,.0f} GWh elettrici dell'industria friulana, i "
+        f"settori dove l'idrogeno ha davvero senso ne rappresentano circa il "
+        f"{rilevanti['GWh elettrici'].sum() / DOC.INDUSTRIA_TOTALE_GWH[2023] * 100:.0f}%: ".replace(",", ".")
+        + "siderurgia, vetro e ceramica, chimica. Cartaria e prodotti in metallo lavorano "
+        "a temperature che una pompa di calore industriale o una resistenza coprono meglio "
+        "e a meno.\n\n"
+        "Nella chimica il caso è ancora più netto: l'idrogeno **è già usato come materia "
+        "prima**, prodotto da metano. Sostituirlo con idrogeno rinnovabile non richiede di "
+        "cambiare processo, solo di cambiare fornitura — è il punto in cui la transizione "
+        "costa meno e rende di più, e vale la pena partire da lì."
+    )
+
     st.subheader("Quanto fotovoltaico servirebbe")
     st.caption(
         "L'idrogeno rinnovabile è elettricità rinnovabile trasformata. Qui si può vedere "
@@ -2452,6 +2677,52 @@ def _scheda_13():
         "Un evento simile non accadeva dal 29 agosto 2003, l'alluvione della Val Canale."
     )
 
+    # ------------------------------------------- il confronto con le altre regioni
+    st.divider()
+    st.subheader("Come sta il FVG rispetto al resto d'Italia")
+    st.caption(f"Fonte: {DOC.FONTE_CIRO}. Ventisei indicatori, qui i più rilevanti.")
+
+    st.error(
+        f"**Nel 2024 il Friuli-Venezia Giulia è stata la "
+        f"{DOC.CIRO_SINTESI['eventi_estremi_2024']}.** "
+        "Non è un'impressione costruita sui titoli dei giornali: è un conteggio, e mette "
+        "in fila gli otto episodi della cronologia qui sopra. Una regione piccola, "
+        "stretta fra mare e Alpi, dove i sistemi convettivi trovano tutto quello che "
+        "serve per innescarsi."
+    )
+
+    ind = pd.DataFrame(DOC.CIRO_INDICATORI,
+                       columns=["Ambito", "Indicatore", "FVG", "Italia", "um",
+                                "alto_e_meglio", "nota"])
+    conf = ind.dropna(subset=["Italia"]).copy()
+    lungo = conf.melt(id_vars=["Indicatore", "alto_e_meglio"],
+                      value_vars=["FVG", "Italia"], var_name="Area", value_name="Valore")
+    fig = px.bar(lungo, x="Valore", y="Indicatore", color="Area", orientation="h",
+                 barmode="group", text_auto=".1f",
+                 color_discrete_map={"FVG": "#2563EB", "Italia": "#9CA3AF"})
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=380, yaxis_title=None, xaxis_title="%", **PLOT)
+    grafico(fig, DOC.FONTE_CIRO)
+
+    solo = ind[ind["Italia"].isna()][["Ambito", "Indicatore", "FVG", "um", "nota"]]
+    solo.columns = ["Ambito", "Indicatore", "Valore", "Unità", "Nota"]
+    st.markdown("**Indicatori senza confronto diretto**")
+    st.dataframe(solo, hide_index=True, width="stretch")
+    st.caption(f"Fonte: {DOC.FONTE_CIRO}.")
+
+    st.info(
+        "**Il quadro è a due facce.** Sulle rinnovabili elettriche il FVG va bene: è la "
+        "**seconda regione d'Italia** per conseguimento del target 2030 (46% contro una "
+        f"media del 31%), ha {DOC.CIRO_SINTESI['comunita_energetiche_2024']} comunità "
+        "energetiche attive e una quota rinnovabile sopra la media. "
+        "Sulla vulnerabilità va male: prima per eventi estremi, consumo di suolo all'8% "
+        "sopra la media, perdite della rete idrica al 42%.\n\n"
+        "In mezzo c'è la struttura: **gas al 48% del mix** e consumi finali pro capite "
+        "fra i più alti d'Italia, per via del riscaldamento e dell'industria pesante. "
+        "Il FVG sta costruendo bene l'offerta rinnovabile mentre porta con sé una domanda "
+        "molto energivora — ed è la seconda parte a decidere se gli obiettivi si raggiungono."
+    )
+
     # --------------------------------------------- catena di impatto energia
     st.divider()
     st.subheader("Come il clima colpisce il sistema energetico")
@@ -2832,9 +3103,10 @@ def _scheda_15():
 
 
 # ------------------------------------------------------------- navigazione
-# Sedici schede in fila diventano illeggibili: si raggruppano in sezioni e
-# viene eseguita solo quella scelta. Ogni scheda e' una funzione, cosi' il
-# codice delle altre non gira nemmeno: la pagina si apre molto piu' in fretta.
+# Due pagine, un file solo: `st.navigation` separa l'esplorazione dei dati dal
+# motore di scenario, che ha esigenze diverse (gira una simulazione oraria e
+# non serve a chi vuole solo consultare i numeri). Dentro l'esplorazione, le
+# sedici schede sono raggruppate in sezioni ed eseguite una alla volta.
 SEZIONI = [
     ('📊 Quadro generale', [0]),
     ('⚡ Elettricità e rinnovabili', [1, 3, 4, 7]),
@@ -2848,18 +3120,28 @@ NOMI_SCHEDE = ['📊 Panoramica', '⚡ Elettricità', '🔌 Reti', '☀️ Fotov
 
 _schede = {n: globals()[f"_scheda_{n}"] for n in range(len(NOMI_SCHEDE))}
 
-with st.sidebar:
-    st.divider()
-    st.markdown("**Sezione**")
-    _sezione = st.radio("Sezione", [s[0] for s in SEZIONI], label_visibility="collapsed")
 
-_indici = dict(SEZIONI)[_sezione]
-if len(_indici) == 1:
-    _schede[_indici[0]]()
-else:
-    for _t, _i in zip(st.tabs([NOMI_SCHEDE[i] for i in _indici]), _indici):
-        with _t:
-            _schede[_i]()
+def pagina_esplora():
+    pagina_kpi()
+    with st.sidebar:
+        st.divider()
+        st.markdown("**Sezione**")
+        sezione = st.radio("Sezione", [s[0] for s in SEZIONI],
+                           label_visibility="collapsed")
+    indici = dict(SEZIONI)[sezione]
+    if len(indici) == 1:
+        _schede[indici[0]]()
+    else:
+        for t, i in zip(st.tabs([NOMI_SCHEDE[i] for i in indici]), indici):
+            with t:
+                _schede[i]()
+    piede()
+
+
+def pagina_motore():
+    _motore_scenari()
+    piede()
+
 
 
 # ================================================================ 1. PANORAMICA
@@ -2876,85 +3158,255 @@ else:
 
 # ================================================================ 7. DATI
 
-st.divider()
-with st.expander("Fonti, licenze e limiti dei dati"):
-    st.markdown(
-        f"""
-**Da dove vengono i numeri.** Ogni grafico dichiara la propria fonte subito sotto.
-Le principali sono: **{DOC.F_TERNA}** per la serie storica del settore elettrico;
-**{DOC.F_TERNA_REG}** per il dettaglio provinciale; **{DOC.F_PER}** per il bilancio
-energetico e gli scenari; **{DOC.F_RSE}**; **{DOC.F_REGIONE}** per i progetti
-autorizzati e le aree delle cabine primarie; **{DOC.F_AUDIZIONI}** per lo stato
-delle reti; **{DOC.F_ARPA}** e **{DOC.F_ISPRA}** per clima ed emissioni.
+def piede():
+    st.divider()
+    with st.expander("Fonti, licenze e limiti dei dati"):
+        st.markdown(
+            f"""
+    **Da dove vengono i numeri.** Ogni grafico dichiara la propria fonte subito sotto.
+    Le principali sono: **{DOC.F_TERNA}** per la serie storica del settore elettrico;
+    **{DOC.F_TERNA_REG}** per il dettaglio provinciale; **{DOC.F_PER}** per il bilancio
+    energetico e gli scenari; **{DOC.F_RSE}**; **{DOC.F_REGIONE}** per i progetti
+    autorizzati e le aree delle cabine primarie; **{DOC.F_AUDIZIONI}** per lo stato
+    delle reti; **{DOC.F_ARPA}** e **{DOC.F_ISPRA}** per clima ed emissioni.
 
-**Licenza dei dati RSE.** I dataset del Geoportale ETA sono distribuiti da RSE S.p.A.
-con licenza **Creative Commons BY-SA 4.0**: l'attribuzione va mantenuta e i dati
-derivati vanno rilasciati con la stessa licenza.
+    **Licenza dei dati RSE.** I dataset del Geoportale ETA sono distribuiti da RSE S.p.A.
+    con licenza **Creative Commons BY-SA 4.0**: l'attribuzione va mantenuta e i dati
+    derivati vanno rilasciati con la stessa licenza.
 
-**Sui dati GSE.** Il GSE è il detentore dei dati di dettaglio sugli impianti
-incentivati — Atlaimpianti contiene la georeferenziazione puntuale del fotovoltaico,
-la distinzione fra impianti a terra e su copertura, l'alimentazione dei digestori a
-biogas e la potenza per classe di taglia. **Questi dati non sono stati usati qui**:
-non sono liberamente scaricabili in forma massiva e richiedono una richiesta formale.
-Dove servirebbero, l'app usa aggregazioni comunali o provinciali e lo dichiara.
-Le conseguenze pratiche sono tre: la mappa del fotovoltaico si ferma al comune e non
-arriva al singolo impianto; la distinzione tetto/terra è ricostruita per classe di
-potenza e non per tipologia dichiarata; l'alimentazione degli impianti a biogas
-(colture dedicate contro scarti e deiezioni) è nota solo come categoria di fonte.
-Con l'accesso ai dati GSE queste tre limitazioni cadrebbero.
+    **Sui dati GSE.** Il GSE è il detentore dei dati di dettaglio sugli impianti
+    incentivati — Atlaimpianti contiene la georeferenziazione puntuale del fotovoltaico,
+    la distinzione fra impianti a terra e su copertura, l'alimentazione dei digestori a
+    biogas e la potenza per classe di taglia. **Questi dati non sono stati usati qui**:
+    non sono liberamente scaricabili in forma massiva e richiedono una richiesta formale.
+    Dove servirebbero, l'app usa aggregazioni comunali o provinciali e lo dichiara.
+    Le conseguenze pratiche sono tre: la mappa del fotovoltaico si ferma al comune e non
+    arriva al singolo impianto; la distinzione tetto/terra è ricostruita per classe di
+    potenza e non per tipologia dichiarata; l'alimentazione degli impianti a biogas
+    (colture dedicate contro scarti e deiezioni) è nota solo come categoria di fonte.
+    Con l'accesso ai dati GSE queste tre limitazioni cadrebbero.
 
-**Cosa questo strumento non è.** Non è un modello previsionale né un documento di
-pianificazione. Gli scenari riproducono quelli del PER; i calcoli parametrici
-(copertura, idrogeno, dispacciamento) servono a confrontare ordini di grandezza fra
-opzioni, non a valutare investimenti. Dove un dato è stimato, è scritto.
-        """
+    **Cosa questo strumento non è.** Non è un modello previsionale né un documento di
+    pianificazione. Gli scenari riproducono quelli del PER; i calcoli parametrici
+    (copertura, idrogeno, dispacciamento) servono a confrontare ordini di grandezza fra
+    opzioni, non a valutare investimenti. Dove un dato è stimato, è scritto.
+            """
+        )
+    st.caption(
+        f"Sviluppato da {DOC.AUTORE['nome']} — [{DOC.AUTORE['ente']}]({DOC.AUTORE['sito']}) · "
+        f"[{DOC.AUTORE['email']}](mailto:{DOC.AUTORE['email']}) · "
+        f"[LinkedIn]({DOC.AUTORE['linkedin']}) · [GitHub]({DOC.AUTORE['github']})"
     )
-st.caption(
-    f"Sviluppato da {DOC.AUTORE['nome']} — [{DOC.AUTORE['ente']}]({DOC.AUTORE['sito']}) · "
-    f"[{DOC.AUTORE['email']}](mailto:{DOC.AUTORE['email']}) · "
-    f"[LinkedIn]({DOC.AUTORE['linkedin']}) · [GitHub]({DOC.AUTORE['github']})"
-)
 
-# ================================================================ CONSUMI FINALI
+    # ================================================================ CONSUMI FINALI
 
-# ================================================================ SCENARI
+    # ================================================================ SCENARI
 
-# ================================================================ RETI
+    # ================================================================ RETI
 
-# ================================================================ IDROELETTRICO
+    # ================================================================ IDROELETTRICO
 
-# ================================================================ CLIMA
+    # ================================================================ CLIMA
 
-# ================================================================ FOTOVOLTAICO
+    # ================================================================ FOTOVOLTAICO
 
-# ================================================================ GAS
+    # ================================================================ GAS
 
-# ================================================================ IDROGENO
+    # ================================================================ IDROGENO
 
-# ---- aggiunte alla scheda Scenari: il Sankey 2045
+    # ---- aggiunte alla scheda Scenari: il Sankey 2045
 
-# ---- aggiunte alla scheda Reti: avanzamento, accumuli, distributori
+    # ---- aggiunte alla scheda Reti: avanzamento, accumuli, distributori
 
-# ---- mappa delle aree di influenza delle cabine primarie
+    # ---- mappa delle aree di influenza delle cabine primarie
 
-# ---- Fotovoltaico: dove si potrebbe installare (dati RSE)
+    # ---- Fotovoltaico: dove si potrebbe installare (dati RSE)
 
-# ---- Idroelettrico: la mappa delle centrali
+    # ---- Idroelettrico: la mappa delle centrali
 
-# ---- Reti: le inversioni di flusso
+    # ---- Reti: le inversioni di flusso
 
-# ---- Emissioni: il quadro completo
+    # ---- Emissioni: il quadro completo
 
-# ---- Fotovoltaico: la pipeline autorizzativa e il suolo
+    # ---- Fotovoltaico: la pipeline autorizzativa e il suolo
 
-# ================================================================ BIOMASSE
+    # ================================================================ BIOMASSE
 
-# ================================================================ BIOMETANO
+    # ================================================================ BIOMETANO
 
-# ---- Ipotesi di copertura (scheda Transizione)
+    # ---- Ipotesi di copertura (scheda Transizione)
 
-# ---- Eolico: perché in FVG non c'è, e cosa cambierebbe
+    # ---- Eolico: perché in FVG non c'è, e cosa cambierebbe
 
-# ---- Eolico misurato: l'Atlante RSE (scheda Transizione)
+    # ---- Eolico misurato: l'Atlante RSE (scheda Transizione)
 
-# ---- Centrali termoelettriche (scheda Termo & CO2)
+    # ---- Centrali termoelettriche (scheda Termo & CO2)
+
+
+# ================================================================ MOTORE SCENARI
+@st.cache_data(show_spinner=False)
+def _serie_oraria() -> pd.DataFrame:
+    dati = D.carica_per("orario_2023")
+    dati = dati.rename(columns={dati.columns[0]: "ora"}).set_index("ora")
+    dati.index = pd.to_datetime(dati.index)
+    return dati
+
+
+@st.cache_data(show_spinner="Simulo le configurazioni ora per ora...")
+def _esplora(pv, eo, bess, prezzi_d, rete_d, colonna_eolico):
+    base = Parco(**DOC.PARCO_BASE_FVG)
+    return esplora(_serie_oraria(), base, list(pv), list(eo), list(bess),
+                   prezzi=Prezzi(**prezzi_d), rete=CostiRete(**rete_d),
+                   colonna_eolico=colonna_eolico)
+
+
+def _motore_scenari():
+    st.title("🔮 Motore di scenario")
+    st.markdown(
+        "Ogni configurazione viene simulata **ora per ora su un anno intero**: 8.760 "
+        "passi in cui il carico va coperto con quello che c'è in quel momento. È la "
+        "differenza fra dire «copriamo il 60% della domanda» e verificare se quel 60% "
+        "arriva quando serve."
+    )
+
+    serie = _serie_oraria()
+    st.caption(
+        f"Anno simulato: {serie.index.year[0]} · {len(serie):,} ore · ".replace(",", ".")
+        + f"carico {serie['carico_totale_mw'].sum() / 1000:,.0f} GWh. ".replace(",", ".")
+        + "Profili fotovoltaico da PVGIS ed eolico dall'Atlante RSE; la **forma oraria "
+        "del carico è un archetipo**, calibrato sui totali Terna ma non misurato."
+    )
+
+    with st.sidebar:
+        st.divider()
+        st.markdown("**Cosa esplorare**")
+        pv_max = st.slider("Fotovoltaico massimo (MW)", 1500, 6000, 4000, 250)
+        eo_max = st.slider("Eolico massimo (MW)", 0, 1500, 600, 100)
+        bess_max = st.slider("Accumuli massimi (MWh)", 800, 12000, 6000, 400)
+        passi = st.select_slider("Punti per asse", [3, 4, 5, 6], value=4)
+        sito_eolico = st.selectbox(
+            "Sito eolico di riferimento",
+            {"cf_eolico_Carso_Basovizza": "Carso triestino (3.169 h)",
+             "cf_eolico_Colli_Orientali": "Colli Orientali (2.945 h)"},
+            format_func=lambda k: {"cf_eolico_Carso_Basovizza": "Carso triestino (3.169 h)",
+                                   "cf_eolico_Colli_Orientali": "Colli Orientali (2.945 h)"}[k])
+
+    base = DOC.PARCO_BASE_FVG
+    pv_range = np.linspace(base["pv_mw"], pv_max, passi).round(0)
+    eo_range = np.linspace(0, eo_max, passi).round(0) if eo_max else [0]
+    bess_range = np.linspace(base["bess_mwh"], bess_max, passi).round(0)
+
+    with st.expander("Prezzi, contratti per differenza e costi di rete"):
+        c = st.columns(4)
+        prezzi_d = {
+            "cfd_pv": c[0].number_input("CfD fotovoltaico (€/MWh)", 20, 150, 60),
+            "cfd_eolico": c[1].number_input("CfD eolico (€/MWh)", 30, 150, 80),
+            "cfd_idro": c[2].number_input("CfD idroelettrico (€/MWh)", 20, 150, 55),
+            "gas": c[3].number_input("Prezzo del gas (€/MWh)", 30, 300, 130),
+        }
+        c2 = st.columns(4)
+        prezzi_d["importazione"] = c2[0].number_input(
+            "Prezzo dell'energia importata (€/MWh)", 40, 250, int(DOC.PUN_MEDIO_2025))
+        prezzi_d["lcos"] = c2[1].number_input("Costo dell'accumulo (€/MWh scaricato)", 30, 250, 90)
+        prezzi_d["voll"] = 3000.0
+        rete_d = {
+            "connessione_eur_kw": c2[2].number_input(
+                "Connessione (€/kW)", 20, 300, DOC.COSTI_RETE["connessione_eur_kw"]),
+            "rinforzo_eur_kw": c2[3].number_input(
+                "Rinforzo oltre hosting capacity (€/kW)", 0, 600,
+                DOC.COSTI_RETE["rinforzo_eur_kw_oltre_hosting"]),
+            "hosting_capacity_mw": float(DOC.HOSTING_CAPACITY_MW),
+            "vita_anni": 30, "wacc": 0.06,
+        }
+        st.caption(
+            f"Fonte dei costi di rete: {DOC.FONTE_COSTI_RETE}. Sotto i "
+            f"{DOC.HOSTING_CAPACITY_MW} MW di hosting capacity si paga la sola connessione; "
+            "oltre, anche il rinforzo. È la differenza che il modello nazionale non fa."
+        )
+
+    df = _esplora(tuple(pv_range), tuple(eo_range), tuple(bess_range),
+                  prezzi_d, rete_d, sito_eolico)
+    ott = migliore(df)
+
+    st.subheader("La configurazione con meno emissioni, a parità di costo")
+    st.caption("Fra tutte quelle entro il 5% dal costo minimo.")
+    m = st.columns(5)
+    m[0].metric("Fotovoltaico", f"{ott['pv_mw']:,.0f} MW".replace(",", "."),
+                f"{ott['pv_mw'] - base['pv_mw']:+,.0f} rispetto a oggi".replace(",", "."))
+    m[1].metric("Eolico", f"{ott['eolico_mw']:,.0f} MW".replace(",", "."))
+    m[2].metric("Accumuli", f"{ott['bess_mwh']:,.0f} MWh".replace(",", "."))
+    m[3].metric("Costo del sistema", f"{ott['eur_mwh']:.1f} €/MWh",
+                f"di cui rete {ott['eur_mwh'] - ott['eur_mwh_senza_rete']:.1f}")
+    m[4].metric("Intensità carbonica", f"{ott['gco2_kwh']:.0f} g/kWh")
+
+    m2 = st.columns(4)
+    m2[0].metric("Import residuo", f"{ott['quota_import']:.0f}%",
+                 f"{ott['import_gwh']:,.0f} GWh".replace(",", "."))
+    m2[1].metric("Quota rinnovabile", f"{ott['quota_fer']:.0f}%")
+    m2[2].metric("Export di surplus", f"{ott['export_gwh']:,.0f} GWh".replace(",", "."))
+    m2[3].metric("Costo annuo della rete", f"{ott['costo_rete_mln']:.0f} mln €")
+
+    st.subheader("Frontiera di Pareto: costo contro emissioni")
+    fr = frontiera(df)
+    fig = px.scatter(df, x="gco2_kwh", y="eur_mwh", color="eolico_mw",
+                     size="bess_mwh", hover_data=["pv_mw", "quota_import", "quota_fer"],
+                     color_continuous_scale="Viridis",
+                     labels={"gco2_kwh": "gCO₂/kWh (ciclo di vita)",
+                             "eur_mwh": "€/MWh, rete inclusa", "eolico_mw": "eolico (MW)"})
+    fig.add_scatter(x=fr["gco2_kwh"], y=fr["eur_mwh"], mode="lines",
+                    line=dict(color="#111827", dash="dot"), name="Frontiera")
+    fig.add_scatter(x=[ott["gco2_kwh"]], y=[ott["eur_mwh"]], mode="markers",
+                    marker=dict(size=18, color="#22C55E", line=dict(color="#111827", width=2)),
+                    name="Scelta")
+    fig.update_layout(height=520, xaxis_autorange="reversed", template="plotly_white",
+                      margin=dict(t=48, b=10, l=10, r=24))
+    grafico(fig, DOC.F_ELAB,
+            f"{len(df)} configurazioni simulate, {len(fr)} non dominate.")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Quanto pesa l'eolico sull'import**")
+        agg = df.groupby("eolico_mw", as_index=False).agg(
+            import_min=("quota_import", "min"), costo_min=("eur_mwh", "min"),
+            co2_min=("gco2_kwh", "min"))
+        fig = px.line(agg, x="eolico_mw", y="import_min", markers=True,
+                      color_discrete_sequence=["#22C55E"])
+        fig.update_layout(height=320, xaxis_title="eolico installato (MW)",
+                          yaxis_title="import minimo raggiungibile (%)", **PLOT)
+        grafico(fig, DOC.F_ELAB)
+    with c2:
+        st.markdown("**Il costo della rete cresce a scalino**")
+        fig = px.scatter(df, x="nuova_potenza_mw", y="costo_rete_mln",
+                         color_discrete_sequence=["#F97316"])
+        fig.add_vline(x=DOC.HOSTING_CAPACITY_MW, line_dash="dash", line_color="#111827",
+                      annotation_text="hosting capacity", annotation_position="top left")
+        fig.update_layout(height=320, xaxis_title="nuova potenza connessa (MW)",
+                          yaxis_title="costo annuo di rete (mln €)", **PLOT)
+        grafico(fig, DOC.FONTE_COSTI_RETE)
+
+    with st.expander("Tutte le configurazioni simulate"):
+        vista = df[["pv_mw", "eolico_mw", "bess_mwh", "eur_mwh", "costo_rete_mln",
+                    "gco2_kwh", "quota_import", "quota_fer", "export_gwh",
+                    "curtailment_gwh", "spillamento_gwh"]].copy()
+        vista.columns = ["PV (MW)", "Eolico (MW)", "BESS (MWh)", "€/MWh", "Rete (mln €)",
+                         "gCO₂/kWh", "Import %", "FER %", "Export (GWh)",
+                         "Curtailment (GWh)", "Spillamento (GWh)"]
+        st.dataframe(vista.round(1).sort_values("€/MWh"), hide_index=True,
+                     width="stretch", height=340)
+
+    st.warning(
+        "**Cosa il motore non fa.** La forma oraria del carico è un archetipo calibrato "
+        "sui totali Terna, non una misura: i risultati sono robusti sui confronti fra "
+        "configurazioni, meno sui valori assoluti. Non c'è la rete interna alla regione, "
+        "quindi la congestione locale non appare — e in FVG è il vincolo vero, come "
+        "mostra la scheda Reti. I costi di rete sono ordini di grandezza, non preventivi. "
+        "Serve a capire quale direzione conviene, non quanto costerà."
+    )
+
+
+# ------------------------------------------------------------- pagine
+_navigazione = st.navigation([
+    st.Page(pagina_esplora, title="Esplora i dati", icon="📊", default=True),
+    st.Page(pagina_motore, title="Motore di scenario", icon="🔮"),
+])
+_navigazione.run()
