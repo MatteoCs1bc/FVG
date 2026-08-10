@@ -103,6 +103,12 @@ prod_fonte, prod_fer, pot_fonte, pot_fer = (
 )
 prod_comb, prod_cat, idrico = (D.senza_zeri(x) for x in (prod_comb, prod_cat, idrico))
 
+# Gli accumuli non producono energia, la spostano nel tempo: metterli fra le
+# fonti di un grafico di produzione confonde due cose diverse. Restano nei
+# grafici di potenza, dove hanno senso.
+prod_fonte = prod_fonte[~prod_fonte["voce"].str.contains("ccumulo", na=False)]
+prod_fer = prod_fer[~prod_fer["voce"].str.contains("ccumulo", na=False)]
+
 # Totali annui: servono in piu' schede (quota rinnovabile, intensita' carbonica,
 # grafico di Marchetti), quindi stanno qui e non dentro una singola scheda.
 tot_y = prod_fonte.groupby("anno")["valore"].sum()
@@ -338,7 +344,13 @@ def _scheda_0():
         st.caption(
             "In rosso ciò che entra da fuori regione, in verde le risorse interne. "
             "Il bilancio chiude con uno scarto di pochi ktep dovuto ai bunkeraggi "
-            "dell'aviazione internazionale."
+            "dell'aviazione internazionale.\n\n"
+            "**Sulle unità**: 1 ktep = 41,868 TJ = 11,63 GWh. I 3.957 ktep di consumo "
+            "interno lordo valgono quindi circa 46.000 GWh, contro i 9.305 GWh di soli "
+            "consumi elettrici: l'elettricità è un quinto del sistema energetico, e questo "
+            "Sankey misura tutto il resto insieme. La conversione vale per l'energia "
+            "contenuta nei vettori, non per il servizio reso: un ktep di gas in caldaia e "
+            "un ktep di elettricità in pompa di calore non scaldano la stessa casa."
         )
         st.divider()
 
@@ -535,6 +547,23 @@ def _scheda_1():
     grafico(fig, DOC.F_TERNA)
 
 
+
+    # ---------------------------------------------------- il dettaglio rinnovabile
+    st.divider()
+    st.subheader("Le rinnovabili, per fonte")
+    c1, c2 = st.columns(2)
+    with c1:
+        fig = px.area(prod_fer.sort_values("anno"), x="anno", y="valore", color="voce",
+                      color_discrete_map=D.mappa_colori(prod_fer["voce"]))
+        fig.update_layout(height=360, yaxis_title="GWh", xaxis_title=None,
+                          title="Produzione rinnovabile", **PLOT)
+        grafico(fig, DOC.F_TERNA)
+    with c2:
+        fig = px.area(pot_fer.sort_values("anno"), x="anno", y="valore", color="voce",
+                      color_discrete_map=D.mappa_colori(pot_fer["voce"]))
+        fig.update_layout(height=360, yaxis_title="MW", xaxis_title=None,
+                          title=f"Potenza rinnovabile ({tipo_cap.lower()})", **PLOT)
+        grafico(fig, DOC.F_TERNA)
 
     # ------------------------------------------------- il profilo della domanda
     st.divider()
@@ -975,13 +1004,21 @@ def _scheda_2():
                 id_vars="codice", var_name="Tecnologia", value_name="MW")
             comp = comp[comp["MW"] > 0]
             top = sat.nlargest(10, "mw_richiesti")["codice"]
-            fig = px.bar(comp[comp["codice"].isin(top)], x="MW", y="codice",
+            # il codice AC001E01592 non dice nulla: lo affianco alla provincia
+            etichette = sat.set_index("codice")["gestore"].to_dict()
+            comp["area"] = comp["codice"].map(
+                lambda c: f"{c[-5:]} · {etichette.get(c, '')[:14]}")
+            fig = px.bar(comp[comp["codice"].isin(top)], x="MW", y="area",
                          color="Tecnologia", orientation="h",
                          color_discrete_map={"Solare": "#FACC15", "Accumuli": "#A855F7",
                                              "Bioenergie": "#8B4513",
                                              "Idroelettrico": "#2563EB"})
-            fig.update_layout(height=380, yaxis_title=None,
-                              title="Le dieci aree più sollecitate", **PLOT)
+            fig.update_layout(height=420, yaxis_title=None,
+                              title="Le dieci aree più sollecitate",
+                              legend=dict(orientation="h", yanchor="bottom", y=1.06, x=0),
+                              margin=dict(t=70, b=10, l=10, r=24),
+                              template="plotly_white")
+            fig.update_yaxes(categoryorder="total ascending")
             grafico(fig, DOC.F_ELAB)
         with c2:
             fig = px.scatter(sat[sat["mw_richiesti"] > 0], x="area_km2", y="mw_richiesti",
@@ -990,9 +1027,13 @@ def _scheda_2():
                              color_discrete_map={"e-distribuzione": "#2563EB",
                                                  "AcegasApsAmga": "#F97316",
                                                  "SECAB": "#22C55E"})
-            fig.update_layout(height=380, xaxis_title="km² dell'area (log)",
+            fig.update_layout(height=420, xaxis_title="km² dell'area (log)",
                               yaxis_title="MW richiesti (log)",
-                              title="Aree grandi non vuol dire aree cariche", **PLOT)
+                              title="Aree grandi non vuol dire aree cariche",
+                              legend=dict(orientation="h", yanchor="bottom", y=1.06, x=0,
+                                          title=None),
+                              margin=dict(t=70, b=10, l=10, r=24),
+                              template="plotly_white")
             grafico(fig, DOC.F_ELAB)
 
         st.info(
@@ -1100,6 +1141,44 @@ def _scheda_3():
                           margin=dict(t=30, b=10, l=10, r=10),
                           legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0))
         grafico(fig, DOC.F_AUDIZIONI)
+        # dove siamo rispetto alla traiettoria
+        if not pot.empty:
+            oggi_mw = anno_di(pv_pot)["valore"].sum()
+            tappa = pot[pot["anno"] >= anno]
+            if not tappa.empty:
+                prossima = tappa.iloc[0]
+                atteso = float(prossima["valore"])
+                st.markdown("**Dove siamo rispetto alla traiettoria**")
+                d1, d2, d3 = st.columns(3)
+                d1.metric(f"Installato al {anno}", f"{oggi_mw:,.0f} MW".replace(",", "."))
+                d2.metric(f"Obiettivo {int(prossima['anno'])}",
+                          f"{atteso:,.0f} MWp".replace(",", "."))
+                d3.metric("Percorso compiuto", f"{oggi_mw / atteso * 100:.0f}%",
+                          f"mancano {atteso - oggi_mw:,.0f} MW".replace(",", "."))
+
+                anni_residui = max(1, int(prossima["anno"]) - anno)
+                ritmo_serve = (atteso - oggi_mw) / anni_residui
+                storico = pv_pot.sort_values("anno")
+                ritmo_att = (storico["valore"].iloc[-1] - storico["valore"].iloc[-4]) / 3 \
+                    if len(storico) >= 4 else 0
+                fig = px.bar(
+                    pd.DataFrame([
+                        {"Ritmo": "Ultimi tre anni", "MW/anno": ritmo_att},
+                        {"Ritmo": f"Necessario al {int(prossima['anno'])}", "MW/anno": ritmo_serve},
+                    ]), x="MW/anno", y="Ritmo", orientation="h", text_auto=".0f",
+                    color="Ritmo", color_discrete_sequence=["#2563EB", "#F97316"])
+                fig.update_traces(cliponaxis=False)
+                fig.update_layout(showlegend=False, height=230, yaxis_title=None, **PLOT)
+                grafico(fig, DOC.F_TERNA + " e " + DOC.F_PER)
+                st.caption(
+                    f"Negli ultimi tre anni il parco è cresciuto di circa "
+                    f"**{ritmo_att:,.0f} MW l'anno**; per centrare l'obiettivo del PER al ".replace(",", ".")
+                    + f"{int(prossima['anno'])} servirebbero **{ritmo_serve:,.0f} MW l'anno**. ".replace(",", ".")
+                    + ("Il ritmo attuale basta." if ritmo_att >= ritmo_serve
+                       else f"Il ritmo attuale copre il {ritmo_att / ritmo_serve * 100:.0f}% "
+                            "di quanto servirebbe.")
+                )
+
         if not sup.empty:
             st.caption(
                 "Superficie stimata dal PER per ospitare questa crescita: "
@@ -1198,19 +1277,53 @@ def _scheda_3():
         )
 
         # ---- termini di paragone
-        st.markdown("**Quanto è grande quel suolo, in cose che si vedono**")
-        par = pd.DataFrame([
-            {"Termine di paragone": k, "Equivalenti": ha_terra / v}
-            for k, v in DOC.PARAGONI_SUOLO.items()
-        ])
-        st.dataframe(par.round(0), hide_index=True, width="stretch")
+        st.markdown("**Quanto è grande quel suolo, visto in scala**")
         st.caption(
-            f"Fonte: {DOC.FONTE_SAU}. I {ha_terra:,.0f} ettari dei progetti fotovoltaici "
-            "equivalgono a circa 3.200 campi da calcio, o a un sesto della superficie "
-            "già impermeabilizzata della regione (38.380 ettari). "
-            "La competizione col cibo è reale solo se si guarda il singolo campo: "
-            "sul totale regionale, il fattore che sottrae terreno all'agricoltura è "
-            "l'urbanizzazione, non il solare.".replace(",", ".")
+            "Ogni quadrato è proporzionale alla superficie che rappresenta. "
+            "È il modo più onesto di rispondere alla domanda «il fotovoltaico mangia i campi»: "
+            "guardare le aree una accanto all'altra invece di discuterne a parole."
+        )
+
+        mais_ha = 0.0
+        _m = D.carica_per("digestori_mais")
+        if not _m.empty:
+            mais_ha = float(_m.iloc[0]["centrale_ha"])
+
+        aree_confronto = [
+            ("Superficie agricola del FVG", DOC.SAU_FVG_HA, "#65A30D"),
+            ("Superficie già impermeabilizzata", 38_380, "#6B7280"),
+            ("Mais per biogas (stima)", mais_ha, "#DC2626"),
+            ("Fotovoltaico, tutti i progetti", ha_terra, "#FACC15"),
+        ]
+        aree_confronto = [a for a in aree_confronto if a[1] > 0]
+        riferimento = max(a[1] for a in aree_confronto)
+
+        fig = go.Figure()
+        x = 0.0
+        for nome_a, ha_a, colore in aree_confronto:
+            lato = (ha_a / riferimento) ** 0.5
+            fig.add_shape(type="rect", x0=x, y0=0, x1=x + lato, y1=lato,
+                          fillcolor=colore, line=dict(color="#111827", width=1),
+                          opacity=0.85)
+            fig.add_annotation(x=x + lato / 2, y=-0.07, showarrow=False,
+                               text=f"<b>{nome_a}</b><br>{ha_a:,.0f} ha".replace(",", "."),
+                               font=dict(size=11))
+            x += lato + 0.09
+        fig.update_xaxes(visible=False, range=[-0.05, x])
+        fig.update_yaxes(visible=False, range=[-0.22, 1.08], scaleanchor="x")
+        fig.update_layout(height=380, margin=dict(t=20, b=20, l=10, r=10),
+                          plot_bgcolor="white", showlegend=False)
+        grafico(fig, DOC.FONTE_SAU + "; dossier digestori FVG")
+
+        st.success(
+            f"**Il quadrato del fotovoltaico è quello piccolo in fondo.** "
+            f"I {ha_terra:,.0f} ettari di tutti i progetti fotovoltaici della regione ".replace(",", ".")
+            + f"stanno dentro l'{ha_terra / DOC.SAU_FVG_HA * 100:.1f}% della superficie agricola, "
+            + (f"e sono circa **un {mais_ha / ha_terra:.0f}° del terreno coltivato a mais per "
+               "alimentare i digestori a biogas**. " if mais_ha > ha_terra else "")
+            + "Il confronto per ettaro è ancora più netto: il fotovoltaico a terra rende "
+            "intorno agli 870 MWh l'anno per ettaro, il mais da biogas circa 21. "
+            "Quaranta volte tanto, sulla stessa terra."
         )
 
     st.divider()
@@ -1295,31 +1408,6 @@ def _scheda_3():
             "procedimenti non arriva mai in esercizio — le audizioni indicano storicamente "
             f"circa il {DOC.TASSO_REALIZZAZIONE}%."
         )
-
-
-def _scheda_4():
-    c1, c2 = st.columns(2)
-
-    with c1:
-        st.subheader("Produzione rinnovabile per fonte")
-        fig = px.area(prod_fer.sort_values("anno"), x="anno", y="valore", color="voce",
-                      color_discrete_map=D.mappa_colori(prod_fer["voce"]))
-        fig.update_layout(height=360, yaxis_title="GWh", xaxis_title=None, **PLOT)
-        grafico(fig, DOC.F_TERNA)
-
-    with c2:
-        st.subheader(f"Potenza rinnovabile ({tipo_cap.lower()})")
-        fig = px.area(pot_fer.sort_values("anno"), x="anno", y="valore", color="voce",
-                      color_discrete_map=D.mappa_colori(pot_fer["voce"]))
-        fig.update_layout(height=360, yaxis_title="MW", xaxis_title=None, **PLOT)
-        grafico(fig, DOC.F_TERNA)
-
-    st.subheader("Idroelettrico per tipologia di impianto")
-    st.caption("Il fluente segue la piovosità, bacini e serbatoi modulano.")
-    fig = px.bar(idrico.sort_values("anno"), x="anno", y="valore", color="voce",
-                 color_discrete_map=D.mappa_colori(idrico["voce"]))
-    fig.update_layout(height=340, yaxis_title="GWh", xaxis_title=None, barmode="stack", **PLOT)
-    grafico(fig, DOC.F_TERNA)
 
 
 def _scheda_5():
@@ -1619,61 +1707,157 @@ def _scheda_6():
 
 
 
-    # ------------------------------------------------------- la dieta, per quel poco che si sa
+    # ------------------------------------------------------- la dieta, adesso si sa
     st.divider()
     st.subheader("Che cosa mangiano i digestori")
-    dieta = D.carica_per("bio_impianti_dieta")
-    pipe = D.carica_per("biometano_pipeline")
+    dg = D.carica_per("digestori_sintesi")
+    diete = D.carica_per("digestori_diete")
+    fonti_bio = D.carica_per("digestori_fonti")
+    mais = D.carica_per("digestori_mais")
+    imp_dg = D.carica_per("digestori_impianti")
 
-    st.caption(
-        "È la domanda decisiva — colture dedicate o scarti — e la risposta oggi è "
-        "parziale. Quella che segue è una ricognizione da fonti aperte, non un registro."
-    )
-
-    if not dieta.empty:
-        tab = dieta[["impianto", "comune", "provincia", "tipologia", "dieta", "stato",
-                     "fonte", "affidabilita"]].copy()
-        tab.columns = ["Impianto", "Comune", "Prov.", "Tipologia", "Alimentazione",
-                       "Stato", "Fonte", "Affidabilità"]
-        st.dataframe(tab, hide_index=True, width="stretch")
+    if not dg.empty:
+        r0 = dg.iloc[0]
         st.caption(
-            "Fonte: ricognizione su fonti aperte (comunicati aziendali, stampa, "
-            "documentazione regionale). La colonna «Affidabilità» dichiara quanto è solida "
-            "ciascuna riga: nessuna arriva ad «alta»."
+            f"Censimento su fonti aperte: {int(r0['digestione_anaerobica'])} impianti "
+            f"schedati su 71-92 stimati in regione, cioè fra il "
+            f"{r0['copertura_su_92']:.0f}% e il {r0['copertura_su_71']:.0f}% del parco. "
+            "Non è un registro ufficiale: quello è Atlaimpianti del GSE, non accessibile."
         )
 
-        agri = dieta["dieta"].astype(str).str.contains("agricol|zootecnic|coltur", case=False).sum()
-        scarti = dieta["dieta"].astype(str).str.contains("scart|FORSU|reflu|rifiut", case=False).sum()
-        d1, d2, d3 = st.columns(3)
-        d1.metric("Impianti tracciati", len(dieta))
-        d2.metric("Con matrici agricole", int(agri))
-        d3.metric("Con scarti o rifiuti", int(scarti))
+        k = st.columns(4)
+        k[0].metric("Impianti censiti", int(r0["digestione_anaerobica"]),
+                    f"{r0['copertura_su_71']:.0f}% del parco stimato")
+        k[1].metric("Potenza tracciata", f"{r0['kwe_noti'] / 1000:.1f} MWe")
+        k[2].metric("Quota a colture dedicate", f"{r0['quota_colture_dedicate']:.0f}%",
+                    "della potenza censita")
+        k[3].metric("In riconversione a biometano", int(r0["in_riconversione"]))
 
-    if not pipe.empty:
-        st.markdown("**I comuni con progetti di biometano**")
-        st.caption(
-            f"{len(pipe)} comuni interessati da progetti in iter o realizzati. "
-            "L'elenco dice dove, non con quale alimentazione."
+    if not diete.empty:
+        c1, c2 = st.columns([1.2, 1])
+        with c1:
+            d2 = diete[diete["kwe"] > 0]
+            fig = px.bar(d2.sort_values("kwe"), x="kwe", y="classe", orientation="h",
+                         text="impianti", color="classe",
+                         color_discrete_map={"Colture dedicate": "#DC2626",
+                                             "Reflui sottoprodotti": "#22C55E",
+                                             "Solo reflui": "#16A34A",
+                                             "Rifiuti": "#A855F7"})
+            fig.update_traces(textposition="outside", texttemplate="%{text} impianti",
+                              cliponaxis=False)
+            fig.update_layout(showlegend=False, height=320, yaxis_title=None,
+                              xaxis_title="kW elettrici censiti",
+                              title="Potenza per tipo di alimentazione", **PLOT)
+            grafico(fig, "ricognizione su fonti aperte, dossier digestori FVG")
+        with c2:
+            fig = px.pie(diete[diete["impianti"] > 0], values="impianti", names="classe",
+                         hole=0.5,
+                         color_discrete_map={"Colture dedicate": "#DC2626",
+                                             "Reflui sottoprodotti": "#22C55E",
+                                             "Solo reflui": "#16A34A",
+                                             "Rifiuti": "#A855F7", "Fanghi": "#9CA3AF"})
+            fig.update_traces(textinfo="value")
+            fig.update_layout(height=320, title="Numero di impianti",
+                              legend=dict(orientation="h", yanchor="top", y=-0.05, x=0),
+                              margin=dict(t=48, b=10, l=10, r=24), template="plotly_white")
+            grafico(fig, "ricognizione su fonti aperte")
+
+        st.error(
+            "**La risposta alla domanda che avevamo lasciato aperta è netta, e non è "
+            "quella che si spera.** Gli impianti a **colture dedicate** sono 14 su 29 per "
+            "numero — meno della metà — ma valgono il **79,4% della potenza censita**. "
+            "Reflui e sottoprodotti fanno il 16%, i soli reflui il 4%, i rifiuti lo 0,7%.\n\n"
+            "E sono quasi tutti da **999-1000 kWe**: la taglia disegnata attorno al vecchio "
+            "incentivo. Non è una scelta agronomica, è una scelta regolatoria — e si vede."
         )
-        st.dataframe(pipe.rename(columns={"comune": "Comune"}), hide_index=True,
-                     width="stretch", height=240)
 
-    st.error(
-        "**Questo è il buco più serio dell'intera applicazione, e va detto chiaramente.** "
-        "In regione ci sono **57 comuni con impianti a biogas per 120,6 MW**, ma di questi "
-        "conosciamo l'alimentazione solo per una manciata. Senza sapere quanta parte va a "
-        "**colture dedicate** e quanta a **reflui zootecnici e scarti**, la valutazione "
-        "ambientale del biogas friulano resta sospesa: le due filiere hanno bilanci di "
-        "suolo, di acqua e di carbonio completamente diversi, e il confronto per ettaro "
-        "della sezione precedente colpisce solo la prima.\n\n"
-        "**Tre strade per chiudere il buco**, in ordine di praticabilità:\n"
-        "1. **Atlaimpianti del GSE** riporta la tipologia di alimentazione per gli impianti "
-        "incentivati. L'accesso massivo richiede una richiesta formale, che APE FVG può "
-        "presentare come ente pubblico.\n"
-        "2. Le **autorizzazioni AIA regionali** contengono la matrice in ingresso impianto "
-        "per impianto e sono pubbliche: 57 comuni sono un lavoro manuale ma finito.\n"
-        "3. Il **registro biometano del GSE** copre gli impianti convertiti, che sono i più "
-        "rilevanti per il futuro ma pochi per il presente."
+    # --------------------------------------------------- il suolo del mais
+    if not mais.empty:
+        m0 = mais.iloc[0]
+        st.subheader("Quanto suolo serve per alimentarli")
+        prog_s2 = D.carica_per("progetti_solare")
+        ha_pv = 0.0
+        if not prog_s2.empty:
+            att2 = prog_s2[prog_s2["stato"].isin(
+                ["Autorizzato", "In costruzione", "In istruttoria", "Realizzato"])]
+            ha_pv = float(att2["superficie_ha"].sum())
+
+        q = st.columns(4)
+        q[0].metric("Mais energetico, stima centrale",
+                    f"{m0['centrale_ha']:,.0f} ha".replace(",", "."),
+                    f"fra {m0['minimo_ha']:,.0f} e {m0['massimo_ha']:,.0f}".replace(",", "."))
+        q[1].metric("Fotovoltaico, tutti i progetti",
+                    f"{ha_pv:,.0f} ha".replace(",", "."))
+        q[2].metric("Rapporto", f"{m0['centrale_ha'] / ha_pv:.1f}×" if ha_pv else "—",
+                    "il mais occupa di più")
+        q[3].metric("Quota sulla SAU regionale",
+                    f"{m0['centrale_ha'] / DOC.SAU_FVG_HA * 100:.1f}%")
+
+        conf_ha = pd.DataFrame([
+            {"Uso del suolo": "Mais per biogas (stima)", "Ettari": m0["centrale_ha"]},
+            {"Uso del suolo": "Fotovoltaico, progetti in pipeline", "Ettari": ha_pv},
+        ])
+        fig = px.bar(conf_ha, x="Ettari", y="Uso del suolo", orientation="h",
+                     text_auto=".0f", color="Uso del suolo",
+                     color_discrete_map={"Mais per biogas (stima)": "#DC2626",
+                                         "Fotovoltaico, progetti in pipeline": "#FACC15"})
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(showlegend=False, height=240, yaxis_title=None, **PLOT)
+        grafico(fig, "dossier digestori FVG e portale progetti regionale")
+
+        st.warning(
+            f"**Il mais per biogas occupa circa {m0['centrale_ha'] / ha_pv:.0f} volte il "
+            "suolo di tutto il fotovoltaico regionale**, e produce molta meno energia per "
+            f"ettaro: circa {m0['resa_kwh_ha'] / 1000:.0f} MWh elettrici contro i circa "
+            f"{DOC.PV_ORE_PER_TIPO['Utility scale (oltre 1 MW)'] / DOC.PV_ETTARI_PER_MWP / 1000:.0f} "
+            "MWh del fotovoltaico a terra.\n\n"
+            "Quando si discute di «consumo di suolo per l'energia» in Friuli, il fenomeno "
+            "quantitativamente rilevante è questo, non i campi fotovoltaici. La stima è "
+            "confermata per via indipendente: in Veneto servono 202 ettari per MW di "
+            "biogas, che applicati ai 43 MW friulani danno 8.686 ettari — 240 di scarto "
+            f"sulla stima energetica di {m0['centrale_ha']:,.0f}.".replace(",", ".")
+        )
+
+    # ------------------------------------------------- quante fonti, quanti numeri
+    if not fonti_bio.empty:
+        st.subheader("Quanti sono davvero? Dipende da chi lo chiede")
+        f2 = fonti_bio.copy()
+        f2["etichetta"] = f2["fonte"] + " — " + f2["perimetro"]
+        fig = px.bar(f2, x="mw", y="etichetta", orientation="h", color="affidabilita",
+                     text="impianti",
+                     color_discrete_map={"alta": "#22C55E", "media": "#FACC15",
+                                         "bassa": "#F97316"})
+        fig.update_traces(textposition="outside", texttemplate="%{text} impianti",
+                          cliponaxis=False)
+        fig.update_layout(height=300, yaxis_title=None, xaxis_title="MW",
+                          **PLOT)
+        grafico(fig, "CREA/Agrifood FVG, ENEA, Terna",
+                "Perimetri diversi: i numeri non vanno mediati né confrontati direttamente.")
+        st.caption(
+            "CREA conta 71 impianti a biogas per 43 MWe, ENEA 92 per 56,4 MWe, Terna 136 "
+            "per 140,6 MW ma includendo tutte le bioenergie. Non è un conflitto: sono "
+            "perimetri diversi. È però il principale motivo di incertezza su tutte le "
+            "stime derivate, compresa quella del suolo."
+        )
+
+    if not imp_dg.empty and "affidabilita" in imp_dg.columns:
+        with st.expander("Gli impianti schedati, uno per uno"):
+            colonne = [c for c in ["id", "nome", "comune", "provincia", "potenza_kWe",
+                                   "classe_dieta", "stato", "affidabilita"]
+                       if c in imp_dg.columns]
+            st.dataframe(imp_dg[colonne], hide_index=True, width="stretch", height=340)
+            st.caption(
+                "Ogni riga porta il proprio livello di affidabilità: **alta** significa "
+                "atto amministrativo o statistica ufficiale, **media** documento di "
+                "pianificazione o comunicato, **bassa** ricostruzione da stampa."
+            )
+
+    st.info(
+        "**Cosa manca ancora.** Il censimento copre un terzo abbondante del parco: le "
+        "quote per classe di alimentazione sono indicative della struttura, non una "
+        "misura. Per chiudere servirebbe **Atlaimpianti del GSE**, che APE FVG può "
+        "richiedere come ente pubblico, oppure lo spoglio delle autorizzazioni AIA "
+        "regionali, che contengono la matrice in ingresso impianto per impianto."
     )
 
 
@@ -2467,6 +2651,44 @@ def _scheda_12():
         "Si gioca su come ci si muove e su come si scaldano le case."
     )
 
+    # ------------------------------------------------- pro capite contro l'Italia
+    st.subheader("Pro capite: come sta il FVG rispetto all'Italia")
+    st.caption(
+        "Il confronto pro capite è il modo giusto per paragonare una regione piccola "
+        "a un paese: dice quanto pesa ciascun abitante, non quanto pesa il territorio."
+    )
+    pop_fvg = DOC.CONTESTO["popolazione_2021"]
+    em_pc_it = 7.0     # t CO2eq per abitante, media italiana
+    cons_pc_fvg = 3346 * 1000 / pop_fvg * 11.63   # ktep -> kWh per abitante
+    cons_pc_it = 2.05   # tep per abitante, media italiana
+
+    pc = pd.DataFrame([
+        {"Indicatore": "Emissioni (t CO₂eq per abitante)", "FVG": DOC.EMISSIONI_PRO_CAPITE_2019,
+         "Italia": em_pc_it},
+        {"Indicatore": "Consumi finali (tep per abitante)",
+         "FVG": 3346 / (pop_fvg / 1000), "Italia": cons_pc_it},
+        {"Indicatore": "Elettricità consumata (MWh per abitante)",
+         "FVG": DOC.CONSUMI_ELETTRICI_TOTALE * 1000 / pop_fvg, "Italia": 5.3},
+    ])
+    lungo_pc = pc.melt(id_vars="Indicatore", var_name="Area", value_name="Valore")
+    fig = px.bar(lungo_pc, x="Valore", y="Indicatore", color="Area", orientation="h",
+                 barmode="group", text_auto=".2f",
+                 color_discrete_map={"FVG": "#DC2626", "Italia": "#9CA3AF"})
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=330, yaxis_title=None, xaxis_title=None, **PLOT)
+    grafico(fig, DOC.FONTE_EMISSIONI + "; " + DOC.FONTE_CIRO,
+            "Le medie italiane sono valori di riferimento correnti, non ricalcolati qui.")
+
+    st.caption(
+        f"Il FVG emette **{DOC.EMISSIONI_PRO_CAPITE_2019:.1f} tonnellate di CO₂eq per "
+        f"abitante** contro una media nazionale intorno a {em_pc_it:.0f}, e consuma "
+        f"**{DOC.CONSUMI_ELETTRICI_TOTALE * 1000 / pop_fvg:.1f} MWh elettrici** per "
+        "abitante contro circa 5,3. Non è uno stile di vita più energivoro: è "
+        "un'industria pesante divisa per una popolazione piccola. Lo stesso indicatore, "
+        "rapportato al valore aggiunto invece che agli abitanti, colloca il FVG **sotto** "
+        "la media nazionale."
+    )
+
     # ------------------------------------------------------------ serie storica
     st.subheader("La serie storica, con le sue cautele")
     fig = px.bar(em_tot_df, x="anno", y="kt", text_auto=".0f",
@@ -3109,16 +3331,17 @@ def _scheda_15():
 # sedici schede sono raggruppate in sezioni ed eseguite una alla volta.
 SEZIONI = [
     ('📊 Quadro generale', [0]),
-    ('⚡ Elettricità e rinnovabili', [1, 3, 4, 7]),
+    ('⚡ Elettricità e rinnovabili', [1, 3, 7, 14]),
     ('🔥 Termico, gas e bioenergie', [8, 9, 5, 6]),
     ('🔌 Reti e territorio', [2]),
     ('🌍 Clima ed emissioni', [12, 13]),
-    ('🔮 Scenari e transizione', [11, 14, 10]),
+    ('🔮 Scenari e transizione', [11, 10]),
     ('🗂 Dati e fonti', [15]),
 ]
-NOMI_SCHEDE = ['📊 Panoramica', '⚡ Elettricità', '🔌 Reti', '☀️ Fotovoltaico', '🌱 Rinnovabili', '🌲 Biomasse', '♻️ Biometano', '💧 Idroelettrico', '🔥 Gas', '🔥 Termo & CO₂', '🧪 Idrogeno', '🔮 Scenari', '🌍 Emissioni', '🌡️ Clima', '📈 Transizione', '🗂 Dati']
+NOMI_SCHEDE = ['📊 Panoramica', '⚡ Elettricità', '🔌 Reti', '☀️ Fotovoltaico', '(rimossa)', '🌲 Biomasse', '♻️ Biometano', '💧 Idroelettrico', '🔥 Gas', '🔥 Termo & CO₂', '🧪 Idrogeno', '🔮 Scenari', '🌍 Emissioni', '🌡️ Clima', '🌬️ Eolico', '🗂 Dati']
 
-_schede = {n: globals()[f"_scheda_{n}"] for n in range(len(NOMI_SCHEDE))}
+_schede = {n: globals()[f"_scheda_{n}"] for n in range(len(NOMI_SCHEDE))
+           if f"_scheda_{n}" in globals()}
 
 
 def pagina_esplora():
