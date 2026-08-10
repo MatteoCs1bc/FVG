@@ -1144,10 +1144,16 @@ def _scheda_3():
         pot = pv_tra[pv_tra["grandezza"] == "Potenza di picco"]
         sup = pv_tra[pv_tra["grandezza"] == "Superficie occupata"]
         fig = go.Figure()
-        fig.add_bar(x=pot["anno"], y=pot["valore"], name="Potenza di picco (MWp)",
-                    marker_color="#FACC15")
-        fig.add_scatter(x=prod["anno"], y=prod["valore"], name="Produzione (GWh)",
-                        mode="lines+markers", line=dict(color="#111827", width=3), yaxis="y2")
+        fig.add_bar(x=pot["anno"], y=pot["valore"], name="Obiettivo del PER (MWp)",
+                    marker_color="#FDE68A")
+        # i dati reali, finché ci sono: dicono se la traiettoria è rispettata
+        reale = pv_pot.sort_values("anno")
+        fig.add_scatter(x=reale["anno"], y=reale["valore"], name="Installato reale (MW)",
+                        mode="lines+markers", line=dict(color="#2563EB", width=3),
+                        marker=dict(size=7))
+        fig.add_scatter(x=prod["anno"], y=prod["valore"], name="Produzione attesa (GWh)",
+                        mode="lines+markers", line=dict(color="#111827", width=2, dash="dot"),
+                        yaxis="y2")
         fig.update_layout(height=380, template="plotly_white",
                           yaxis=dict(title="MWp"),
                           yaxis2=dict(title="GWh", overlaying="y", side="right"),
@@ -1304,19 +1310,23 @@ def _scheda_3():
 
         fig = go.Figure()
         x = 0.0
-        for nome_a, ha_a, colore in aree_confronto:
+        # i quadrati piccoli hanno etichette larghe quanto quelli grandi: si
+        # alternano su due livelli e si lascia sempre uno spazio minimo fra loro
+        for k_a, (nome_a, ha_a, colore) in enumerate(aree_confronto):
             lato = (ha_a / riferimento) ** 0.5
             fig.add_shape(type="rect", x0=x, y0=0, x1=x + lato, y1=lato,
-                          fillcolor=colore, line=dict(color="#111827", width=1),
-                          opacity=0.85)
-            fig.add_annotation(x=x + lato / 2, y=-0.09, showarrow=False,
+                          fillcolor=colore, line=dict(color="#111827", width=1.2),
+                          opacity=0.88)
+            y_testo = -0.10 if k_a % 2 == 0 else -0.26
+            fig.add_annotation(x=x + lato / 2, y=y_testo, showarrow=False,
                                text=f"<b>{nome_a}</b><br>{ha_a:,.0f} ha".replace(",", "."),
-                               font=dict(size=11, color="#111827"),
-                               bgcolor="rgba(255,255,255,0.9)", borderpad=3)
-            x += lato + 0.09
-        fig.update_xaxes(visible=False, range=[-0.05, x])
-        fig.update_yaxes(visible=False, range=[-0.22, 1.08], scaleanchor="x")
-        fig.update_layout(height=380, margin=dict(t=20, b=20, l=10, r=10),
+                               font=dict(size=11, color="#111827"), align="center",
+                               bgcolor="rgba(255,255,255,0.95)",
+                               bordercolor=colore, borderwidth=1.5, borderpad=4)
+            x += max(lato, 0.30) + 0.16
+        fig.update_xaxes(visible=False, range=[-0.12, x])
+        fig.update_yaxes(visible=False, range=[-0.42, 1.10], scaleanchor="x")
+        fig.update_layout(height=460, margin=dict(t=20, b=30, l=10, r=10),
                           plot_bgcolor="white", showlegend=False)
         grafico(fig, DOC.FONTE_SAU + "; dossier digestori FVG")
 
@@ -1658,21 +1668,67 @@ def _scheda_6():
 
         # solo digestione anaerobica: le caldaie a biomassa legnosa stanno
         # nella scheda Biomasse, e mescolarle qui confonde due filiere diverse
-        mappa_bio2 = bio[bio["tipo"].astype(str).str.contains("iometano|iogas", na=False)].copy()
-        if mappa_bio2.empty:
-            mappa_bio2 = bio.copy()
-        mappa_bio2["size_ha"] = mappa_bio2["superficie_ha"].fillna(0).clip(lower=0)
-        fig = px.scatter_map(
-            mappa_bio2, lat="lat", lon="lon", size="size_ha", color="tipo",
-            hover_name="nome",
-            hover_data={"potenza_mw": ":.2f", "superficie_ha": ":.0f", "stato": True,
-                        "lat": False, "lon": False, "size_ha": False},
-            size_max=28, zoom=7.4, center={"lat": 45.95, "lon": 13.10},
-            map_style="carto-positron",
-            color_discrete_map={"Biometano": "#8B4513", "Biogas": "#A16207"})
-        fig.update_layout(height=460, margin=dict(t=10, b=10, l=0, r=0),
-                          legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
-        grafico(fig, DOC.F_REGIONE)
+        st.markdown("**Dove sono: impianti in esercizio e progetti in corso**")
+        st.caption(
+            "In blu i digestori già operativi dal censimento, in arancio i progetti di "
+            "biometano in autorizzazione. Le caldaie a biomassa legnosa non sono qui: "
+            "stanno nella scheda Biomasse, perché sono una filiera diversa."
+        )
+        esistenti = D.carica_per("digestori_impianti")
+        punti = []
+        if not esistenti.empty and "lat" in esistenti.columns:
+            e2 = esistenti.dropna(subset=["lat", "lon"]).copy()
+            e2["categoria"] = e2["stato"].map(
+                lambda x: "In riconversione a biometano" if "riconvers" in str(x)
+                else ("In progetto" if "progett" in str(x) else "In esercizio"))
+            e2["potenza"] = pd.to_numeric(e2["potenza_kWe"], errors="coerce").fillna(200) / 1000
+            e2["dettaglio"] = e2["classe_dieta"].astype(str).str.replace("_", " ")
+            punti.append(e2[["nome", "comune", "categoria", "potenza", "dettaglio",
+                             "lat", "lon"]])
+        # solo biometano fra i progetti: le biomasse legnose vanno altrove
+        prog_bm = bio[bio["tipo"].astype(str).str.contains("iometano", na=False)].copy()
+        if not prog_bm.empty:
+            prog_bm["categoria"] = "Progetto di biometano"
+            prog_bm["potenza"] = prog_bm["potenza_mw"].fillna(0.2)
+            prog_bm["dettaglio"] = prog_bm["stato"]
+            prog_bm["comune"] = ""
+            punti.append(prog_bm[["nome", "comune", "categoria", "potenza", "dettaglio",
+                                  "lat", "lon"]])
+
+        if punti:
+            mappa_bio2 = pd.concat(punti, ignore_index=True)
+            mappa_bio2["size"] = mappa_bio2["potenza"].fillna(0.1).clip(lower=0.05)
+            fig = px.scatter_map(
+                mappa_bio2, lat="lat", lon="lon", size="size", color="categoria",
+                hover_name="nome",
+                hover_data={"comune": True, "potenza": ":.2f", "dettaglio": True,
+                            "lat": False, "lon": False, "size": False},
+                size_max=26, zoom=7.3, center={"lat": 45.95, "lon": 13.10},
+                map_style="carto-positron",
+                color_discrete_map={"In esercizio": "#2563EB",
+                                    "In riconversione a biometano": "#8B4513",
+                                    "In progetto": "#FACC15",
+                                    "Progetto di biometano": "#F97316"},
+                labels={"potenza": "MW"})
+            fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
+                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                          x=0, title=None))
+            grafico(fig, "censimento digestori FVG e portale progetti regionale",
+                    "Gli impianti esistenti sono collocati sul centroide del comune, "
+                    "non sulla posizione reale.")
+
+            per_cat = mappa_bio2.groupby("categoria").agg(
+                n=("nome", "count"), mw=("potenza", "sum")).reset_index()
+            fig = px.bar(per_cat.sort_values("n"), x="n", y="categoria", orientation="h",
+                         text_auto=".0f", color="categoria",
+                         color_discrete_map={"In esercizio": "#2563EB",
+                                             "In riconversione a biometano": "#8B4513",
+                                             "In progetto": "#FACC15",
+                                             "Progetto di biometano": "#F97316"})
+            fig.update_traces(cliponaxis=False)
+            fig.update_layout(showlegend=False, height=260, yaxis_title=None,
+                              xaxis_title="impianti", **PLOT)
+            grafico(fig, "censimento digestori FVG e portale progetti regionale")
 
         elenco = bio[["nome", "tipo", "potenza_mw", "superficie_ha", "stato"]].copy()
         elenco.columns = ["Impianto", "Tipo", "MW", "Ettari", "Stato"]
@@ -2254,6 +2310,46 @@ def _scheda_9():
         "principale del crollo delle emissioni elettriche che si vede nei grafici sopra. "
         f"Il censimento copre {cen['mw'].sum() / 1530.9 * 100:.0f}% della potenza "
         "termoelettrica che Terna registra per la regione: mancano gli autoproduttori minori."
+    )
+
+
+    # ------------------------------------------ centrali termoelettriche
+    st.divider()
+    st.subheader("Gli impianti termoelettrici della regione")
+    cen = pd.DataFrame(DOC.CENTRALI_TERMO)
+    t1, t2, t3, t4 = st.columns(4)
+    t1.metric("Impianti censiti", len(cen))
+    t2.metric("Potenza complessiva", f"{cen['mw'].sum():,.0f} MW".replace(",", "."))
+    t3.metric("I due maggiori",
+              f"{cen.nlargest(2, 'mw')['mw'].sum() / cen['mw'].sum() * 100:.0f}%",
+              "della potenza")
+    t4.metric("In dismissione", f"{cen[cen['stato'] == 'Dismissione']['mw'].sum():.0f} MW")
+
+    fig = px.scatter_map(
+        cen, lat="lat", lon="lon", size="mw", color="combustibile", hover_name="nome",
+        hover_data={"comune": True, "mw": ":.1f", "tecnologia": True, "stato": True,
+                    "lat": False, "lon": False},
+        size_max=44, zoom=7.1, center={"lat": 45.95, "lon": 13.3},
+        map_style="carto-positron",
+        color_discrete_map={"Gas naturale": "#9CA3AF", "Carbone": "#111827",
+                            "Rifiuti urbani e speciali": "#A855F7",
+                            "Rifiuti speciali": "#C084FC",
+                            "Gas naturale e off-gas siderurgico": "#4B5563"})
+    fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
+                      legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
+    grafico(fig, DOC.FONTE_CENTRALI, "Coordinate al centro del sito, non rilevate.")
+
+    for r in cen.sort_values("mw", ascending=False).itertuples():
+        with st.expander(f"{r.nome} — {r.mw:.0f} MW, {r.comune} ({r.prov})"):
+            st.markdown(f"**{r.tecnologia}**, alimentata a {r.combustibile.lower()}. "
+                        f"Stato: {r.stato.lower()}.\n\n{r.nota}")
+
+    st.info(
+        f"Il parco termoelettrico è **concentratissimo**: Torviscosa e Monfalcone insieme "
+        f"fanno {cen.nlargest(2, 'mw')['mw'].sum():.0f} MW su {cen['mw'].sum():,.0f} "
+        "censiti. ".replace(",", ".")
+        + "Monfalcone, a carbone, dal maggio 2024 non è più abilitata ai mercati: è la "
+        "ragione principale del crollo delle emissioni elettriche regionali."
     )
 
 
@@ -3226,44 +3322,6 @@ def _scheda_14():
         "primaria più vicina va da 1,4 a 15,5 km secondo il punto."
     )
 
-    # ------------------------------------------ centrali termoelettriche
-    st.divider()
-    st.subheader("Gli impianti termoelettrici della regione")
-    cen = pd.DataFrame(DOC.CENTRALI_TERMO)
-    t1, t2, t3, t4 = st.columns(4)
-    t1.metric("Impianti censiti", len(cen))
-    t2.metric("Potenza complessiva", f"{cen['mw'].sum():,.0f} MW".replace(",", "."))
-    t3.metric("I due maggiori",
-              f"{cen.nlargest(2, 'mw')['mw'].sum() / cen['mw'].sum() * 100:.0f}%",
-              "della potenza")
-    t4.metric("In dismissione", f"{cen[cen['stato'] == 'Dismissione']['mw'].sum():.0f} MW")
-
-    fig = px.scatter_map(
-        cen, lat="lat", lon="lon", size="mw", color="combustibile", hover_name="nome",
-        hover_data={"comune": True, "mw": ":.1f", "tecnologia": True, "stato": True,
-                    "lat": False, "lon": False},
-        size_max=44, zoom=7.1, center={"lat": 45.95, "lon": 13.3},
-        map_style="carto-positron",
-        color_discrete_map={"Gas naturale": "#9CA3AF", "Carbone": "#111827",
-                            "Rifiuti urbani e speciali": "#A855F7",
-                            "Rifiuti speciali": "#C084FC",
-                            "Gas naturale e off-gas siderurgico": "#4B5563"})
-    fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
-                      legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
-    grafico(fig, DOC.FONTE_CENTRALI, "Coordinate al centro del sito, non rilevate.")
-
-    for r in cen.sort_values("mw", ascending=False).itertuples():
-        with st.expander(f"{r.nome} — {r.mw:.0f} MW, {r.comune} ({r.prov})"):
-            st.markdown(f"**{r.tecnologia}**, alimentata a {r.combustibile.lower()}. "
-                        f"Stato: {r.stato.lower()}.\n\n{r.nota}")
-
-    st.info(
-        f"Il parco termoelettrico è **concentratissimo**: Torviscosa e Monfalcone insieme "
-        f"fanno {cen.nlargest(2, 'mw')['mw'].sum():.0f} MW su {cen['mw'].sum():,.0f} "
-        "censiti. ".replace(",", ".")
-        + "Monfalcone, a carbone, dal maggio 2024 non è più abilitata ai mercati: è la "
-        "ragione principale del crollo delle emissioni elettriche regionali."
-    )
 
 
 def _scheda_15():
@@ -3336,8 +3394,8 @@ Dove un dato è stimato, è scritto.
 # sezioni ed eseguite una alla volta: il codice delle altre non gira nemmeno.
 SEZIONI = [
     ('📊 Quadro generale', [0]),
-    ('⚡ Elettricità e rinnovabili', [1, 3, 7, 14]),
-    ('🔥 Termico, gas e bioenergie', [8, 9, 5, 6]),
+    ('⚡ Elettricità e rinnovabili', [1, 3, 7, 6, 14]),
+    ('🔥 Termico, gas e bioenergie', [8, 9, 5]),
     ('🔌 Reti e territorio', [2]),
     ('🌍 Clima ed emissioni', [12, 13]),
     ('🔮 Scenari e transizione', [11, 10]),
@@ -3347,7 +3405,7 @@ NOMI_SCHEDE = {
     0: '📊 Panoramica', 1: '⚡ Elettricità', 2: '🔌 Reti', 3: '☀️ Fotovoltaico',
     5: '🌲 Biomasse', 6: '♻️ Biometano', 7: '💧 Idroelettrico', 8: '🔥 Gas',
     9: '🔥 Termo & CO₂', 10: '🧪 Idrogeno', 11: '🔮 Scenari', 12: '🌍 Emissioni',
-    13: '🌡️ Clima', 14: '🌬️ Eolico e termoelettrico', 15: '🗂 Dati',
+    13: '🌡️ Clima', 14: '🌬️ Eolico', 15: '🗂 Dati',
 }
 _schede = {n: globals()[f"_scheda_{n}"] for n in NOMI_SCHEDE
            if f"_scheda_{n}" in globals()}
@@ -3481,6 +3539,32 @@ def _motore_scenari():
                   prezzi_d, rete_d, sito_eolico, domanda_twh)
     ott = migliore(df)
 
+    # ------------------------------------------------ quanto paghiamo oggi
+    st.divider()
+    st.subheader("Il punto di partenza: quanto costa il sistema di oggi")
+    st.caption(
+        "Stesso motore, stesso anno, ma con il parco attuale e la domanda attuale. "
+        "Serve come termine di paragone: ogni scenario va confrontato con questo, "
+        "non con zero."
+    )
+    oggi = _esplora((base["pv_mw"],), (0.0,), (base["bess_mwh"],),
+                    prezzi_d, rete_d, sito_eolico,
+                    DOC.CONSUMI_ELETTRICI_TOTALE / 1000).iloc[0]
+    o = st.columns(5)
+    o[0].metric("Costo del sistema oggi", f"{oggi['eur_mwh']:.1f} €/MWh")
+    o[1].metric("Import", f"{oggi['quota_import']:.0f}%",
+                f"{oggi['import_gwh']:,.0f} GWh".replace(",", "."))
+    o[2].metric("Quota rinnovabile", f"{oggi['quota_fer']:.0f}%")
+    o[3].metric("Intensità carbonica", f"{oggi['gco2_kwh']:.0f} g/kWh")
+    o[4].metric("Spesa annua", f"{oggi['eur_mwh'] * DOC.CONSUMI_ELETTRICI_TOTALE / 1000:,.0f} mln €".replace(",", "."))
+    st.caption(
+        f"Prezzo di riferimento del mercato nel 2025: **{DOC.PUN_MEDIO_2025} €/MWh** "
+        f"(PUN medio, il più alto fra le principali borse europee). Il costo calcolato "
+        f"qui è {'sotto' if oggi['eur_mwh'] < DOC.PUN_MEDIO_2025 else 'sopra'} quel "
+        "livello perché una parte dell'energia regionale è idroelettrico storico, già "
+        "ammortizzato e valorizzato al suo contratto per differenza."
+    )
+
     # ---------------------------------------------- passo 1: il sistema conveniente
     st.divider()
     st.subheader("Secondo: il sistema più conveniente, con l'import")
@@ -3570,6 +3654,38 @@ def _motore_scenari():
                "si ripagano rispetto all'energia comprata.")
         )
 
+        st.subheader("Tutto l'anno, ora per ora")
+        st.caption(
+            "Le 8.760 ore dell'anno in un colpo solo: la linea nera è la domanda, le aree "
+            "la generazione. Si legge la stagionalità — il solare che gonfia l'estate, "
+            "l'import che riempie l'inverno."
+        )
+        prof_anno = profilo_orario(domanda, cf_pv, cf_eo, Parco(**{
+            **base, "pv_mw": float(scelta["pv_mw"]),
+            "eolico_mw": float(scelta["eolico_mw"]),
+            "bess_mwh": float(scelta["bess_mwh"]),
+            "bess_mw": float(scelta["bess_mwh"]) / 4}), giorno_inizio=0, giorni=365)
+        # media mobile giornaliera: 8.760 punti grezzi sono illeggibili
+        gio = prof_anno.copy()
+        gio["giorno"] = gio["ora"] // 24
+        gio = gio.groupby("giorno", as_index=False).mean(numeric_only=True)
+
+        fig = go.Figure()
+        for nome_s, colore in [("fotovoltaico", "#FACC15"), ("eolico", "#22C55E"),
+                               ("import", "#EF4444")]:
+            fig.add_scatter(x=gio["giorno"], y=gio[nome_s], name=nome_s.capitalize(),
+                            stackgroup="anno", line=dict(width=0), fillcolor=colore)
+        fig.add_scatter(x=gio["giorno"], y=np.full(len(gio), base["idro_fluente_mw"]),
+                        name="Idro fluente", stackgroup="anno", line=dict(width=0),
+                        fillcolor="#2563EB")
+        fig.add_scatter(x=gio["giorno"], y=gio["domanda"], name="Domanda",
+                        mode="lines", line=dict(color="#111827", width=2))
+        fig.update_layout(height=420, xaxis_title="giorno dell'anno", yaxis_title="MW medi",
+                          template="plotly_white", hovermode="x unified",
+                          legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
+                          margin=dict(t=60, b=10, l=10, r=24))
+        grafico(fig, DOC.F_ELAB, "Medie giornaliere delle 8.760 ore simulate.")
+
         st.subheader("Come si copre il divario, ora per ora")
         settimana = st.select_slider(
             "Settimana dell'anno", options=list(range(1, 53)), value=26,
@@ -3609,6 +3725,72 @@ def _motore_scenari():
             "disegna picchi diurni che spesso eccedono la domanda, il secondo riempie "
             "anche le notti."
         )
+
+    # ------------------------------------------------ il confronto 2025 -> 2045
+        st.divider()
+        st.subheader("Da oggi al 2045, in un diagramma")
+        st.caption(
+            "A sinistra il sistema elettrico di oggi, a destra quello dello scenario "
+            "scelto. Ogni flusso è energia annua in GWh: si legge cosa cresce, cosa "
+            "sparisce e cosa resta importato."
+        )
+
+        def _trasparente(esadecimale: str, alfa: float = 0.35) -> str:
+            """Da #RRGGBB a rgba(): i flussi vanno colorati come la loro fonte."""
+            r, g, b = (int(esadecimale[i:i + 2], 16) for i in (1, 3, 5))
+            return f"rgba({r},{g},{b},{alfa})"
+
+        def _sankey_anno(riga, titolo, domanda_gwh):
+            fonti_s = [
+                ("Fotovoltaico", riga["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000, "#FACC15"),
+                ("Eolico", riga["eolico_mw"] * DOC.ORE_EQUIVALENTI["Eolico onshore"] / 1000,
+                 "#22C55E"),
+                ("Idroelettrico", 2163.0, "#2563EB"),
+                ("Termoelettrico", riga["gas_gwh"], "#4B5563"),
+                ("Import", riga["import_gwh"], "#EF4444"),
+            ]
+            fonti_s = [f for f in fonti_s if f[1] > 1]
+            nodi_s = [f[0] for f in fonti_s] + ["Domanda regionale"]
+            idx_s = {n: i for i, n in enumerate(nodi_s)}
+            fig_s = go.Figure(go.Sankey(
+                node=dict(pad=18, thickness=20, label=nodi_s,
+                          color=[f[2] for f in fonti_s] + ["#111827"],
+                          line=dict(color="rgba(0,0,0,0.15)", width=0.5)),
+                link=dict(source=[idx_s[f[0]] for f in fonti_s],
+                          target=[idx_s["Domanda regionale"]] * len(fonti_s),
+                          value=[f[1] for f in fonti_s],
+                          color=[_trasparente(f[2]) for f in fonti_s],
+                          hovertemplate="%{value:.0f} GWh<extra></extra>")))
+            fig_s.update_layout(height=380, font_size=12, title=titolo,
+                                margin=dict(t=50, b=20, l=10, r=10))
+            return fig_s
+
+        sk1, sk2 = st.columns(2)
+        with sk1:
+            grafico(_sankey_anno(oggi, f"Oggi — {DOC.CONSUMI_ELETTRICI_TOTALE / 1000:.1f} TWh",
+                                 DOC.CONSUMI_ELETTRICI_TOTALE), DOC.F_ELAB)
+        with sk2:
+            grafico(_sankey_anno(scelta, f"2045 — {domanda_twh:.1f} TWh", domanda_twh * 1000),
+                    DOC.F_ELAB)
+
+        delta = pd.DataFrame([
+            {"Voce": "Fotovoltaico",
+             "Oggi": oggi["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000,
+             "2045": scelta["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000},
+            {"Voce": "Eolico", "Oggi": 0.0,
+             "2045": scelta["eolico_mw"] * DOC.ORE_EQUIVALENTI["Eolico onshore"] / 1000},
+            {"Voce": "Termoelettrico", "Oggi": oggi["gas_gwh"], "2045": scelta["gas_gwh"]},
+            {"Voce": "Import", "Oggi": oggi["import_gwh"], "2045": scelta["import_gwh"]},
+        ])
+        delta["Variazione"] = delta["2045"] - delta["Oggi"]
+        fig = px.bar(delta, x="Variazione", y="Voce", orientation="h", text_auto="+.0f",
+                     color="Variazione", color_continuous_scale=["#DC2626", "#F3F4F6", "#22C55E"],
+                     color_continuous_midpoint=0)
+        fig.add_vline(x=0, line_color="#111827")
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=280, yaxis_title=None, coloraxis_showscale=False,
+                          xaxis_title="GWh in più o in meno rispetto a oggi", **PLOT)
+        grafico(fig, DOC.F_ELAB)
 
     with st.expander("Tutte le configurazioni simulate"):
         vista = df[["pv_mw", "eolico_mw", "bess_mwh", "eur_mwh", "costo_rete_mln",
