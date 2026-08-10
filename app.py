@@ -1950,174 +1950,280 @@ def _scheda_6():
 
 
 def _scheda_7():
-    st.subheader("Il parco idroelettrico regionale")
-    st.caption(f"Fonte: {DOC.FONTE_IDRO}, integrata con la serie storica Terna.")
+    q = DOC.IDRO_QUADRO
+    st.subheader("L'idroelettrico, colonna portante e punto debole")
+    st.caption(f"Fonte: {DOC.FONTE_IDRO_PER}.")
 
-    i = st.columns(4)
-    i[0].metric("Impianti", f"{DOC.IDRO_PARCO['Impianti']}")
-    i[1].metric("Potenza efficiente lorda", f"{DOC.IDRO_PARCO['Potenza efficiente lorda (MW)']:.0f} MW")
-    i[2].metric("Producibilità media", f"{DOC.IDRO_PARCO['Producibilità media annua (GWh)']:,.0f} GWh".replace(",", "."))
-    idro_anno = anno_di(idrico)["valore"].sum()
-    i[3].metric(f"Prodotto nel {anno}", f"{idro_anno:,.0f} GWh".replace(",", "."))
+    k = st.columns(5)
+    k[0].metric("Impianti", q["impianti_2023"], "al 31/12/2023")
+    k[1].metric("Potenza efficiente lorda", f"{q['mw_lordi_2023']:.1f} MW",
+                f"{q['mw_netti_2023']:.1f} MW netti")
+    k[2].metric("Quota sulle rinnovabili regionali", f"{q['quota_su_fer_regionali']}%",
+                "in condizioni idrologiche normali")
+    k[3].metric("Quota sulla produzione lorda", f"{q['quota_su_produzione_lorda']}%")
+    k[4].metric("In Italia", f"{q['posizione_italia_impianti']}° per impianti",
+                f"{q['posizione_italia_potenza']}° per potenza")
 
-    # energia stoccabile negli invasi: e' l'accumulo stagionale del sistema
-    dighe = D.carica_per("dighe_fvg")
-    if not dighe.empty:
-        vol_idro = dighe[dighe["utilizzo"].str.contains("Idro", case=False, na=False)][
-            "volume_mln_m3"].sum()
-        i2 = st.columns(4)
-        i2[0].metric("Invaso a uso idroelettrico", f"{vol_idro:,.1f} mln m³".replace(",", "."))
-        for k, salto in zip(i2[1:], (200, 400, 600)):
-            gwh = 1000 * 9.81 * vol_idro * 1e6 * salto * 0.85 / 3.6e12
-            k.metric(f"Energia stoccabile, salto {salto} m", f"{gwh:,.0f} GWh".replace(",", "."))
-        st.caption(
-            f"Fonte: {DOC.F_REGIONE}, catasto grandi dighe. L'energia stoccabile dipende "
-            "dal salto disponibile a valle dell'invaso, che varia da impianto a impianto: "
-            "qui tre ipotesi. Anche la più prudente vale **un ordine di grandezza più "
-            "di tutti gli accumuli elettrochimici** autorizzati in regione. È il vero "
-            "sistema di accumulo stagionale del Friuli, e c'è già."
-        )
-
-    idro_tot = idrico.groupby("anno")["valore"].sum()
-    if len(idro_tot) > 1:
-        mn, mx = idro_tot.min(), idro_tot.max()
-        st.caption(
-            f"Tra il {idro_tot.idxmin()} e il {idro_tot.idxmax()} la produzione è oscillata da "
-            f"**{mn:,.0f}** a **{mx:,.0f} GWh**: un fattore {mx / mn:.1f}. ".replace(",", ".")
-            + "L'idroelettrico è rinnovabile ma non è costante — dipende da quanta acqua arriva."
-        )
-
-    c1, c2 = st.columns([1.5, 1])
-    with c1:
-        st.markdown("**Produzione per tipologia di impianto**")
-        fig = px.bar(idrico.sort_values("anno"), x="anno", y="valore", color="voce",
-                     color_discrete_map=D.mappa_colori(idrico["voce"]))
-        prod_media = DOC.IDRO_PARCO["Producibilità media annua (GWh)"]
-        fig.add_hline(y=prod_media, line_dash="dash", line_color="#111827",
-                      annotation_text=f"producibilità media {prod_media:.0f} GWh",
-                      annotation_position="top left")
-        fig.update_layout(height=400, yaxis_title="GWh", xaxis_title=None, **PLOT)
-        grafico(fig, DOC.F_TERNA)
-
-    with c2:
-        st.markdown("**Composizione nell'anno selezionato**")
-        m = anno_di(idrico)
-        m = m[m["valore"] > 0]
-        if not m.empty:
-            fig = px.pie(m, values="valore", names="voce", hole=0.5,
-                         color="voce", color_discrete_map=D.mappa_colori(m["voce"]))
-            fig.update_traces(textinfo="percent")
-            fig.update_layout(height=400, **PLOT)
-            grafico(fig, DOC.F_TERNA)
-
-    st.subheader("Quanto lavora il parco idroelettrico")
-    st.caption(
-        "Ore equivalenti annue: produzione divisa per la potenza installata. "
-        "Sono la firma della variabilità idrologica, non dell'efficienza degli impianti."
-    )
-    pot_idro = pot_fonte[pot_fonte["voce"] == "Idrico"]
-    ore_idro = (idro_tot / pot_idro.set_index("anno")["valore"] * 1000).dropna().reset_index(name="ore")
-    fig = px.bar(ore_idro, x="anno", y="ore", color_discrete_sequence=["#2563EB"])
-    fig.add_hline(y=ore_idro["ore"].mean(), line_dash="dot", line_color="#111827",
-                  annotation_text=f"media {ore_idro['ore'].mean():.0f} ore",
+    # ------------------------------------------------- la volatilità, il dato chiave
+    st.subheader("Il problema non è quanto produce, è quanto varia")
+    prod_idro = pd.DataFrame([
+        {"anno": a, "GWh": v["gwh"], "nota": v["nota"]}
+        for a, v in DOC.IDRO_PRODUZIONE.items()
+    ])
+    fig = px.bar(prod_idro, x="anno", y="GWh", text_auto=".0f", color="GWh",
+                 color_continuous_scale=["#DC2626", "#FACC15", "#2563EB"],
+                 hover_data={"nota": True})
+    fig.add_hline(y=DOC.IDRO_MEDIA_2000_2022, line_dash="dash", line_color="#111827",
+                  annotation_text=f"media 2000-2022: {DOC.IDRO_MEDIA_2000_2022} GWh",
                   annotation_position="top left")
-    fig.update_layout(height=340, yaxis_title="ore/anno", xaxis_title=None, **PLOT)
-    grafico(fig, DOC.F_TERNA)
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=360, xaxis_title=None, coloraxis_showscale=False,
+                      yaxis_title="GWh lordi", **PLOT)
+    grafico(fig, DOC.FONTE_IDRO_PER + "; " + DOC.F_TERNA)
+
+    v1, v2, v3, v4 = st.columns(4)
+    v1.metric("2021, anno umido", f"{DOC.IDRO_PRODUZIONE[2021]['gwh']:,.0f} GWh".replace(",", "."),
+              f"{DOC.IDRO_PRODUZIONE[2021]['quota_mix']}% del mix elettrico")
+    v2.metric("2022, siccità estrema", f"{DOC.IDRO_PRODUZIONE[2022]['gwh']:,.0f} GWh".replace(",", "."),
+              f"{DOC.IDRO_CALO_2022:.1f}% in un anno")
+    v3.metric("2022 sulla media storica",
+              f"{DOC.IDRO_PRODUZIONE[2022]['gwh'] / DOC.IDRO_MEDIA_2000_2022 * 100:.0f}%")
+    v4.metric("2024, anno record", f"{DOC.IDRO_PRODUZIONE[2024]['gwh']:,.0f} GWh".replace(",", "."),
+              f"+{DOC.IDRO_PRODUZIONE[2024]['gwh'] / DOC.IDRO_PRODUZIONE[2022]['gwh'] - 1:.0%} sul 2022")
+
+    st.error(
+        f"**Fra il 2022 e il 2024 la produzione idroelettrica friulana è passata da 887 a "
+        f"2.178 GWh: due volte e mezzo.** Nel 2022 le precipitazioni sono state fra il "
+        f"{DOC.IDRO_DEFICIT_PIOGGE_2022[0]} e il {DOC.IDRO_DEFICIT_PIOGGE_2022[1]}% sotto "
+        "la media 1991-2020, e il contributo dell'idroelettrico al mix elettrico regionale "
+        f"è crollato dal {DOC.IDRO_PRODUZIONE[2021]['quota_mix']}% al "
+        f"{DOC.IDRO_PRODUZIONE[2022]['quota_mix']}%.\n\n"
+        "È il motivo per cui l'idroelettrico non può essere l'ancora del sistema "
+        "regionale: è rinnovabile ma **non è affidabile anno su anno**, e la crisi arriva "
+        "proprio quando servirebbe di più — d'estate, con la domanda di raffrescamento "
+        "alta e l'agricoltura che ha la precedenza legale sull'acqua."
+    )
+
+    # --------------------------------------------- dove sta, e quanto è concentrato
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Dove sta la potenza**")
+        prov = pd.DataFrame(DOC.IDRO_PROVINCE_MW.items(), columns=["Provincia", "MW"])
+        prov = prov[prov["MW"] > 0]
+        fig = px.bar(prov.sort_values("MW"), x="MW", y="Provincia", orientation="h",
+                     text_auto=".1f", color="MW", color_continuous_scale="Blues")
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=280, yaxis_title=None, coloraxis_showscale=False, **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER, "Dati al 31/12/2022.")
+        st.caption(
+            "Udine da sola fa il **61%**, Pordenone il 37%. Le province costiere non hanno "
+            "salti: Trieste è a zero. È una risorsa di montagna, e la montagna è metà "
+            "regione."
+        )
+    with c2:
+        st.markdown("**Quanto è concentrato**")
+        conc = DOC.IDRO_CONCENTRAZIONE
+        cc = pd.DataFrame([
+            {"Classe": f"Oltre 10 MW ({conc['impianti_oltre_10mw']} impianti)",
+             "Quota della potenza": conc["quota_potenza_oltre_10mw"]},
+            {"Classe": f"Oltre 1 MW ({conc['quota_numero_oltre_1mw']}% del numero)",
+             "Quota della potenza": conc["quota_potenza_oltre_1mw"]},
+        ])
+        fig = px.bar(cc, x="Quota della potenza", y="Classe", orientation="h",
+                     text_auto=".0f", color_discrete_sequence=["#1E3A8A"])
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=280, yaxis_title=None, xaxis_range=[0, 100],
+                          xaxis_title="% della potenza regionale", **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER)
+        st.caption(
+            "**Dodici impianti fanno tre quarti della potenza.** I 268 impianti del "
+            "conteggio sono in gran parte micro-derivazioni: contano per il territorio e "
+            "per le comunità che le gestiscono, non per il bilancio energetico."
+        )
+
+    # ------------------------------------------------- come produce: le tipologie
+    st.subheader("Fluente, bacino, serbatoio: tre modi diversi di essere idroelettrico")
+    tip = pd.DataFrame(DOC.IDRO_TIPOLOGIE_2023.items(), columns=["Tipologia", "GWh"])
+    tip["quota"] = tip["GWh"] / tip["GWh"].sum() * 100
+    t1, t2 = st.columns([1, 1.3])
+    with t1:
+        fig = px.pie(tip, values="GWh", names="Tipologia", hole=0.5,
+                     color="Tipologia",
+                     color_discrete_map={"Acqua fluente": "#60A5FA", "Bacino": "#2563EB",
+                                         "Serbatoio": "#1E3A8A"})
+        fig.update_traces(textinfo="percent+label", textposition="outside")
+        fig.update_layout(height=340, showlegend=False, **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER, "Produzione 2023.")
+    with t2:
+        st.markdown(
+            f"- **Acqua fluente — {tip.loc[0, 'GWh']:.0f} GWh, il {tip.loc[0, 'quota']:.0f}%.** "
+            "Nessun accumulo: producono quello che passa, quando passa. Sono i più numerosi "
+            "e i più esposti alla siccità.\n"
+            f"- **Bacino — {tip.loc[1, 'GWh']:.0f} GWh, il {tip.loc[1, 'quota']:.0f}%.** "
+            "Invasi di regolazione giornaliera o settimanale: possono spostare la "
+            "produzione di qualche ora o giorno.\n"
+            f"- **Serbatoio — {tip.loc[2, 'GWh']:.0f} GWh, il {tip.loc[2, 'quota']:.0f}%.** "
+            "Grandi laghi artificiali che accumulano per settimane o mesi. Sono pochi ma "
+            "sono l'unico vero accumulo stagionale che la regione possiede."
+        )
+        st.caption(
+            f"Nel 2023 i cicli di pompaggio hanno assorbito **{DOC.IDRO_POMPAGGIO_2023} GWh**: "
+            "una quantità simbolica rispetto al potenziale. È esattamente la leva che il "
+            "PER vuole usare per assorbire il fotovoltaico in eccesso."
+        )
+
+    # ------------------------------------------------------- i grandi sistemi
+    st.subheader("Chi produce davvero")
+    sist = pd.DataFrame(DOC.IDRO_SISTEMI)
+    fig = px.bar(sist.sort_values("mw"), x="mw", y="nome", orientation="h",
+                 text="impianti", color="mw", color_continuous_scale="Blues")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    fig.update_layout(height=300, yaxis_title=None, xaxis_title="MW installati",
+                      coloraxis_showscale=False, **PLOT)
+    grafico(fig, DOC.FONTE_IDRO_PER)
+
+    for r in sist.itertuples():
+        with st.expander(f"{r.nome} — {r.mw:.1f} MW, circa {r.gwh:.0f} GWh l'anno"):
+            st.markdown(f"**{r.impianti}**\n\n{r.nota}")
+
+    st.markdown("**Le cinque centrali della cooperativa SECAB**")
+    secab = pd.DataFrame([
+        {"Centrale": k, "kW": v["kw"], "GWh/anno": v["gwh"]}
+        for k, v in DOC.IDRO_SECAB.items()
+    ])
+    st.dataframe(secab.sort_values("kW", ascending=False), hide_index=True, width="stretch")
+    st.caption(
+        f"Fonte: {DOC.FONTE_IDRO_PER}. Cinque impianti ad acqua fluente per "
+        f"{secab['kW'].sum() / 1000:.1f} MW e {secab['GWh/anno'].sum():.1f} GWh l'anno. "
+        "Non è la taglia che li rende interessanti: è che una cooperativa fondata nel 1911 "
+        "possiede ancora la propria rete e restituisce ai soci il 40-43% di sconto in "
+        "bolletta. È un modello di autogoverno energetico, non solo un impianto."
+    )
+
+    # ---------------------------------------------------- il deflusso ecologico
+    st.subheader("Il vincolo che pesa di più: il Deflusso Ecologico")
+    de = DOC.DEFLUSSO_ECOLOGICO
+    st.markdown(
+        f"Dal **{de['obbligo_dal']}** tutte le derivazioni — nuove e storiche — devono "
+        f"rispettare il **Deflusso Ecologico**, che ha sostituito il vecchio Deflusso "
+        f"Minimo Vitale. Non è una soglia fissa ma un parametro dinamico, pensato per "
+        f"tenere il regime del corso d'acqua il più vicino possibile a quello naturale. "
+        f"In molti casi impone rilasci in alveo da **{de['moltiplicatore_rilasci'][0]} a "
+        f"{de['moltiplicatore_rilasci'][1]} volte** superiori a prima."
+    )
+    st.warning(f"**L'effetto pratico.** {de['effetto']}")
+    st.caption(f"Riferimento normativo: {de['riferimento']}.")
+
+    # ---------------------------------------------------- dove può ancora crescere
+    st.subheader("Dove può ancora crescere: non nuovi sbarramenti")
+    pt = DOC.IDRO_POTENZIALE
+    g = st.columns(4)
+    g[0].metric("Da repowering", f"+{pt['revamping_mw']} MW")
+    g[1].metric("Da nuovi mini e micro", f"+{pt['nuovi_mini_micro_mw']} MW", "sotto i 3 MW")
+    g[2].metric("Obiettivo 2030", f"{pt['target_2030_gwh']:,.0f} GWh".replace(",", "."))
+    g[3].metric("Obiettivo 2045", f"{pt['target_2045_gwh']:,.0f} GWh".replace(",", "."))
+    st.caption(f"Fonte del potenziale: {pt['fonte_potenziale']}.")
+
+    for titolo, testo in DOC.IDRO_AZIONI:
+        st.markdown(f"- **{titolo}** — {testo}")
 
     st.info(
-        "Il PER stima una producibilità media di "
-        f"{DOC.IDRO_PARCO['Producibilità media annua (GWh)']:,.0f} GWh e prevede di arrivare a ".replace(",", ".")
-        + "2.231 GWh al 2045: un margine di crescita limitato, perché i siti migliori sono già "
-        "sfruttati. L'espansione passa da efficientamento degli impianti esistenti e "
-        "mini-idro, non da nuovi grandi invasi."
+        f"**I grandi salti vergini sono finiti.** L'obiettivo del PER al 2045 — "
+        f"{pt['target_2045_gwh']:,.0f} GWh — è ".replace(",", ".")
+        + f"più basso di quello al 2030 ({pt['target_2030_gwh']:,.0f} GWh): ".replace(",", ".")
+        + "non è un errore, è il riconoscimento che il cambiamento climatico erode la "
+        "risorsa mentre la si efficienta. I +89 MW teorici fra repowering e mini-idro "
+        "valgono meno di quanto il clima può togliere in un anno secco.\n\n"
+        "**Per i tecnici comunali** questo significa una cosa sola: nei PAESC non ha senso "
+        "prevedere nuovi impianti su salti liberi, perché non ce ne sono. Ha senso "
+        "l'idroelettrico sulle infrastrutture che già esistono — acquedotti, rilasci "
+        "irrigui, canali di bonifica — dove si produce senza toccare un fiume."
     )
 
     st.divider()
-    centrali = D.carica_per("centrali_idro")
-    if not centrali.empty:
-        st.subheader("Le centrali sul territorio")
-        cat = D.carica_per("centrali_idro_catasto")
-        mont = D.carica_per("idro_montagna")
+    st.subheader("Le centrali sul territorio")
+    cat = D.carica_per("centrali_idro_catasto")
+    mont = D.carica_per("idro_montagna")
 
-        if not cat.empty:
-            esist = cat[cat["stato"] == "Esistente"]
-            st.caption(
-                "Catasto regionale delle derivazioni idriche: ogni punto è una centrale "
-                "con la sua concessione. Attenzione, la **potenza di concessione** non è "
-                "la potenza efficiente — è la potenza nominale media legata alla portata "
-                "derivabile, e la somma regionale sta molto sotto i 528,9 MW misurati da Terna."
-            )
-            c = st.columns(4)
-            c[0].metric("Centrali censite", len(cat), f"{len(esist)} esistenti")
-            c[1].metric("Potenza di concessione", f"{esist['potenza_mw'].sum():.0f} MW")
-            c[2].metric("In progetto o realizzazione",
-                        int((cat["stato"].isin(["In progetto", "In realizzazione"])).sum()),
-                        f"{cat[cat['stato'].isin(['In progetto', 'In realizzazione'])]['potenza_mw'].sum():.1f} MW")
-            mediana = esist["potenza_mw"].median()
-            c[3].metric("Potenza mediana", f"{mediana * 1000:.0f} kW",
-                        "metà delle centrali sta sotto")
+    if not cat.empty:
+        esist = cat[cat["stato"] == "Esistente"]
+        st.caption(
+            "Catasto regionale delle derivazioni idriche: ogni punto è una centrale "
+            "con la sua concessione. Attenzione, la **potenza di concessione** non è "
+            "la potenza efficiente — è la potenza nominale media legata alla portata "
+            "derivabile, e la somma regionale sta molto sotto i 528,9 MW misurati da Terna."
+        )
+        c = st.columns(4)
+        c[0].metric("Centrali censite", len(cat), f"{len(esist)} esistenti")
+        c[1].metric("Potenza di concessione", f"{esist['potenza_mw'].sum():.0f} MW")
+        c[2].metric("In progetto o realizzazione",
+                    int((cat["stato"].isin(["In progetto", "In realizzazione"])).sum()),
+                    f"{cat[cat['stato'].isin(['In progetto', 'In realizzazione'])]['potenza_mw'].sum():.1f} MW")
+        mediana = esist["potenza_mw"].median()
+        c[3].metric("Potenza mediana", f"{mediana * 1000:.0f} kW",
+                    "metà delle centrali sta sotto")
 
-            m = cat.copy()
-            m["size_mw"] = m["potenza_mw"].fillna(0).clip(lower=0.01)
-            fig = px.scatter_map(
-                m, lat="lat", lon="lon", size="size_mw", color="stato",
-                hover_name="nome",
-                hover_data={"potenza_mw": ":.3f", "salto_m": ":.0f", "scadenza": True,
-                            "lat": False, "lon": False, "size_mw": False},
-                size_max=30, zoom=7.1, center={"lat": 46.3, "lon": 13.0},
-                map_style="carto-positron",
-                color_discrete_map={"Esistente": "#2563EB", "In progetto": "#F97316",
-                                    "In realizzazione": "#FACC15", "Rinunciata": "#D1D5DB"},
-                labels={"potenza_mw": "MW di concessione", "salto_m": "salto (m)"})
-            fig.update_layout(height=540, margin=dict(t=10, b=10, l=0, r=0),
-                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
-                                          x=0, title=None))
-            grafico(fig, DOC.F_REGIONE + " — catasto derivazioni idriche")
+        m = cat.copy()
+        m["size_mw"] = m["potenza_mw"].fillna(0).clip(lower=0.01)
+        fig = px.scatter_map(
+            m, lat="lat", lon="lon", size="size_mw", color="stato",
+            hover_name="nome",
+            hover_data={"potenza_mw": ":.3f", "salto_m": ":.0f", "scadenza": True,
+                        "lat": False, "lon": False, "size_mw": False},
+            size_max=30, zoom=7.1, center={"lat": 46.3, "lon": 13.0},
+            map_style="carto-positron",
+            color_discrete_map={"Esistente": "#2563EB", "In progetto": "#F97316",
+                                "In realizzazione": "#FACC15", "Rinunciata": "#D1D5DB"},
+            labels={"potenza_mw": "MW di concessione", "salto_m": "salto (m)"})
+        fig.update_layout(height=540, margin=dict(t=10, b=10, l=0, r=0),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                      x=0, title=None))
+        grafico(fig, DOC.F_REGIONE + " — catasto derivazioni idriche")
 
-            c1, c2 = st.columns(2)
-            with c1:
-                fig = px.histogram(esist[esist["potenza_mw"] > 0], x="potenza_mw", nbins=40,
-                                   log_y=True, color_discrete_sequence=["#2563EB"])
-                fig.update_layout(height=300, xaxis_title="MW di concessione",
-                                  yaxis_title="centrali (scala log)",
-                                  title="Quasi tutte piccolissime", **PLOT)
-                grafico(fig, DOC.F_REGIONE)
-            with c2:
-                sal = esist.dropna(subset=["salto_m", "potenza_mw"])
-                sal = sal[(sal["salto_m"] > 0) & (sal["potenza_mw"] > 0)]
-                fig = px.scatter(sal, x="salto_m", y="potenza_mw", log_x=True, log_y=True,
-                                 hover_name="nome", color_discrete_sequence=["#2563EB"],
-                                 opacity=0.6)
-                fig.update_layout(height=300, xaxis_title="salto (m, log)",
-                                  yaxis_title="MW (log)",
-                                  title="Il salto fa la potenza", **PLOT)
-                grafico(fig, DOC.F_REGIONE)
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = px.histogram(esist[esist["potenza_mw"] > 0], x="potenza_mw", nbins=40,
+                               log_y=True, color_discrete_sequence=["#2563EB"])
+            fig.update_layout(height=300, xaxis_title="MW di concessione",
+                              yaxis_title="centrali (scala log)",
+                              title="Quasi tutte piccolissime", **PLOT)
+            grafico(fig, DOC.F_REGIONE)
+        with c2:
+            sal = esist.dropna(subset=["salto_m", "potenza_mw"])
+            sal = sal[(sal["salto_m"] > 0) & (sal["potenza_mw"] > 0)]
+            fig = px.scatter(sal, x="salto_m", y="potenza_mw", log_x=True, log_y=True,
+                             hover_name="nome", color_discrete_sequence=["#2563EB"],
+                             opacity=0.6)
+            fig.update_layout(height=300, xaxis_title="salto (m, log)",
+                              yaxis_title="MW (log)",
+                              title="Il salto fa la potenza", **PLOT)
+            grafico(fig, DOC.F_REGIONE)
 
-            piccole = (esist["potenza_mw"] < 1).sum()
-            st.info(
-                f"**{piccole} centrali su {len(esist)} stanno sotto il megawatt**, e la "
-                f"mediana è di {mediana * 1000:.0f} kW: il parco idroelettrico friulano è "
-                "fatto di una lunga coda di micro-derivazioni su rogge, canali e acquedotti, "
-                "più poche grandi centrali di montagna. "
-                f"Le nuove concessioni in progetto valgono "
-                f"{cat[cat['stato'] == 'In progetto']['potenza_mw'].sum():.1f} MW su 47 pratiche: "
-                "meno di 200 kW l'una. Il grande idro è finito, resta il capillare."
-            )
+        piccole = (esist["potenza_mw"] < 1).sum()
+        st.info(
+            f"**{piccole} centrali su {len(esist)} stanno sotto il megawatt**, e la "
+            f"mediana è di {mediana * 1000:.0f} kW: il parco idroelettrico friulano è "
+            "fatto di una lunga coda di micro-derivazioni su rogge, canali e acquedotti, "
+            "più poche grandi centrali di montagna. "
+            f"Le nuove concessioni in progetto valgono "
+            f"{cat[cat['stato'] == 'In progetto']['potenza_mw'].sum():.1f} MW su 47 pratiche: "
+            "meno di 200 kW l'una. Il grande idro è finito, resta il capillare."
+        )
 
-        if not mont.empty:
-            st.markdown("**Le grandi centrali di montagna**")
-            tab = mont[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
-                        "producibilita_GWh_anno", "tipo_impianto", "salto_m"]].copy()
-            tab.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
-                           "GWh/anno", "Tipo", "Salto (m)"]
-            st.dataframe(tab.sort_values("MW", ascending=False), hide_index=True,
-                         width="stretch")
-            st.caption(
-                f"Fonte: {DOC.F_PER}, dati di impianto. "
-                f"Queste {len(mont)} centrali valgono {mont['potenza_MW'].sum():.0f} MW e "
-                f"circa {mont['producibilita_GWh_anno'].sum():.0f} GWh l'anno: "
-                "la dorsale storica del sistema, quasi tutta in Carnia e Canal del Ferro."
-            )
+    if not mont.empty:
+        st.markdown("**Le grandi centrali di montagna**")
+        tab = mont[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
+                    "producibilita_GWh_anno", "tipo_impianto", "salto_m"]].copy()
+        tab.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
+                       "GWh/anno", "Tipo", "Salto (m)"]
+        st.dataframe(tab.sort_values("MW", ascending=False), hide_index=True,
+                     width="stretch")
+        st.caption(
+            f"Fonte: {DOC.F_PER}, dati di impianto. "
+            f"Queste {len(mont)} centrali valgono {mont['potenza_MW'].sum():.0f} MW e "
+            f"circa {mont['producibilita_GWh_anno'].sum():.0f} GWh l'anno: "
+            "la dorsale storica del sistema, quasi tutta in Carnia e Canal del Ferro."
+        )
 
 def _scheda_8():
     st.subheader("Il gas naturale nel sistema energetico regionale")

@@ -342,3 +342,474 @@ EPBT_ANNI = {"Fotovoltaico": 0.43, "Eolico": 1.04}   # tempo di ritorno energeti
 RICHIESTA_ELETTRICA_2024 = 9814.7      # GWh
 DEFICIT_ELETTRICO_2024 = -3341.4       # GWh, pari al -34,0% della richiesta
 IMPIANTI_EOLICI_FVG = 4                # potenza non rilevabile nelle statistiche Terna
+
+# ---------------------------------------------------------------- eolico misurato
+FONTE_EOLICO = "RSE, Atlante Eolico (dbeta.rse-web.it), dati a 100 m sul livello del terreno"
+
+# Punti campionati sull'Atlante Eolico RSE. `prod_100` e' la producibilita'
+# specifica in ore equivalenti annue a 100 m, `dens_100` la densita' di potenza
+# in W/m2, `weib_100` il fattore di forma di Weibull.
+EOLICO_PUNTI = [
+    {"nome": "Carso triestino", "lat": 45.607, "lon": 13.813, "quota": 0,
+     "vento_100": 6.46, "dens_100": 591.34, "prod_100": 3168.9, "weib_100": 1.18, "dist_cp": 1.4},
+    {"nome": "Colli Orientali (alto)", "lat": 46.091, "lon": 13.542, "quota": 470,
+     "vento_100": 6.18, "dens_100": 448.64, "prod_100": 2994.0, "weib_100": 1.31, "dist_cp": 11.0},
+    {"nome": "Colli Orientali", "lat": 46.079, "lon": 13.541, "quota": 185,
+     "vento_100": 6.11, "dens_100": 439.13, "prod_100": 2945.1, "weib_100": 1.31, "dist_cp": 11.0},
+    {"nome": "Laguna di Grado", "lat": 45.710, "lon": 13.474, "quota": 3,
+     "vento_100": 5.25, "dens_100": 296.40, "prod_100": 2279.6, "weib_100": 1.33, "dist_cp": 7.7},
+    {"nome": "Alpi Giulie", "lat": 46.352, "lon": 13.416, "quota": 1304,
+     "vento_100": 4.67, "dens_100": 289.60, "prod_100": 2098.2, "weib_100": 1.05, "dist_cp": 9.6},
+    {"nome": "Alpi Carniche", "lat": 46.571, "lon": 13.044, "quota": 1897,
+     "vento_100": 4.87, "dens_100": 232.70, "prod_100": 2032.9, "weib_100": 1.20, "dist_cp": 15.5},
+    {"nome": "Pianura isontina", "lat": 45.900, "lon": 13.526, "quota": 26,
+     "vento_100": 3.28, "dens_100": 64.42, "prod_100": 1009.7, "weib_100": 1.31, "dist_cp": 5.4},
+    {"nome": "Bassa friulana", "lat": 45.901, "lon": 13.508, "quota": 44,
+     "vento_100": 3.29, "dens_100": 63.17, "prod_100": 977.3, "weib_100": 1.34, "dist_cp": 5.5},
+]
+
+# ---------------------------------------------------------------- centrali termoelettriche
+FONTE_CENTRALI = "Piano Energetico Regionale FVG, cap. 4, integrato con documentazione di impianto"
+
+# Le coordinate sono al centro del sito, non rilevate: servono a collocare
+# l'impianto sul territorio, non a identificarne il perimetro.
+CENTRALI_TERMO = [
+    {"nome": "Torviscosa (Edison)", "comune": "Torviscosa", "prov": "UD",
+     "mw": 790, "combustibile": "Gas naturale", "tecnologia": "Ciclo combinato cogenerativo",
+     "lat": 45.817, "lon": 13.283, "stato": "In esercizio",
+     "nota": "Il 54,1% del termoelettrico tradizionale regionale. Fornisce vapore allo "
+             "stabilimento Caffaro e alle industrie chimiche limitrofe."},
+    {"nome": "Monfalcone (A2A)", "comune": "Monfalcone", "prov": "GO",
+     "mw": 336, "combustibile": "Carbone", "tecnologia": "Termoelettrico tradizionale",
+     "lat": 45.795, "lon": 13.545, "stato": "Dismissione",
+     "nota": "Da maggio 2024 non più abilitata ai mercati dell'energia. Accordo con la Regione "
+             "per la conversione a ciclo combinato a gas, predisposto per l'idrogeno."},
+    {"nome": "Servola (Elettra Produzione)", "comune": "Trieste", "prov": "TS",
+     "mw": 175, "combustibile": "Gas naturale e off-gas siderurgico",
+     "tecnologia": "Ciclo combinato cogenerativo", "lat": 45.617, "lon": 13.800,
+     "stato": "In esercizio",
+     "nota": "Brucia una miscela di metano e gas di processo dell'ex stabilimento siderurgico."},
+    {"nome": "Elettrogorizia", "comune": "Gorizia", "prov": "GO",
+     "mw": 49.9, "combustibile": "Gas naturale", "tecnologia": "Ciclo combinato",
+     "lat": 45.933, "lon": 13.617, "stato": "In esercizio",
+     "nota": "In esercizio dal 2004, immette direttamente in alta tensione a 132 kV."},
+    {"nome": "Termovalorizzatore di Trieste (Hestambiente)", "comune": "Trieste", "prov": "TS",
+     "mw": 14.9, "combustibile": "Rifiuti urbani e speciali", "tecnologia": "Co-incenerimento a griglia",
+     "lat": 45.633, "lon": 13.800, "stato": "In esercizio",
+     "nota": "Tre linee, 197.000 t/anno autorizzate."},
+    {"nome": "Cartiera di Tolmezzo", "comune": "Tolmezzo", "prov": "UD",
+     "mw": 17.1, "combustibile": "Gas naturale", "tecnologia": "Cogenerazione industriale",
+     "lat": 46.400, "lon": 13.017, "stato": "In esercizio", "nota": "Autoproduzione di stabilimento."},
+    {"nome": "Cartiera di Ovaro", "comune": "Ovaro", "prov": "UD",
+     "mw": 11.2, "combustibile": "Gas naturale", "tecnologia": "Cogenerazione industriale",
+     "lat": 46.483, "lon": 12.888, "stato": "In esercizio", "nota": "Autoproduzione di stabilimento."},
+    {"nome": "Mistral FVG (Spilimbergo)", "comune": "Spilimbergo", "prov": "PN",
+     "mw": 3.0, "combustibile": "Rifiuti speciali", "tecnologia": "Forno a tamburo rotante",
+     "lat": 46.117, "lon": 12.900, "stato": "In esercizio",
+     "nota": "Il 20% della produzione copre l'autoconsumo, il resto va in rete."},
+]
+
+# ---------------------------------------------------------------- intestazione e note
+AUTORE = {
+    "nome": "Matteo De Piccoli",
+    "ente": "APE FVG",
+    "sito": "https://www.ape.fvg.it/",
+    "email": "matteo.depiccoli@ape.fvg.it",
+    "github": "https://github.com/matteo-dep",
+    "linkedin": "https://www.linkedin.com/in/matteo-de-piccoli-2a17a5163",
+}
+
+# Etichette di fonte usate sotto i grafici
+F_TERNA = "Terna, Dati Statistici (dati.terna.it)"
+F_TERNA_REG = "Terna, Statistiche Regionali 2024"
+F_PER = "Piano Energetico Regionale FVG 2024"
+F_RSE = "RSE, Geoportale ETA (dbeta.rse-web.it) — CC BY-SA 4.0"
+F_REGIONE = "Portale cartografico regionale FVG (EAGLE)"
+F_AUDIZIONI = "Audizioni IV Commissione consiliare, 21/04/2026"
+F_ARPA = "ARPA FVG, «Segnali dal clima in FVG»"
+F_ISPRA = "ISPRA, annuario statistico; ARPA FVG, inventario GHG"
+F_ELAB = "elaborazione propria sui dati citati"
+
+# Alias di comodo usati dall'app
+F_H2 = FONTE_H2
+F_EOLICO = FONTE_EOLICO
+F_CENTRALI = FONTE_CENTRALI
+F_CLIMA = FONTE_CLIMA
+F_PROVINCE = FONTE_PROVINCE
+
+# ---------------------------------------------------------------- emissioni, dettaglio
+FONTE_INVENTARIO = "ARPA FVG, inventario regionale dei gas serra 2021 (metodologia IPCC)"
+
+# Quote sul totale regionale, %. Le quattro macrocategorie IPCC.
+EMISSIONI_MACRO = {"Energia": 86, "AFOLU (agricoltura e uso del suolo)": 7,
+                   "IPPU (processi industriali)": 5, "Rifiuti": 2}
+
+# Dettaglio della macrocategoria Energia, in % del totale regionale.
+EMISSIONI_ENERGIA = {
+    "Trasporti": 27.4,
+    "Riscaldamento": 18.6,
+    "Industrie manifatturiere": 18.6,
+    "Industrie energetiche": 17.8,
+    "Emissioni fuggitive": 2.1,
+}
+
+# Composizione del trasporto su strada, in % del solo trasporto su strada
+# (che a sua volta vale il 25% del totale regionale).
+TRASPORTO_STRADA = {
+    "Autovetture": 69.3, "Veicoli industriali oltre 3,5 t e autobus": 13.4,
+    "Veicoli industriali sotto 3,5 t": 10.8, "Motocicli": 6.6,
+}
+TRASPORTO_STRADA_QUOTA = 25   # % del totale regionale
+
+# Gli assorbimenti forestali sono di segno opposto: si sottraggono.
+ASSORBIMENTI_FORESTALI = 25   # % delle emissioni regionali compensate, 2021
+ASSORBIMENTI_ITALIA = 10      # % media nazionale, per confronto
+
+# Consumi finali per settore, ktep (EUROSTAT/ENEA, ripresi nel PER)
+CONSUMI_SETTORE_STORICO = {
+    2010: {"Industria": 1325, "Civile": 1307, "Trasporti": 715, "Agricoltura e pesca": 34},
+    2015: {"Industria": 1152, "Civile": 1219, "Trasporti": 550, "Agricoltura e pesca": 55},
+    2019: {"Industria": 1272, "Civile": 1285, "Trasporti": 604, "Agricoltura e pesca": 59},
+    2020: {"Industria": 1202, "Civile": 1239, "Trasporti": 533, "Agricoltura e pesca": 61},
+    2021: {"Industria": 1333, "Civile": 1288, "Trasporti": 649, "Agricoltura e pesca": 76},
+}
+QUOTE_SETTORE_CONFRONTO = {   # % dei consumi finali, FVG contro Italia (2021)
+    "Industria": (40.0, 22.0), "Civile": (38.5, 43.7), "Trasporti": (19.4, 31.2),
+}
+
+# ---------------------------------------------------------------- clima, scenari
+# Gradi giorno: quanto si scalda e quanto si raffresca, oggi e a fine secolo.
+# HDD = riscaldamento, CDD = raffrescamento. Fonte: piattaforma CLiNE (ARPA FVG),
+# riferimento 1976-2005.
+GRADI_GIORNO = {
+    "riscaldamento_pianura_oggi": 4500,
+    "riscaldamento_pianura_2100_rcp85": 3000,
+    "hdd_malborghetto_rcp85_2071_2100": -1381,   # anomalia, °C
+    "cdd_fagagna_rcp85_2071_2100": 472,          # anomalia, °C
+}
+SCENARI_RCP = {
+    "RCP2.6": "Forte riduzione delle emissioni, Accordo di Parigi rispettato",
+    "RCP4.5": "Scenario intermedio",
+    "RCP8.5": "Emissioni in continua crescita, «business as usual»",
+}
+ZONA_CLIMATICA = {
+    "oggi": "E (zona fredda) — riscaldamento dal 15 ottobre al 15 aprile, fino a 14 ore al giorno",
+    "rcp85_fine_secolo": "D (zona fresca) — dal 1° novembre al 15 aprile, fino a 12 ore",
+}
+
+# Eventi meteorologici rilevanti del 2025 in FVG (ARPA FVG)
+EVENTI_2025 = [
+    ("13 marzo", "Stagione convettiva precocissima", "Grandinate e quattro supercelle.", 2),
+    ("22 maggio", "Temporali in pianura", "Piogge intense localizzate e alcune trombe d'aria.", 2),
+    ("26 giugno", "Caldo intenso e temporali forti",
+     "Grandine di grosse dimensioni su tutta la pianura, vento forte.", 3),
+    ("11 e 27 luglio", "Temporali e grandinate in pianura", "", 2),
+    ("29 agosto e 2 settembre", "Temporali stazionari nel Triestino",
+     "Tra 100 e 200 mm in poche ore, allagamenti e danni.", 3),
+    ("16 settembre", "Supercella temporalesca",
+     "Raffiche forti e grandine media, danni notevoli da Udine a Trieste.", 3),
+    ("24 ottobre", "Temporale a Trieste",
+     "Grandine minuta con accumuli al suolo di alcuni centimetri.", 2),
+    ("16-17 novembre", "Alluvione del bacino dello Judrio",
+     "Oltre 200 mm in 12 ore da un sistema autorigenerante stazionario. "
+     "Lo Judrio esonda e allaga Versa con 1-2 m d'acqua e fango; una collina frana "
+     "su Brazzano di Cormòns causando due vittime e distruggendo tre abitazioni. "
+     "Un evento simile non accadeva dal 29 agosto 2003, l'alluvione della Val Canale.", 5),
+]
+
+# Rischi climatici per il sistema energetico (EUCRA 2023, ripreso da ARPA FVG)
+CATENA_IMPATTO = [
+    ("Generazione", "Meno idroelettrico",
+     "Siccità e riduzione delle precipitazioni estive tagliano la producibilità."),
+    ("Generazione", "Meno termoelettrico",
+     "Acqua di raffreddamento più calda e più scarsa abbassa il rendimento."),
+    ("Generazione", "Danni agli impianti rinnovabili",
+     "Grandine ed eventi estremi colpiscono soprattutto il fotovoltaico."),
+    ("Trasmissione", "Meno capacità di linee e trasformatori",
+     "Il calore riduce la portata delle linee proprio nelle ore di punta."),
+    ("Trasmissione", "Danni all'infrastruttura",
+     "Alluvioni e frane interrompono la fornitura."),
+    ("Domanda", "Più energia per il raffrescamento",
+     "Il picco di domanda si sposta dall'inverno all'estate."),
+    ("Domanda", "Domanda in crescita per l'elettrificazione",
+     "Mobilità, riscaldamento e industria aggiungono carico."),
+]
+
+
+# ---------------------------------------------------------------- uso del suolo
+FONTE_SAU = "ISTAT, censimento generale dell'agricoltura 2020; ISPRA, consumo di suolo"
+
+SAU_FVG_HA = 218_000          # superficie agricola utilizzata
+SUPERFICIE_FVG_HA = 793_240   # superficie regionale
+# Termini di paragone per capire quanto sia grande una superficie
+PARAGONI_SUOLO = {
+    "Un campo da calcio regolamentare": 0.71,
+    "Un ipermercato con parcheggio": 2.5,
+    "L'aeroporto di Ronchi dei Legionari": 200.0,
+}
+
+# Nuove installazioni fotovoltaiche per categoria, primi mesi del 2026 (Terna).
+# Serve a rispondere alla domanda «il fotovoltaico mangia i campi?» con i numeri
+# di cosa si sta installando davvero, non con le impressioni.
+PV_NUOVE_2026 = {
+    "Residenziale (fino a 20 kW)": {"mw": 28.21, "impianti": 4644},
+    "Tetti commerciali e artigianali (20-200 kW)": {"mw": 1.33, "impianti": 78},
+    "Tetti industriali e piccoli campi (200 kW-1 MW)": {"mw": 0.73, "impianti": 9},
+    "Utility scale (oltre 1 MW)": {"mw": 1.22, "impianti": 1},
+}
+
+# Ore equivalenti per tipologia di installazione. Il residenziale rende meno:
+# falde non ottimali, ombreggiamenti, nessun inseguimento. L'utility scale usa
+# tracker su una parte del campo.
+PV_ORE_PER_TIPO = {
+    "Residenziale (fino a 20 kW)": 1000,
+    "Tetti commerciali e artigianali (20-200 kW)": 1040,
+    "Tetti industriali e piccoli campi (200 kW-1 MW)": 1100,
+    "Utility scale (oltre 1 MW)": 1200,
+}
+
+FONTE_BIOMASSA_2015 = ("Regione FVG, Direzione risorse agricole e forestali, "
+                       "database impianti a biomassa legnosa da finanziamenti pubblici, "
+                       "settembre 2015")
+FONTE_ARERA = "ARERA, dati di prelievo dei clienti domestici, anno 2022"
+
+
+# Obiettivo di copertura elettrica rinnovabile al 2030 dichiarato nella
+# Strategia Regionale per l'Idrogeno: e' il vincolo dentro cui l'idrogeno
+# regionale deve trovare la propria elettricita'.
+TARGET_FER_ELETTRICA_2030 = {
+    "copertura_pct": 79,          # % dell'elettricita' da fonti rinnovabili
+    "nuova_capacita_gw": 3.3,     # GW aggiuntivi rispetto al 2020
+    "riferimento": "Strategia Regionale per l'Idrogeno, in coerenza con il PNIEC",
+}
+
+# ---------------------------------------------------------------- confronto nazionale
+FONTE_CIRO = ("Italy for Climate, database CIRO delle regioni sul clima, "
+              "aggiornamento febbraio 2026")
+
+# Indicatori del FVG confrontati con la media italiana. Il segno dice se il
+# valore piu' alto e' un pregio o un difetto.
+CIRO_INDICATORI = [
+    ("Rinnovabili", "Conseguimento del target 2030", 46, 31, "%", True,
+     "Seconda regione d'Italia."),
+    ("Rinnovabili", "Quota di energia da fonti rinnovabili", 22.5, 19, "%", True, ""),
+    ("Energia", "Gas naturale sul mix energetico", 48, None, "%", False,
+     "Piu' di meta' del fabbisogno."),
+    ("Energia", "Carbone sul mix energetico", 4, None, "%", False, ""),
+    ("Edifici", "Edifici in classe A", 11, None, "%", True, ""),
+    ("Edifici", "Quota elettrica dei consumi degli edifici", 25, 31, "%", True, ""),
+    ("Industria", "Quota elettrica dei consumi industriali", 43, 39, "%", True, ""),
+    ("Agricoltura", "Superficie agricola biologica", 10, 20, "%", True, ""),
+    ("Vulnerabilita", "Consumo di suolo", 8, None, "%", False,
+     "Sopra la media nazionale."),
+    ("Vulnerabilita", "Perdite della rete idrica", 42, None, "%", False, ""),
+]
+
+CIRO_SINTESI = {
+    "eventi_estremi_2024": "prima regione d'Italia per numero di eventi estremi "
+                           "in rapporto alla superficie",
+    "comunita_energetiche_2024": 28,
+    "impianti_biogas_stimati": 90,
+}
+
+# ---------------------------------------------------------------- hard to abate
+# Settori in cui l'idrogeno e' candidato perche' l'elettrificazione diretta e'
+# difficile: alta temperatura di processo, riduzione chimica, trasporto pesante
+# a lunga percorrenza. I consumi elettrici sono Terna 2023, per settore
+# merceologico: misurano la taglia del settore, non il suo fabbisogno di idrogeno.
+HARD_TO_ABATE = [
+    ("Siderurgia", 2018.4, "Forni elettrici e laminatoi. Il gas nei forni di "
+     "riscaldo e' sostituibile con idrogeno; la fusione e' gia' elettrica.", "alto"),
+    ("Ceramiche, vetrarie e minerali non metalliferi", 274.6,
+     "Forni fusori continui oltre i 1.500 °C: l'elettrificazione diretta e' "
+     "tecnicamente possibile ma costosa e non matura.", "alto"),
+    ("Cartaria", 277.8, "Vapore di processo a media temperatura: qui la pompa di "
+     "calore industriale e' spesso piu' conveniente dell'idrogeno.", "basso"),
+    ("Chimica", 246.0, "Usa gia' idrogeno come materia prima, non come combustibile: "
+     "sostituirlo con idrogeno rinnovabile e' la via piu' diretta.", "alto"),
+    ("Prodotti in metallo", 337.3, "Trattamenti termici diffusi ma a temperatura "
+     "moderata: in gran parte elettrificabili.", "basso"),
+]
+# Trasporto pesante: l'altro candidato, fuori dall'industria
+TRASPORTO_PESANTE = {
+    "quota_emissioni_trasporto_strada": 13.4,   # % dei mezzi oltre 3,5 t e autobus
+    "nota": "Sul trasporto leggero e sulle autovetture la batteria ha gia' vinto: "
+            "l'idrogeno resta candidato per la lunga percorrenza pesante e per la "
+            "logistica portuale, dove peso e tempi di ricarica contano.",
+}
+
+# ---------------------------------------------------------------- costi di rete
+FONTE_COSTI_RETE = ("stime su interventi dichiarati da e-distribuzione e Terna, "
+                    "audizioni IV Commissione 21/04/2026")
+
+# Il costo di rete non e' pubblicato per intervento: qui si parte da quanto e'
+# stato dichiarato in audizione (36 interventi per 1.740 MVA) e da costi unitari
+# di letteratura. Sono ordini di grandezza, modificabili dall'interfaccia.
+COSTI_RETE = {
+    "nuova_cabina_primaria_mln": 18.0,     # milioni di euro per nuova CP
+    "ampliamento_cabina_mln": 5.0,         # milioni per ampliamento
+    "connessione_eur_kw": 90,              # costo medio di allacciamento in MT
+    "rinforzo_eur_kw_oltre_hosting": 220,  # costo aggiuntivo oltre l'hosting capacity
+}
+INTERVENTI_PROGRAMMATI = {"nuove_cabine": 14, "ampliamenti": 23, "mva": 1740}
+
+# Parametri del parco elettrico regionale usati dal motore di scenario.
+# Idro: potenza efficiente Terna 2024 ripartita fra fluente e modulabile;
+# invaso dalle 12 grandi dighe, convertito in energia con un salto medio.
+PARCO_BASE_FVG = {
+    "pv_mw": 1210.8,
+    "idro_fluente_mw": 200.0,
+    "idro_bacino_mw": 330.0,
+    "idro_bacino_mwh": 155_000.0,   # 167,6 mln m3 con salto medio 400 m
+    "idro_afflusso_mw": 247.0,      # 2.163 GWh/anno di producibilita' media
+    "bess_mw": 206.0,               # Pavia di Udine, unico in esercizio
+    "bess_mwh": 824.0,              # 4 ore di scarica
+    "gas_mw": 1530.9,
+    "import_max_mw": 1500.0,
+    "export_max_mw": 800.0,
+}
+
+# ---------------------------------------------------------------- agrifood FVG
+FONTE_AGRIFOOD = "Agrifood FVG, sezione Bioeconomia e Dati statistici"
+
+AGRIFOOD = {
+    "seminativi_ha": 130_000,
+    "biogas_impianti": 71,
+    "biogas_taglia_media_kw": 700,
+    "paglie_stoppie_t_ha": (3.5, 4.5),
+    "foresta_certificata_pefc_ha": 81_913,
+    "pioppeti_certificati_ha": 1_960,
+    "quota_pefc_italia_pct": 9,
+    "quota_pioppeti_italia_pct": 35,
+    "legno_da_foresta_mc_2014": 19_544,
+    "legno_totale_mc_2014": 35_351,
+    "quota_uso_energetico_pct": 19.12,
+    "quota_legname_da_lavoro_pct": 80.88,
+}
+
+# ---------------------------------------------------------------- eventi estremi
+FONTE_EVENTI = ("Legambiente, Osservatorio CittàClima; Italy for Climate, database CIRO; "
+                "ARPA FVG per gli eventi del 2025")
+
+# Conteggio degli eventi meteorologici estremi registrati in FVG.
+# Attenzione: la crescita riflette anche il miglioramento della rilevazione,
+# non solo l'aumento reale della frequenza.
+EVENTI_ESTREMI_SERIE = {
+    2015: 3, 2016: 2, 2017: 4, 2018: 6, 2019: 5, 2020: 7,
+    2021: 6, 2022: 9, 2023: 14, 2024: 19, 2025: 8,
+}
+EVENTI_NOTA = (
+    "Serie ricostruita da rassegne su base regionale: gli anni recenti sono rilevati "
+    "meglio dei primi, quindi la pendenza va letta con cautela. Il 2025 conta i soli "
+    "episodi documentati da ARPA FVG nel bilancio annuale, con criteri piu' stretti."
+)
+EVENTI_MEMORABILI = [
+    (2003, "Alluvione della Val Canale", "29 agosto: due vittime, danni ingenti."),
+    (2018, "Tempesta Vaia", "Ottobre: schianti forestali diffusi su Carnia e Prealpi."),
+    (2023, "Stagione grandinigena record",
+     "Grandinate ripetute su pianura friulana e Pordenonese."),
+    (2024, "Prima regione d'Italia per eventi estremi per superficie",
+     "Conteggio Italy for Climate su base CittaClima."),
+    (2025, "Alluvione dello Judrio",
+     "16-17 novembre: oltre 200 mm in 12 ore, due vittime a Brazzano di Cormons."),
+]
+
+# ---------------------------------------------------------------- idroelettrico
+FONTE_IDRO_PER = ("Piano Energetico Regionale FVG, cap. 4; Terna e GSE; "
+                  "Distretto Idrografico delle Alpi Orientali")
+
+IDRO_QUADRO = {
+    "impianti_2022": 247, "mw_2022": 528.3,
+    "impianti_2023": 268, "mw_lordi_2023": 528.7, "mw_netti_2023": 522.6,
+    "quota_su_fer_regionali": 94,     # % della produzione rinnovabile primaria
+    "quota_su_produzione_lorda": 20,  # % della produzione elettrica lorda
+    "posizione_italia_impianti": 5, "posizione_italia_potenza": 9,
+    "quota_potenza_nazionale": (2.3, 2.8),
+}
+
+# La potenza e' concentrata dove ci sono i salti: Udine e Pordenone.
+IDRO_PROVINCE_MW = {"Udine": 324.7, "Pordenone": 193.8, "Gorizia": 9.8, "Trieste": 0.0}
+
+# Il parco e' polarizzato: pochi grandi impianti fanno quasi tutta la potenza.
+IDRO_CONCENTRAZIONE = {
+    "impianti_oltre_10mw": 12, "quota_potenza_oltre_10mw": 75,
+    "quota_numero_oltre_1mw": 24, "quota_potenza_oltre_1mw": 93,
+}
+
+# Produzione lorda per anno: e' la firma della variabilita' idrologica.
+IDRO_PRODUZIONE = {
+    2021: {"gwh": 1983.66, "quota_mix": 25.5, "quota_fer": 57.7, "nota": "anno umido"},
+    2022: {"gwh": 887.27, "quota_mix": 9.9, "quota_fer": None, "nota": "siccità estrema"},
+    2023: {"gwh": 1506.30, "quota_mix": None, "quota_fer": None, "nota": "ripresa"},
+    2024: {"gwh": 2177.70, "quota_mix": None, "quota_fer": None, "nota": "anno record"},
+}
+IDRO_MEDIA_2000_2022 = 1650    # GWh/anno
+IDRO_CALO_2022 = -55.3         # % rispetto al 2021
+IDRO_DEFICIT_PIOGGE_2022 = (30, 50)   # % sotto la media 1991-2020
+
+# Produzione 2023 per tipologia di impianto, GWh
+IDRO_TIPOLOGIE_2023 = {
+    "Acqua fluente": 900.7, "Bacino": 428.1, "Serbatoio": 177.5,
+}
+IDRO_POMPAGGIO_2023 = 15.9     # GWh assorbiti per i cicli di accumulo
+
+# I grandi sistemi di generazione
+IDRO_SISTEMI = [
+    {"nome": "A2A — asta del Tagliamento", "mw": 235.0, "gwh": 600,
+     "impianti": "Ampezzo (62,1 MW) e Somplago (172,8 MW)",
+     "nota": "Eredità delle opere SADE degli anni Quaranta e Cinquanta. Somplago è "
+             "scavata in caverna a 600 m di profondità, tre turbine Francis da 60 MW, "
+             "salto di 285 m. Restituisce al lago di Cavazzo, che fa da bacino di "
+             "demodulazione ed evita l'hydropeaking sul Tagliamento. Gruppi rinnovati "
+             "fra il 2011 e il 2015."},
+    {"nome": "Edison — asta del Cellina", "mw": 140.0, "gwh": 500,
+     "impianti": "30 impianti, fra cui Meduno e Barcis",
+     "nota": "Il bacino di Barcis svolge un ruolo plurimo: regimazione delle piene "
+             "autunnali, riserva irrigua estiva e generazione."},
+    {"nome": "SECAB — Alto Bût", "mw": 10.8, "gwh": 44.5,
+     "impianti": "5 centrali ad acqua fluente",
+     "nota": "Cooperativa fondata a Paluzza nel 1911, serve 5.500 utenze su 170 km² con "
+             "rete propria. I soci pagano il 40-43% in meno delle tariffe di mercato."},
+]
+
+IDRO_SECAB = {
+    "Enfretors (Paluzza)": {"kw": 2583, "gwh": 11.5},
+    "Noiariis (Sutrio)": {"kw": 2576, "gwh": 9.8},
+    "Mieli (Comeglians)": {"kw": 1880, "gwh": 14.0},
+    "Museis (Cercivento)": {"kw": 1800, "gwh": 7.2},
+    "Fontanon (Timau)": {"kw": 380, "gwh": 1.7},
+}
+
+# Il Deflusso Ecologico ha sostituito il Deflusso Minimo Vitale dal 2021
+DEFLUSSO_ECOLOGICO = {
+    "riferimento": "Direttiva Acque 2000/60/CE, Distretto Idrografico delle Alpi Orientali",
+    "obbligo_dal": 2021,
+    "moltiplicatore_rilasci": (2, 3),   # volte il vecchio DMV
+    "effetto": "Le micro-centrali e i mulini storici sono costretti a fermarsi per mesi "
+               "nei periodi di magra estivi e invernali, rilasciando l'intera portata "
+               "in alveo. È il vincolo che pesa di più sui piani di ammortamento dei "
+               "piccoli produttori.",
+}
+
+# Dove può ancora crescere: non nuovi sbarramenti, ma efficientamento e reti minori
+IDRO_POTENZIALE = {
+    "revamping_mw": 44, "nuovi_mini_micro_mw": 45,
+    "target_2030_gwh": 2837, "target_2045_gwh": 2693,
+    "fonte_potenziale": "studi A2A ed ENEA ripresi nel PER",
+}
+IDRO_AZIONI = [
+    ("Repowering degli impianti esistenti",
+     "Sostituzione di turbine obsolete con modelli ad alto rendimento: è la sola strada "
+     "per crescere, esaurita la disponibilità di grandi salti vergini."),
+    ("Micro-idro su acquedotti",
+     "Turbine sui salti geodetici delle condotte montane e civili: producono sfruttando "
+     "la pressione dell'acqua potabile in discesa, senza alcun impatto sui fiumi."),
+    ("Rilasci degli invasi irrigui",
+     "Generazione sui rilasci già previsti per l'agricoltura, senza nuove derivazioni."),
+    ("Turbine cinetiche sui canali di bonifica",
+     "Moduli da 10 kW immersi nei canali artificiali, che sfruttano lo scorrimento "
+     "superficiale senza dighe né deviazioni."),
+    ("Nuovi pompaggi su invasi esistenti",
+     "Al 2045 il fotovoltaico regionale triplicherà, generando forti eccedenze diurne: "
+     "pompare di giorno e turbinare di notte è il modo per assorbirle."),
+]

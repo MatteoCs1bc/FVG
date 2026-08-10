@@ -26,7 +26,7 @@ import streamlit as st
 # --------------------------------------------------------------------- dati
 _DATI: dict[str, str] = {
     "aree_cabine_primarie":
-        "H4sIAG3peWoC/22WzY4TQQyE7zxL07L7x9M+hlV4AbivhuwQjdglaGZz4elxFBDpLueaT267quzk"
+        "H4sIAF3reWoC/22WzY4TQQyE7zxL07L7x9M+hlV4AbivhuwQjdglaGZz4elxFBDpLueaT267quzk"
         "dHlZT0s4L/v7ZVvCvC3z84+3FL5fL9v6vC3n9fJz+XB4IuIjMVENy8eXdX/f1m/X37fvgmiU8Hl+"
         "3R8xBSynGuvIcQautpgBK4AlabH95zgp2YfDl+PT4VNg6avk4+1bCofTcp73w6/98HaeQ5aYAOIB"
         "Yn585y+UBihRN9sdygNU2OmpjM+Jo2aD8bVFAmwCbJLII5YIvcnUDXkXHV8VEodDr4t6JmJ0eMpY"
@@ -36,7 +36,7 @@ _DATI: dict[str, str] = {
         "nAXkVuA6kLP3dpTwtDraZTjBpOpsA02jxsZNbj0Grjn1BFNc1K03QT3UOMMNNky8ZU2AYQJqdobN"
         "3qMMW+H8GeA6+G/xdE8rGiver9w/7A+oEe0CzwgAAA==",
     "aree_disponibili_fv":
-        "H4sIAG3peWoC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
+        "H4sIAF3reWoC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
         "RNwAMpGgumdhiZZEEAhE3LhxI/JxOl3Pw/3zPL2O58exv+/nof/H6Z/4/vgy/+Ok5eW5vKJfKq2W"
         "l6Z6ufyBvNDn4eVlWVEr+Uv6Tj8vP+374+6v88t0N9x96C+X6f63aT4M54n25PTe6vtu33n6on0X"
         "+fXyT+21oRfK1T/dfe0fx+NQLWL0Plj642Du3V55Xi+uC2mzd/RbvXfqXin6/b3fR5tXOtOOzm8j"
@@ -144,7 +144,7 @@ _DATI: dict[str, str] = {
         "Jo/r8sjPMjti2Rc5zJT4S3427uG0tki4fMmaDE8soJSuRnSN1LtbJAYz+/k4rcjbjgaUj5IHR9qc"
         "5Lh9i9oud+xENZLeywNlzZe56L+xzIukLZLlSc6lK7Pu7f8AgPOfMQo/AAA=",
     "bilancio_2021":
-        "H4sIAG3peWoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
+        "H4sIAF3reWoC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
         "i9/8+77BV0NVRbKjCmSnDTmQ2lqSwSLrh1PTkmP5TM01eMYrGhSeDNYo1U59TGSapEq+MrQTegZ2"
         "ESCpkkOxBsxy3bX35GOyYp+uwS8W3B1BOIw9dbqPkWmZr6EXvGFgFJbsDE9WmxgmFTU47DTTOjQW"
         "1wIMMDustEzzOXhBT86DQMvgLMhT7WiiowJ5uUl/IqaODOseztJN9isZHRuOh2ZIrTbpz0ATudsE"
@@ -154,7 +154,7 @@ _DATI: dict[str, str] = {
         "tiK/BO5Da1iJXf73i9AzuBp58HoRuD+orcBjYKqGOVGAaP+kcRA9Koq/64LihtHr0UPorwBgrFDu"
         "y616F7A1NmCHuyTfq/RQZirN8jy+78awDw+/AIVMnrNsBQAA",
     "bio_impianti_dieta":
-        "H4sIAG3peWoC/22SP28bMQzFd38KwpMNyLFj1B06FHASJ8iQ1I2RdCxone5KwBIP+uPhhn72PjlO"
+        "H4sIAF3reWoC/22SP28bMQzFd38KwpMNyLFj1B06FHASJ8iQ1I2RdCxone5KwBIP+uPhhn72PjlO"
         "0gJdBB2PfPzxUeJ74ZDVWPUlONNHPUqwwiZLrwftcOs1uzDwz4cfzjTiMpuUGSUBcdNqwMltKw3v"
         "5SCZR98LN7EcpXiaXGsTFUpT83YzzzdmL+qhE9QY7qJYNPpCnjOuQueII0eNULIc0UsCueSilUEU"
         "kOKV5IxOty93xPiEZHbREXKjy6fqRhJE9wVVGG4TZL62ruO07tPad2y8a4RH21hH7ms6bRVNGL2v"
@@ -164,7 +164,7 @@ _DATI: dict[str, str] = {
         "SjMS7Keuy8z+NvH229PuGUO1kU97IjRuTk+xw0bVjC8vKkCedxSllZLB/GFxD0kuWfO5emx292t6"
         "AlyVqs32nBKP/gDnXvJN6gIAAA==",
     "bioenergie_comuni":
-        "H4sIAG3peWoC/3VayXIbSZK94ytwqwsqLfblSEklWZtR1RqSrUNf2pJECoqaBJKVWNqMXz/PY0lE"
+        "H4sIAF3reWoC/3VayXIbSZK94ytwqwsqLfblSEklWZtR1RqSrUNf2pJECoqaBJKVWNqMXz/PY0lE"
         "QBxVGWWSYksP9+fvucfLtD8fhk04nvrT5nU6DYe3/j//+99N2L+G/nAKm+1wOIZT/5/8b5t+HjBg"
         "//fmx3Q4DcuU/X9Xd/OpXz8N837YMMkY0xvtWMc2fMNlZ5n1GyU6ybnSikslNx/CtO+Px2F9nMaw"
         "xaROO1pk2B36tILZ0HwWf3Lece+UE8ZbtaG/Wt2dTmEfjmmsrcZK2UlpjWPCp5Efeqw5h359Nx/z"
@@ -253,7 +253,7 @@ _DATI: dict[str, str] = {
         "+cEob0SQEZ3ggEwVnxDXfOAeMuJ4HtMTYt4KGvBBpGdLzWlVQRC9kgsvMR5ShvseiOeVHOdvOBVR"
         "EKQhVR4UxDX+D5LFs4QOLgAA",
     "biomassa_comuni_2015":
-        "H4sIAG3peWoC/31XyW4cNxC96yvmlgshkCyuR1mIjQC2I1iKDrkY1Kg9ZtLTLfQsAfT1eUX2MtLI"
+        "H4sIAF3reWoC/31XyW4cNxC96yvmlgshkCyuR1mIjQC2I1iKDrkY1Kg9ZtLTLfQsAfT1eUX2MtLI"
         "6tE01MR0sZZXrx7X/fbQNaLtO9Gmvcjbp5y6fRb//ie2abdL3/fi2LeHbfN9S2Ldbx8Ou31+yG1z"
         "cbV9ap6fe6H0pbfSRB+0k8FFG4Rxl0YGW56c1coLLazXQmsltPfiOj89pX1/cTXs0+quGbaNUHQp"
         "rfHkIylJxgQqVnzU0VmrvDbKCKxp64XVOgpnyZ0aajZdYivKRKfifLEVvGtJKEFGaBiR4jP/eJVW"
@@ -287,7 +287,7 @@ _DATI: dict[str, str] = {
         "EZlzGN5nkP7jb1e7sQ7k62lS+6jmU+msJ9DJ5zj4+wCdX98OqOOrc4wDouelKs0xo+253vwfxXVo"
         "qRgQAAA=",
     "biomassa_impianti_2015":
-        "H4sIAG3peWoC/+1aTW/bSBK9z6/QbS4No78/jhnvTLBAMmvE3hz2MmjLjMNdSjSojwX86/c1KXY3"
+        "H4sIAF3reWoC/+1aTW/bSBK9z6/QbS4No78/jhnvTLBAMmvE3hz2MmjLjMNdSjSojwX86/c1KXY3"
         "JdqklGQnwS5tCBIBPVVXV9V7Vc2npn5qymLrm7Imy3q1WxfkX/8O7+53m215X1YFWfnNxv+xJfu6"
         "2q2KP1aC+PW6JlW9JpXf/nSzu7+vymVN3jRbv7grmlVBJKeUXJdPT35bE8WpJFpRRThlijBxRZU0"
         "wjjBqJDSCiL1lTSOO60UM1wymUDvfLMvNzCO55BMSUqY4wlSWaqMooeLdZCcm4T0W92sy8VDubjF"
@@ -331,25 +331,25 @@ _DATI: dict[str, str] = {
         "U5OelgzKA8tT6M8iSZ/G//DoV1yQAOnR1gwr09szOKubL/Bx3W4vmS/ctt8v9sU0qsVKXXwCxh0G"
         "K1mt/ppYyVmvQ80i+sEjmCOAKTbIafK+PjKfk8f/AYoBRgN1LQAA",
     "biomassa_province":
-        "H4sIAG3peWoC/4WQQWrDMBBF9zlFDiAGzWg0I2+76bJduAdwHZGKGivYJoWevuO4gUIK1kJIoP/0"
+        "H4sIAF3reWoC/4WQQWrDMBBF9zlFDiAGzWg0I2+76bJduAdwHZGKGivYJoWevuO4gUIK1kJIoP/0"
         "5819HrupVHeZ6rWMfencUscxD0O3ZHf++nCfS74cnurcf5Rj1/d5nst7Gew8HC9THkq+Vvdap1Me"
         "65idBEwevCNkSEgOE7B68U0if1u8x3quU/m2GpxkBaFAJHYITD6hIG8Yj3uct1OxPiiWXjlR0AqJ"
         "YSF4VU4qe4R2Knk2C0rNbSQGTeIIMCAR026D9qW1kI+6phMqNCE5u4TgQ5OacGjr0g35OOVzqaOd"
         "/ngkc+bXnNrOzlQQhdTwY+buC2O8CYsEjWfHEDk10fNdWHyMbopi4O0rTBhBDCSAyEHkMXFXQuG3"
         "XQJyAmpjkv7z3Ayopq0YCSugVSNSEEQKynz4AbhMiB+BAgAA",
     "biometano_pipeline":
-        "H4sIAG3peWoC/x2PsW7DMAxEd36FfqVpkCkBUtvN0O0iEc4BsmhItgd/fWkvJHHEke+iTWtR+dp3"
+        "H4sIAF3reWoC/x2PsW7DMAxEd36FfqVpkCkBUtvN0O0iEc4BsmhItgd/fWkvJHHEke+iTWtR+dp3"
         "FAtXjZxMLmjMdEEuazJCvi1V42xyy+D7WNyxsKFA7toWulseKMRo8tCkkCfGghjNh4x9t2whafba"
         "L96O/UaExPCb6P+fFtXt0umEsp/Gjhv9hlMNalU6K/HDJt2aID1KuPo/zXqcDbfKNfOUf1ZWOuAx"
         "v7hYQA4DRo8zaVlcd95T7HT8qAfoZ886vbU6+2B1Y4vWIC9uqCZ/Ns/mvP9sADfZKAEAAA==",
     "bosco":
-        "H4sIAG3peWoC/3WQvW7DIBSF9z4FypRI1Lpw+R0zeXMX7xZ1aYKEQ2WTPn+BdrASdTkS3PNxzmV2"
+        "H4sIAF3reWoC/3WQvW7DIBSF9z4FypRI1Lpw+R0zeXMX7xZ1aYKEQ2WTPn+BdrASdTkS3PNxzmV2"
         "2V/SGhzdwiUWvX/59TPMwU9XR79TvC9+WvxHSNOCu6ucsotlgi+HId3IxW855ETJrRzcPPttC+8h"
         "+gMdevJKhjNVChh2QDnjRRlya5VlHTzwz+yZMhBGiEqZ9gJX0iqmCrtDyfG30qlQlGkwUlcvQFGU"
         "VloEXdP6f5v+FbVoQFVUNAUlgdfcHfqElfU4B1P92NazwLUWleof65V2svyFaGZb21mlTfEX89g8"
         "5LiG2cU5RZfTiY5vI0WujGYNYR1aw5jgArRRDKmWCjViDfsBveRVws4BAAA=",
     "centrali_idro":
-        "H4sIAG3peWoC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
+        "H4sIAF3reWoC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
         "diTDCGI5K1vz3vC9mWHGvOrFIq92Yy/WU75L4yJFsc7bfvwRv67+LQ+Xu0W6SUPaxq+3/34X27TO"
         "Io5jFps4bPPXFX582ka8u9Ib8S2P214MeRRD3DZnq3X/40cW969/XghrOymUsV0QZ+2mn27iNqcs"
         "VDAsDMvOWaFcZ8V5P27Sqh+3ub2d4rhMbVqtUxy3qSVJ+AjqPGvN3mjjyBphXGc0ac9OhWCUds2b"
@@ -382,7 +382,7 @@ _DATI: dict[str, str] = {
         "j7zg/ZwMbm5ie7WccB8tqWp+sA+Yh0pT/4/iVKrWsmoNQT2hYm7Oe87gumSQO51B3uuKJ+P34MkP"
         "ESWU5MHJQqbEUSQKrIHG0FEvbW0QERopEzEa9wiH28J/CNgJKsgRAAA=",
     "centrali_idro_catasto":
-        "H4sIAG3peWoC/61925IbR5LlO74CxoftbjMIivvlUaSaWpk1uzmkRg/9MgZWQRR2UQUuqoozpq+Z"
+        "H4sIAF3reWoC/61925IbR5LlO74CxoftbjMIivvlUaSaWpk1uzmkRg/9MgZWQRR2UQUuqoozpq+Z"
         "T1jbT9j5sT3HPRLISAAsUCt1sygVWRnICA+/Hj9+v7tbLx4eV4+7xafd4/r+t9W//c9/Xzysto+7"
         "f7trv9/s7m/WDw+b3f0a3/u02+Ovr/7tbn27WR3/a4W/cLdaPNysbvmUxXZ3v9iuHg9Pvfv32av1"
         "/eN+td3cr+a3m/mb3f3jev7yCQ/568PmAX/rcb1IcWlMWrhQlzks8I+331r3rTM+LaxfWhd9ds4X"
@@ -701,27 +701,27 @@ _DATI: dict[str, str] = {
         "xlGkrXEYT2bXQ66cGCTXo9gDcmi7u4EpePyv/xT80O3u/n6lhHkPEx4PEqSGwWfVtyHZOLMXuApe"
         "AV+10reJ0mapgC8cXpj9P5RwXWvbwAAA",
     "consumi_finali_2021":
-        "H4sIAG3peWoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
+        "H4sIAF3reWoC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
         "MWhtaJDeGyupW9YA6rbMGj3sOOMN7c31PDuPZ1RInFE4ID2NFi9G+dkCkWSS7gKUPTD64eVUTvUY"
         "UMkN4LMe4iOLQPmxCr9ZcJOxHu8Gv0hvI2Gyso88zy6KDevy75PZYZ8nko4QK/IjOGdc/iSbemzx"
         "FILV2eQsGK/jaQP8/yE8aWlHlMRiLE6AW2iDfi612Lcdq6JJfl+fW1R/xXecPRJtdFWfbUpmu1yC"
         "0ybaTXyp0v3X5SSDtBjAmy3X8C7x0+9mlUq+DWtXyZLp99eJVir+V6Ik5JvCK6FFlx9q4J+Ot8cK"
         "m5y737GfM88a7gwFAAA=",
     "demografia_scenari":
-        "H4sIAG3peWoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
+        "H4sIAF3reWoC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
         "ej7uKzOSboxMQCsJdwSJwXydBYEooZEtTpbCx2GxWmJ1DkzyszqL+M9iZY3OL4kTO1p+AAAA",
     "digestori_diete":
-        "H4sIAG3peWoC/x2NWw6CMBBF/7sKFnDTdCoP+TZhAbgA00DRiZVBmMbE1Qt+neSem5whhW2L4NfC"
+        "H4sIAF3reWoC/x2NWw6CMBBF/7sKFnDTdCoP+TZhAbgA00DRiZVBmMbE1Qt+neSem5whhW2L4NfC"
         "YVbG8xPxzqLhtojG+btzUNPzxHm3Fcg5ONuYiyTNayzGOPIQNIJKEPmW0LS2NH2cUuZiE1VZVhl3"
         "Mmp43zag2pK5SpJi/b/gUZUOJ3s2XZjvj2M4Is78ALXxgD6dAAAA",
     "digestori_fonti":
-        "H4sIAG3peWoC/2WQTUvEQAyG7/srwl5WMdS2Wysei1TxIlLr3rM7aQ2kk3Vmin/frV8g3sL79UAG"
+        "H4sIAF3reWoC/2WQTUvEQAyG7/srwl5WMdS2Wysei1TxIlLr3rM7aQ2kk3Vmin/frV8g3sL79UAG"
         "84nxyEEmTsFQpqOQT4LTO9IwiKO9qCRa3XZtA5fQjEEGMwd3u/vfMBDsxUaKeF1gtc1ynNgJrdbt"
         "Y9sgxDQ7Mdg8KITZ1MCxKi8V9hxGYfCs8NR2y+hm/X/204+ckgUG1tMR5GB4U+JVnVVl/YPrOXhC"
         "eE6UJCY5vDJ0PIp5UoEyL6s19i9938Jf+tk35WIRJ4qRIZqK4y9F5W0WJ+dYbGssqjyrkfT0kQ83"
         "eKKnOwEAAA==",
     "digestori_impianti":
-        "H4sIAG3peWoC/7Va227jSJJ9n69ICOgpG5NF8yqRBewCssv2eFF2eS2XB+gXI02mVTlNMdW8uLfq"
+        "H4sIAF3reWoC/7Va227jSJJ9n69ICOgpG5NF8yqRBewCssv2eFF2eS2XB+gXI02mVTlNMdW8uLfq"
         "YbGYb5jP2K+aL9kTmUnqRrtrBlh3tWVRVF5ORJw4EUlV8EqvJM/1qqskX9f6RVW5ErxVa83XupXV"
         "d/H4y18kf1K4rxWVflys8sevvGlFq3mhcI3npWga+eje6KrpVvqx6XSpH8WyVjn+wDSt5M+6wm/x"
         "/KwK8aRKhdsxZdF9V7qSmObro6gqzZtuLetnlSuMKQuVi1Y8fhV2MlxpW7EsFV1c5+3jWjbaU1Wj"
@@ -798,14 +798,14 @@ _DATI: dict[str, str] = {
         "WD+UCZTRlZEUIwlL8WafW4LfylbC5tRGR6XEEv8nY+dn8fSkGr2kZzkGcpfMNDsLQ/+2fMQCuuqd"
         "a47ZM2Y5HAIsRA5N+H6A8bCoRpyFcRwEs2k8Qw4wkizLwigJM3M1+cP/AdJCSIozKgAA",
     "digestori_mais":
-        "H4sIAG3peWoC/8vNzMvMzY/PSNRJTs0rKUrMSQWxcxOLi6HCRanFifHZ5RlANpeZgYGBjoUJkLAE"
+        "H4sIAF3reWoC/8vNzMvMzY/PSNRJTs0rKUrMSQWxcxOLi6HCRanFifHZ5RlANpeZgYGBjoUJkLAE"
         "sYwMgSQXAJv4TI5CAAAA",
     "digestori_sintesi":
-        "H4sIAG3peWoC/1WNSw7CMAxE9z2LFTUf1OY0lkkssEAx5NNen3TJcmbezLT05ExdIMuDWxctjFSI"
+        "H4sIAF3reWoC/1WNSw7CMAxE9z2LFTUf1OY0lkkssEAx5NNen3TJcmbezLT05ExdIMuDWxctjFSI"
         "q94lEbxOxqIzTvrh2kclbAM3+6+jg+/QTpj0PT3GzHm2O8NFzfVDQApWSVoOru16WfwKLoINzu0Q"
         "VrODt+YGWzQBXAC//ABHNVBgmgAAAA==",
     "dighe_fvg":
-        "H4sIAG3peWoC/42TTW7cMAyF9z7F7LoRDEoUSWmZToEiQJAGSdtFNwNlxg1U+CdwPLOY0/QuvVgp"
+        "H4sIAF3reWoC/42TTW7cMAyF9z7F7LoRDEoUSWmZToEiQJAGSdtFNwNlxg1U+CdwPLOY0/QuvVgp"
         "JWnTTBbdEIZhP358j9zlu2T2S+7z8TiZ+3k65HGbk0n90h2PaTOYw9Tvh24z9ONmQLPk+6mf7soX"
         "4zht8piPeXp8/p7HzvTTaPq0NGf9bTLnu3nq+m5Z5rydzJcPxrkWDLTgzMc5HfLy6+fq07zLY5pz"
         "Wp2Pq3Xqt93DMu8LjI0OSyFjsXWWJJCQiCNvPLcePZN+Qd5HdL45G26z/vpGUxJtim2IZr1X+KSa"
@@ -818,11 +818,11 @@ _DATI: dict[str, str] = {
         "v7U87jFlZ0+tKtP4eldBjwx1f0Cih1CHsRw0Xwu6nJ6ar+mHemW+KmQdwhG1pLJiX5xTeNp416IL"
         "kdlqjnqYWK1XZLLoQNQuYt/8BnVNt8XMBAAA",
     "geo_indicatori":
-        "H4sIAG3peWoC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
+        "H4sIAF3reWoC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
         "eqBWju23qTSoGrGDqbGag7gU69mjZEqWo+M+vKyibBwr/GnQbnFJHF06276q2L+Z6W+wW8UK6Oyy"
         "quyvKNiEd5dPYzrMYVxoCtNMxxMtYxjenBpBvMgAAAA=",
     "idro_comuni":
-        "H4sIAG3peWoC/3WaS3MjN7KF9/wV3HlDMwpvYCl3uzsmQu3pq9b0YjYTJamsLl+SJRcfE6Fff78E"
+        "H4sIAF3reWoC/3WaS3MjN7KF9/wV3HlDMwpvYCl3uzsmQu3pq9b0YjYTJamsLl+SJRcfE6Fff78E"
         "UCSL9rVnPOMmUADycc7JBJ6H7XHXrfr9oT2s3oZDt3tv//O//13127e+3R361Uu32/eH9j/1t1U7"
         "dgzY/nkevP3v4m48dK+7dtWYpmn8Svlm3azUStm1jiGslFqrFG3UPgW7atbKL+4Oh37b78uMsJLx"
         "Tf6nMWtjgo+NTvLvi19aPjz27fJu3NcF4tVwFdfJ25RcSErXCft+w9aHMjhdDbZ6HZOLvrFKqTK4"
@@ -913,7 +913,7 @@ _DATI: dict[str, str] = {
         "74+b8npUQUi6CvHAOkJXoBnyxga5s7XT1bxoAXl41T/nsCzE8b0XsTRRR7qRH8Lb2NRe36j/H3SC"
         "1j64KwAA",
     "idro_montagna":
-        "H4sIAG3peWoC/6WTW0/jMBCF3/kVfgRpCLn28lgCRSttVxUgeIymqRtGiu2sY1er/PqdlBaBUpWt"
+        "H4sIAF3reWoC/6WTW0/jMBCF3/kVfgRpCLn28lgCRSttVxUgeIymqRtGiu2sY1er/PqdlBaBUpWt"
         "9ilybJ/vzMwxqYZQOwOlUV5LQLWi3cq2psDyt0eoZOuMldAYJ3WHxeIVGmvWvqQV1eSweHh9K1Br"
         "A44aU9BB0Xm7Io3QYu1MoaA/UshW2pI6MrAx2jFvs6E1vgtdPBnV1FgZyHGLXWdEjlZT2a/5izBj"
         "c2wGxY1Qck1GPGNVEyrZ42bxDKJxHEwgzcIgBAat0BkyNw3LYlWRuV5LxcZrZD7XOreoS2pF8ifL"
@@ -925,7 +925,7 @@ _DATI: dict[str, str] = {
         "1sDHOfjxMGdcyjUeS+FkxEiW8Eos96Q7qt4krPgpfMbFZ+EiyI7jJv+IS87AhcEIkqO4aXoS9wkh"
         "0vOAaQTp4N1B3A/wBPAvfpMIJ/kFAAA=",
     "inversioni_flusso":
-        "H4sIAG3peWoC/5WVu3LbMBBF+3yFujQYjSVLlFz6EatJbEaUGzeeNYlQOwNiOQDIQl8f6GGKcYiF"
+        "H4sIAF3reWoC/5WVu3LbMBBF+3yFujQYjSVLlFz6EatJbEaUGzeeNYlQOwNiOQDIQl8f6GGKcYiF"
         "3HBAzuG9+wJQG2pR5wjCYqlA5PCO2r/IHZKWgpQz8m3yVufutJ4f1qA1fVuRwZ3/c/Us7slUpK2Y"
         "LMTGNFI8grJSTK+m8z71sVzMj9ThEYQSBlrLAuumVD2xYcs+yAlm+Rahlc7hkGBKppB6X5D0SdyB"
         "ydFGsRXCnlp8Nh2ClpdANyz0CzRCSWI6uwib8XGlpJ00ZC0NNCtIJhHS7OcsueHrdsJi5T2/fIFM"
@@ -936,7 +936,7 @@ _DATI: dict[str, str] = {
         "xiv0GWmNnFufCgedOQN+kB0beA8KK23AtHg4oeYXMJxOux/lPCe2CBtS1fHoCdsdFqMnf+yNflj3"
         "FTKJkFlTDDXyL5+6qMf4CQAA",
     "orario_2023":
-        "H4sIAG3peWoC/5y9387tuo7ld5+nyH2qPojU/1wmD5BHKBQa1UEBnRygutEB+ukjm3Pt/U1rcFDt"
+        "H4sIAF3reWoC/5y9387tuo7ld5+nyH2qPojU/1wmD5BHKBQa1UEBnRygutEB+ukjm3Pt/U1rcFDt"
         "wsLZOKfW2Pa05SGK/In6x3/86z/9p3/9j3//T//4l//2j//2r//l3/7l//n//uk//ed/+c///V/+"
         "49/+73//x/+7/qfrv//bP/7L9Xf+z3/9j//6j3/5P/71v/7jv//7//gf//r7//OP//Jf/v1f/q//"
         "+Pd/+3/Xv+bf/xdNmv85yfrzv6b0v99//rf7P/+pFfnRqumf0k9a//f9jy+dfOt0/BSdNdbpQ1d/"
@@ -2068,14 +2068,14 @@ _DATI: dict[str, str] = {
         "n5R6mFxPSEip3Nk9ElJK3JYGWTgpJeR3/NZTKstJTylkGfKRlMoSk1Ko+2iWmJTydBEp5ekiUsrT"
         "7aTUWoEV6/4XsMuyjDKQBwA=",
     "parco_impianti_2023":
-        "H4sIAG3peWoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
+        "H4sIAF7reWoC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
         "aCQxb0bzPSXX+NCFI1k4RutbN44WBk/JwimGdkgpRAI7pHBxPZyPYL0PT9s2Bte5lCI1Abb9iaxP"
         "BM/AVclKMHlxNceSiyv1LiTnR1u4w4Eacj65oguxtfC6B8kFUyAZzyfD9D/Lfc4t5aiZXCPnudWt"
         "BhNPQx/UUfr+KnrXki0y1WDhZf8JaBBZ/beJkpmlzbuL/W1q1DyzLpFX1cp9VfDmRgp+dqmclHWd"
         "gyjxjvyRTyi1msZa3jWVuTPjI7NQinlSJbLRqGu9+r0J3RXfpINfrN35Mpe7cJlTusZpGIVC6Avl"
         "IwqtFBOAKPN3GYMrww+AYRR3mwIAAA==",
     "prelievi_fasce_fvg":
-        "H4sIAG3peWoC/6Vdy67kNpLd51f4A4QG3w+ge75gZhaD2Rs17mqjALuqYVdv+usnIk4opZRYKYbu"
+        "H4sIAF7reWoC/6Vdy67kNpLd51f4A4QG3w+ge75gZhaD2Rs17mqjALuqYVdv+usnIk4opZRYKYbu"
         "xmnY4LkkxTiMN3///Ofnn78uv3/+45dP378tv/z26U/6D7/+8fnf//60/PH5zy9///yV/u0ffvlH"
         "WP4Rl1++ff3zX79/+/n3z3//wv/8+ueX3z4//PJfn3799cu3P3763399//zbp8X99Z/fvvPIn7/8"
         "/s/Pv3799P3TX//m/5IX+v/fvyzuL9GlRD8hp0o/Kbm++GTA+R9M7ftnwcqZsUpgqBjykroB6r+/"
@@ -2210,7 +2210,7 @@ _DATI: dict[str, str] = {
         "+qoFt0TM4WGL66gu6DQEGeikxj4xi0EHNO0m+nxpKTghg4mstYbkjaDv8LDs5lgfs3GdUHDpZf+8"
         "EuiEvf/bg0Iv+FbTs6l9rmTw/T/Eye0vaKYAAA==",
     "prelievi_orari_fvg":
-        "H4sIAG3peWoC/6y9S692O7Kl1edXpKqdQq/vdhOEVJ0qkACJ5lFStatI1alMlCcREr+ePOzPQ+y9"
+        "H4sIAF7reWoC/6y9S692O7Kl1edXpKqdQq/vdhOEVJ0qkACJ5lFStatI1alMlCcREr+ePOzPQ+y9"
         "4jKG16clrdYcMT3teJ/wJWz/h3/+07/8yy9//K+//Msv//SXP/71b3/6x///+svf/sOf/v7XP/7t"
         "l3/583/85S//z5/++Pc//59//af//Oe//u0vf/3jf/m//4//5t/8pz//5a9/+NMfyh/HH/7L//Zv"
         "/lj+8ffvf1X94d/9+X//5W9//eP//Kv477/88d/+f7p/+k+//O3Pf/rnX/74+W8/c0zDRFVMjL0N"
@@ -6196,7 +6196,7 @@ _DATI: dict[str, str] = {
         "CfN99XB3IrFwl3B3Hlcw3p3ehUWxFmD05EONYV3C3Xn+W7w73cYm1iIsNx70NynNjQX9yXVbRg17"
         "Y9hc8eb8DaujhZvz999aneHmRPGcf+yr/wFBnamKsUEkAA==",
     "progetti_bess":
-        "H4sIAG3peWoC/82YXW8b1xGG7/sr9q4psFicM+f7Um6VQoUbC5Ji5E7YUFt1Y5qrLpc2ol/fZ5ak"
+        "H4sIAF7reWoC/82YXW8b1xGG7/sr9q4psFicM+f7Um6VQoUbC5Ji5E7YUFt1Y5qrLpc2ol/fZ5ak"
         "JCcuNzbQNgRIwCTFMzPvx7zHq3bq7oexb+upfxjqzfC+qx+Gqds8trfvP9bb3UM3/qNf9d3tP9t6"
         "O7XTcHs/do+Pw/4f9XrY1Ot2qt99vOWbt+//Vd/tHtb9Sj87/s522D5009TW7cQbd/2P/br7w9lq"
         "tXu/W/f1q/Pr6/q7jz9VF1NbXTdjs25q20ioTeNCyiXX/aZaDeN2qC82Vb+dxt00zRVb15hibU4m"
@@ -6229,7 +6229,7 @@ _DATI: dict[str, str] = {
         "hpRbj2hgxnOT3V/tJQaa1huCfBGkLMpPwnO7qS77bqzu/nixHTaPw96Q2TpchUsqp1cF3wjeFlxI"
         "ylwpFgzypDo2QyhzsAB32tFggLX8utB/A+26aVJRFAAA",
     "progetti_bioenergie":
-        "H4sIAG3peWoC/51XzW7bRhi89ykWOQQpsFns7re/R9lQAhdO3VpGD7kYa5lxiFJclaQaRE/Td+mL"
+        "H4sIAF7reWoC/51XzW7bRhi89ykWOQQpsFns7re/R9lQAhdO3VpGD7kYa5lxiFJclaQaRE/Td+mL"
         "dZaUnQRpWKaCYUuUTA7nm5lvtE1D9ZC7OvGh3mfe5l3F93mo2mO63X3g/WFfde/qbV3dvk+8H9KQ"
         "bx+66njM0wve5JY3aeC/f7jFJ293f/D7w76pt+W9x/P0ud9Xw5B4GnDgvr6rm+qHszpXbdU91BXH"
         "0101pDbz1z9dsTer64s121ydC7Z6fX1xfnW5YhtxLS65FBS4FkYFYz1PhwG4j8dypdVnz5UWkUyQ"
@@ -6256,7 +6256,7 @@ _DATI: dict[str, str] = {
         "bNG0IFEksCMRFDDadAdINBxGAnrscBP/d+d5m/f78hefeUj9p5ZYrIbSCw3Ogg2uFAmkO+YexzIG"
         "tVh8L7BYSQoRWMBC2ejVSqEKlb7/L2D/AZtM2NJTDgAA",
     "progetti_fer":
-        "H4sIAG3peWoC/9V923Ic15Ht+/mKCj6MpYhmx75fnhwgCcmY4QUDQLCPXxxFoAiV1eiGuxuQxa+Z"
+        "H4sIAF7reWoC/9V923Ic15Ht+/mKCj6MpYhmx75fnhwgCcmY4QUDQLCPXxxFoAiV1eiGuxuQxa+Z"
         "fzk/dtbKXX0Bia6upihbI2voIQmjN/Ylc2XmypVX9bK5mc3berRs72aj6ey2Gd3Nls30Y/23259H"
         "i/u7Zv6hvWqbv/1YjxbLejn72828+fhxVn4zmsymo0m9HP3089/wlX+7/cfo+v5u0l7x71bfZzFb"
         "3DXLZT2ql/iD6/Z9O2n+z/lsUs+b0dHNvH2YTZZ1ezUbvW1m0+qsmTY/1+8nzaJql/Wkravz+WSU"
@@ -6510,7 +6510,7 @@ _DATI: dict[str, str] = {
         "5EjZKb4Nnutpddo28+r6DyeLGSVixCCPRJCKype9roIMZMeBq6wMFgnDkEpPDTnLAiwor0HmlMja"
         "fr7Q/w/BYUJIHLYAAA==",
     "progetti_idroelettrico":
-        "H4sIAG3peWoC/9Va21LcVhZ9n69Q8ZDMVMmqc788EsykqCI2BYyr5sl13C2YU1FLbUmNM3zN/Mv8"
+        "H4sIAF7reWoC/9Va21LcVhZ9n69Q8ZDMVMmqc788EsykqCI2BYyr5sl13C2YU1FLbUmNM3zN/Mv8"
         "2Kx91NBNEgTHxnGGh4a+SUv7stbaWyzCWF93fQzlGNdd2Xarulx3Y93ehverT+WwWdf9VVzE+v2/"
         "QjmMYezeX/f17W03PSmbri2bMJY/f3qPT75ffSyXm3UTF/Te3XGGbljX4xjKMOKFZfwQm/ovJ8u+"
         "qxu83MdFVz58NtT9Td28WtV9KIaqr5qq5JXgpmQV59JL4Xc/ZWyLGl9YxNvYled1aOLtLZ2di8oZ"
@@ -6560,7 +6560,7 @@ _DATI: dict[str, str] = {
         "Wxg6iQRIFKrluQuMP35dlNXN32Ldlud4ftXOL9LH/497ihcj6a/+v05ZSJ9c8O2k7XM3eVl4XnTd"
         "LyXm/KfrAbZBsemfTizNqtP0alCqTltcYIqG9JjeYObxGmLwe0brfyFI6ON2JwAA",
     "progetti_per_area":
-        "H4sIAG3peWoC/8Vd2XIcx5V9n6+o4MNYimh25L48OUAQpDFDAhgAgjx+cRQbRbCsRhfcCyTxa+Zf"
+        "H4sIAF7reWoC/8Vd2XIcx5V9n6+o4MNYimh25L48OUAQpDFDAhgAgjx+cRQbRbCsRhfcCyTxa+Zf"
         "5sfmnMzqtUp0F+TwyDQlgiDrduZdzrlbTcpl9dDM63I0ax6r0VOzrGZfy78+/jxarJ6q+ed6Uld/"
         "/VKOFsty2YymzWw0LZejenZf/fLXef3wZTmaNPf1pBo9VItlM69G5bwq//rTo/q3m2aK/x5dVM2s"
         "uK5m1c/lp2m1KOplOa3L4mY+HcWxGykxDj5q4UcnK/z5+utXPkfqsXBGaK29UkJENTJ27KP0Xhkl"
@@ -6752,7 +6752,7 @@ _DATI: dict[str, str] = {
         "Une39Ke3s4Y0dsGp9NzrxiQH0QvfInFssfrbWvKvV49/KmvRmuudu+EgCL4eJyVwvWlJS3p5Jddc"
         "c0n7kdr1f9v02YkrgwAA",
     "progetti_solare":
-        "H4sIAG3peWoC/9Vd23IbR5J936/o8JMd0eqo++VpgpIpD2MsiUvK9Ma8OFpgm+odEM3BhR7ra+Zf"
+        "H4sIAF7reWoC/9Vd23IbR5J936/o8JMd0eqo++VpgpIpD2MsiUvK9Ma8OFpgm+odEM3BhR7ra+Zf"
         "9sf2nKrGhZLQLMpyxK6soYcgDBSqsk6ezDyZnLXr7mZY9m297u+GejHcdvXdsO4WH9pfbn+rV5u7"
         "bvlrP+u7X9639Wrdrodfbpbdhw9D/qaeD4t63q7rf/z2C575y+0/6+vN3byf8Wfb11kNq7tuvW7r"
         "do0Hrvt3/bz7j8th3i67+uRm2d8P83Xbz4b6dTcsqotu0f3Wvpt3q6pft/O+rS6X8zo2rlaiCT5q"
@@ -6914,23 +6914,23 @@ _DATI: dict[str, str] = {
         "PCSEmXtahkwjIEtr1Z+ZhHowhJxXUHEep4/HB2EYar5xb0OiSTmnypQ9JzvgDqpx+KlTVOcbtgu6"
         "z2bI/he8WSh9bW0AAA==",
     "pv_classi_2026":
-        "H4sIAG3peWoC/12PwUoEMQyG7/sUvXkJJc04tYXZg3heEFE8l06RsN3psM0i+vRmdAWxlxTyJf+X"
+        "H4sIAF7reWoC/12PwUoEMQyG7/sUvXkJJc04tYXZg3heEFE8l06RsN3psM0i+vRmdAWxlxTyJf+X"
         "nKS8tTMneKip92JmNmuTsnwmM5dab/i0clqkwekdlt19lXMDwuPr9Djto1ZAG3FwI4zR4rUfr33C"
         "H+CWxujAbcBT6Tzrdk61gP/FlCK0GDGgh4GC/08qpTAE65wP3oMbxqDMcxFhw8t86aI3VDbFrJxz"
         "019Oag7fChriDpvI3aAmfx5sSi/CleXD9LwlKTjtNc6hTjhLREhacfcFrHipuioBAAA=",
     "pv_province":
-        "H4sIAG3peWoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
+        "H4sIAF7reWoC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
         "MvIA/Jh5KBvDvNTp8+Bacv+x33pCIpjrlssx9I8dplxW3ob+h9r74e0fed/7+4P+Wq1zHvmdx6bd"
         "5KrnhfO6ZSDvrEawpAPYTpDpkjZgPApO3uioLnXhQyo6CkHILoruTFsK2EYxaAups9qol4mLeKaE"
         "zcomEt36FhCQtIPQoMGImtS1LtJbykmkOecJo07ni+CDREMyupN5Ua16er1IbLKnGkXF32PAO9+6"
         "kROH2D5j0Cbt1TcyexuAYgEAAA==",
     "pv_traiettoria":
-        "H4sIAG3peWoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
+        "H4sIAF7reWoC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
         "dpoIyPsAL+pDtJC8G+lwiaFLkwvesgwTAXJEUBoLDqf28YuXHISqqm2h4oCo9Y4gAZXiqxBG6ydi"
         "nWODMyYsCVJlfm6HX3xOKIXcFnKC0CXfEXKCQL0IR2LOP0fqe4qWeduzwUYXumVLyeYPMW/Kb9Ou"
         "mLebdfqaMrg54ywLxqSBxuUDrOtCw4M2jJxVYlOobWO+Qda7hgRR6c/KGw3m+bwlAgAA",
     "saturazione_aree":
-        "H4sIAG3peWoC/5VY224USQx951t6W+VLuezHgHjYZz4AZcMojJYwKIBW2q/f4+rpmZp0a5UMSoCk"
+        "H4sIAF7reWoC/5VY224USQx951t6W+VLuezHgHjYZz4AZcMojJYwKIBW2q/f4+rpmZp0a5UMSoCk"
         "bZddx8fH/XD6cnw4TI+Hn79Oz4fp/vlw//nvJ55+PJ8eD79+Haenfz4/Hx++HvHAcfp6n///cXju"
         "z9w9PPx++v3tOL0/ng7fD8+Px8P055fn0+EbLGF0mj6dvsHju7sPpdDHQqXU6fDHl+NP/Pav3/8e"
         "T98Pk8VsE89lIp21ieokPKtyq1OZubSo1FhJWggVw8/K5Wu1GPzHxr9wneuk+bjNVIJsEp1rJedI"
@@ -6964,18 +6964,18 @@ _DATI: dict[str, str] = {
         "pmizRpD6t6931qfH/XJ3i9EFb0lIGNE+LKcNbQ1h32kIQELjUS3YhbRcltolYvYCbIc5Wmzv/cM5"
         "FC4LBASBm8I9hV1/2wJBDYxAUlagedEG1zqtJu/+A45zqW7zFAAA",
     "scenari_fer_elettriche":
-        "H4sIAG3peWoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
+        "H4sIAF7reWoC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
         "yDC7iZOHTwzZHe6c3eSb/nxr/ORzTmEYPRCSAKmEOiJcHuNmSiIoq3EnpRA0UbuXakEbqo09Z555"
         "yi4M/J+j0a6zMkJ0tluHxUoWK7w+E9fSRSusNhu0iEmg3qA/M0mx0FNgH316h+V5Ruo1Uo6ENhV9"
         "AasMBmqVAQAA",
     "scenari_industria_vettori":
-        "H4sIAG3peWoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
+        "H4sIAF7reWoC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
         "z/PMDJ4oJg+u7yMMrhvPv30gB5fG9y6FuDrGLrQBJEoBSq4Rfsif4cC3zbXa/GOFIEwea4T6DTWA"
         "M7rr2C6FJtD9NtU36nMpxRpaiaUU22ixWJGttLSz1PavT1XrUxgcxUlNoCoIsp3VBTn2s1iSM6/e"
         "+9p9T1K1yLBxWLXJQC4uPzAHDSicT2HvLs8RocxArimtyEA9CqkcNCBerN4hxTYShersKfHlifsy"
         "Sdi6NMxSpjg8bo0uDvPyzH/7AP3i63xxAwAA",
     "scenari_settori":
-        "H4sIAG3peWoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
+        "H4sIAF7reWoC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
         "ZyV345iGTuRtF8OASYQYk/gZQtx153MQp9BfXx8jjuGlwRP2nfi8fIHbJBQoKZoU83GPi2+MoUch"
         "VV1XIH7H7vDgm/b1QjVQKoGlhlLpPU8tpfV01RU/XkrFQGY4LDUH6WhQ072v+dHgHAPpaO8U58hk"
         "r5YP9xZ3xzwOGO4nxFSktS5ptiVZ0lxRYIrazp3Dvy7V5YG3XGPeFiyXgVm31Jv0vGWq07JAaXva"
@@ -6983,7 +6983,7 @@ _DATI: dict[str, str] = {
         "THHd+QxfQ8iHNIwoPtoNe4mUN5Wsb3VPNXM9ja2U4TXZoQNdeVuKQoJbVzm6x9m/O/vrePpi7rr+"
         "AZui5jptBgAA",
     "sorgenti_idro_catasto":
-        "H4sIAG3peWoC/52SwWobMRCG734KHRMQRhqNZkbHUJqeWgptz0WphRHYUthd5+Cn76y9gT1ke6gu"
+        "H4sIAF7reWoC/52SwWobMRCG734KHRMQRhqNZkbHUJqeWgptz0WphRHYUthd5+Cn76y9gT1ke6gu"
         "Euzq08x8f+vnYv/086UVO0556va1D7rn3+dyqNmeerOnPO0extKu2RxK6+fa8rX2Vh7tzzy81bF2"
         "+3ms41TaVGwAt3fWh30kYfTImDBCskh7RM/ghDA6L7x77vq/+VIu9rkPrZqnt36ahrpi0UyCPQeK"
         "ThclZBdpRsWImHS5EFD87lt+y6Pxphiwn7Sj46nmNq5I3t1RktjptcDoQHBBEfqUmCQmYLyVlVtv"
@@ -6993,7 +6993,7 @@ _DATI: dict[str, str] = {
         "4oRjEg6sqQLcMrcVV3mXFue+Z/mCieIMJk2+hktDK+rvn9wPhgAAC1pj7xIn0tjrSO/yQLyoVO9V"
         "YNr9BThtI8TRAwAA",
     "terna_long":
-        "H4sIAG3peWoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
+        "H4sIAF7reWoC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
         "Jbtlqfv0eUi2Ip/iGQxm19bD9WsW68Vi8d1qt7pb7y4/bO4+3a4uVzc328t3mw/rm7vN9mZ9+cf2"
         "an30Z9r/Rfnf1fX2dn356WazW13ert/vv3e3+bh9e7X6uLqqf7v/08fb7btP/9p/9ffN9e52U//P"
         "+v+sy7+2/31vP65v315tP/z26W63+a186e2H65u37zZvd9ubm/X19Wq3vvz7/TdvLgmALt8cfffl"
@@ -7172,7 +7172,7 @@ _DATI: dict[str, str] = {
         "u2FzU5QnlMgVl72zjlToEjVgziK23A21u93WyxN3h8+D66X1hHHBGlI30/ZiffdxdXP/oQRJ+qQ5"
         "HO3umvX19Xrvo6tX+m1zvXnaC6zf4AP5X7RyDSo8YgMA",
     "trasporti_alimentazione":
-        "H4sIAG3peWoC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
+        "H4sIAF7reWoC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
         "DBc4TO90M907NK/doe1Pzbkb+jZq+n6Int+a/ld7PjfRn+Z1eGuj9747NZ/M1tT1rsiL+t/fSDDJ"
         "onzoj++HLpISYhG9nNrfIShWDqQVZDTIdjKH7ni0CrqIAbOgu7wSRC8SVjzsqo0pK6wpBh2PbF7d"
         "kyMSkGIGWJKCe5CQe1P+KMo1VsE5A6FGmhvAnwqkPCwjEVKmINM5CZJhPyZRH5jNel9ti3AcHLJ0"
@@ -7183,14 +7183,14 @@ _DATI: dict[str, str] = {
         "evMuP4wVmU8J6byONWjQimLB95cDS28ocoEykE4MuUEFpMkcECREUix4lY8jvYK+mvrOrB6fwpti"
         "JzftCYRAxmgCEMY1JokCk1K3fP8Dih8TBCsIAAA=",
     "trasporti_modo":
-        "H4sIAG3peWoC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
+        "H4sIAF7reWoC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
         "GrWpScTFmMipc7Hx0+TIxZ1T58kYw+CePofONY5wKig5ptiPbSC8llBL8j34nxuXauOMWbCs4PP3"
         "z23o+5BiIEopEH8TquM7RzNuGaFB2zVyGIdUSAgFjF9LFpopWAUWMVQvLQcjitmonDGQW/lbKsuZ"
         "BqWv8xeY/74ELhHE5Qx0XYzG3QYMXwNfH6/VKbVtsYLZzy4deSI/AdD6PoBMOAWt9oqQjgZp1tCL"
         "77p0CYWMgXrZdsYzFQPM3nFkQoGJnQ7kQYFux3aY+TS/9VX8f7qzx0o11GbZ/240s9PA1aMoEp1v"
         "NrOPLfAu57ug1/wvTrn4XG0DAAA=",
     "geo__aree_cabine_primarie":
-        "H4sIAG3peWoC/7W9TY8uu3Em+F+01lyQQQaD9E5jeHYNNDBLQ2ho5NuCMHLLuLpauA3/98lMPlEV"
+        "H4sIAF7reWoC/7W9TY8uu3Em+F+01lyQQQaD9E5jeHYNNDBLQ2ho5NuCMHLLuLpauA3/98lMPlEV"
         "T76Rp+qUz5xlHBZfJj/iO574j9/8+u//9vNv/uE3/9fPf/j177/8/I9//ctffv7jr3/+6//6zW9/"
         "8z837W+/+Yd//o/f/PlfjlG/+8dS6j+VWooe/89/ehD+7Ze//tvPv/z65/NP/uM3f/zrv/z5jz+/"
         "/NWffv7br3/95aT//H/8y5//9usvf/5//v6/jx88J/jDLz//4X/8v/8qv/mHsX4axwr+/tdf/vw/"
@@ -7616,7 +7616,7 @@ _DATI: dict[str, str] = {
         "lpHehazKZVxyBhRKEq2tbm9XKcTm6jbpjus8PlT9Ui0x1yhz7TPXVHOttkPLu4GEQ0migHbT5sob"
         "FS8QAztZ8u//8/8DGBt44AXNAQA=",
     "geo__aree_disponibili_fv":
-        "H4sIAG3peWoC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
+        "H4sIAF7reWoC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
         "UXcVkWNm6sEZd26qKrRMzc3U9HEeckT+/Tfv//b99Jv/9pu/OT29/3w7/dXr8/Pp8/v59eU3f/6b"
         "f5ltP37z3/7p339z/jKu+n/e3l8/nT791dOPH6/jgn3f0fD97fX76e39fOnz77/5/Prt58vp2O0/"
         "/vw3X0+v307vb/92uQj3+IfX53/7ev3Vz6+vb1/OL0/v1x/+p3/y4S9iS/HPU/mLGPo///mlIbnQ"
@@ -8263,7 +8263,7 @@ _DATI: dict[str, str] = {
         "s9zLKyyxcmOFq0J2OEvVrgLmXYRhrXv0WYJuL+5J7vbtmiwg5wCvmzFvmkbwwlUMnCbk7RP59//5"
         "X+xXINwYNgIA",
     "geo__comuni_fvg":
-        "H4sIAG3peWoC/6y9S48k2XWt+VcSnPSEIs77cWeU2LwQIN1mU2pOBA2CVcFkCJkR1ZGRCaiE+9/b"
+        "H4sIAF7reWoC/6y9S48k2XWt+VcSnPSEIs77cWeU2LwQIN1mU2pOBA2CVcFkCJkR1ZGRCaiE+9/b"
         "3M46nvszP15Bd/UkC3XCzNzsPPdj7bX+61dv//nT46/+x69+//jw9vX18R9ePn16/OHt6eX5V7/+"
         "1V9G25df/Y9/+69fPf24XfXb17fHj88P299429bw0+vLT4+vb0+ny//rVz+8fP76/Gju+N+//tXH"
         "x5fPj2+v/3n6u27/w8un//y4/9YPLy+vPz49P7ztP/dv/+bjb3wO/dep/CYUH37tfuP+/dd7a3Gj"
@@ -8918,7 +8918,7 @@ _DATI: dict[str, str] = {
         "cIbUFmzPEMTQJa1nCZLwVt4v7IzGAX0Pp7HGdFzDf6yxIitYyRqBskarXEG2eFXy2dh1gYN98fGy"
         "QtVChSFaQiTAgquHuGotC7GoJP5lA2Dxoi7J4bufK85z23/87/8B1ZIlSH2iAgA=",
     "geo__progetti_bess":
-        "H4sIAG3peWoC/+1abU/cRhD+K9Z9aSsha99f+AYpqajSBHEkihShyAWHOrmckc+XCCL+e8fe3fEe"
+        "H4sIAF7reWoC/+1abU/cRhD+K9Z9aSsha99f+AYpqajSBHEkihShyAWHOrmckc+XCCL+e8fe3fEe"
         "uInZo0WqiBRFPJmds5+bl2dm+TZrry7L2e7seVm066Z8Vi8W5Vlb1cvZzuyDw1az3XffZtX5bJfs"
         "3DIHo8umviybturMvs2W9efuv19+/ZgdtkU2z5t8kYNVW13WgO8fzOfw06ot2u7Hw2VWrdpm3bZ1"
         "UxWds7otl9fF+89fZ7s0ZxJM1+D9Q3VWle//KuAJcnGzM7so4WPa5qr7RP9AR/Xi6qJ/6rO6bs6r"
@@ -8953,7 +8953,7 @@ _DATI: dict[str, str] = {
         "hdZDIkfuYuJkQoLCSLmxXS+W2VFVNtn5T4erenldbyFeR1btMmlQsG7XZYRiqNg1CRhFZS+t3xsG"
         "6QGQXy5qhnOClNZjAk9yHTBiEJP+E7QazrrdLFSHwU5p6Z9EIrbxxN1XdHrzN4IAdqoXKgAA",
     "geo__progetti_bioenergie":
-        "H4sIAG3peWoC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
+        "H4sIAF7reWoC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
         "hNmsMTwRTqqr3UdVdaqKH7P+blXMDmbvCtev2+K4qapi2ZdNPZvPvnmsmx18/jErr2cHZP6TORit"
         "2mZVtH05mP2Y1c3t8N/vfztHHw4vTk/Q4vwYo8P3F6fH52eHaIEv8Bkc6stVA2ZHJZj3rm4A6nrX"
         "D9jhum/a8v5++A28N31R37svt//A7ZgbsFvDdd/KZVl8+e5mBwyLh/nsphgctXfDJ4Qv/NhUdzeb"
@@ -8983,7 +8983,7 @@ _DATI: dict[str, str] = {
         "YzxL09l2i2fZng0g27MBlHEDKLdnw0ioxJ6RMKeaPm9F86lZrYafQOaN6/ZuDJ+rOFMWNdpI5v8A"
         "osL2fsD8GtoqlrYyRgnfLikRp2Jj/DILzKiJmK+t4IzFBe3uBQOjVw//Akx93JG9GwAA",
     "geo__progetti_idroelettrico":
-        "H4sIAG3peWoC/+2cW2/bRhbHvwqhh+0u4BBzv+TNdbyFATcx7GyARRIUrER7B0uRKkk5jYN89x5q"
+        "H4sIAF7reWoC/+2cW2/bRhbHvwqhh+0u4BBzv+TNdbyFATcx7GyARRIUrER7B0uRKkk5jYN89x5q"
         "Lhw6is1IdOPdum/9+RxK89fMnMsM82nWflzls+ezf+ZZu67zo6oo8nlrqnJ2MLu0rJk9f/tpZhaz"
         "5+jgljkYrepqldet6cw+zcpq2f25yevrvHi2zOssadI6LVKwbM2qgr+dLOoqL/K2rc28Aty0Wdvx"
         "8zwrzM1N9z/w1KrNy5vsl+WH2XOcEgJma/iYSzM3+S//yeCrpPjzwewqh89r64/dR7tvdlYVH682"
@@ -9033,7 +9033,7 @@ _DATI: dict[str, str] = {
         "px3ClC/1IJpJ4oMeuSvoSeajHuujXv+0PrRGIde/4Dg+XNt2cvTBw6cNfhb1dOQ/7sif66d/QGTb"
         "PyAi0ANevfpKKfWIb1wJ/Be8zwxFdjh+5H3hzaljgvdFuy/QeV/Ix76dlO8//wGahKFC20cAAA==",
     "geo__progetti_solare":
-        "H4sIAG3peWoC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
+        "H4sIAF7reWoC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
         "n0hmRGQmuyQXi/RlgQH8YEXnjVF5iesX/3y0//Guf/Tpo+f9cn+/7Z9uVqv+Zj9s1o8eP/ou03aP"
         "Pv37Px8Nbx99Kh4fNYdGd9vNXb/dD6nZPx+tN7fpzy/7zbp71a/7H5bfrvpdN+yXq2HZXW9X0GM/"
         "3G2gzZN32+H9ZrVfDjcboO72y/2BfL/fbIeffkr/gtE3+3790/K/bn949GlcOGh2D7N9N9wM/X99"
@@ -10047,6 +10047,106 @@ EVENTI_MEMORABILI = [
      "Conteggio Italy for Climate su base CittaClima."),
     (2025, "Alluvione dello Judrio",
      "16-17 novembre: oltre 200 mm in 12 ore, due vittime a Brazzano di Cormons."),
+]
+
+# ---------------------------------------------------------------- idroelettrico
+FONTE_IDRO_PER = ("Piano Energetico Regionale FVG, cap. 4; Terna e GSE; "
+                  "Distretto Idrografico delle Alpi Orientali")
+
+IDRO_QUADRO = {
+    "impianti_2022": 247, "mw_2022": 528.3,
+    "impianti_2023": 268, "mw_lordi_2023": 528.7, "mw_netti_2023": 522.6,
+    "quota_su_fer_regionali": 94,     # % della produzione rinnovabile primaria
+    "quota_su_produzione_lorda": 20,  # % della produzione elettrica lorda
+    "posizione_italia_impianti": 5, "posizione_italia_potenza": 9,
+    "quota_potenza_nazionale": (2.3, 2.8),
+}
+
+# La potenza e' concentrata dove ci sono i salti: Udine e Pordenone.
+IDRO_PROVINCE_MW = {"Udine": 324.7, "Pordenone": 193.8, "Gorizia": 9.8, "Trieste": 0.0}
+
+# Il parco e' polarizzato: pochi grandi impianti fanno quasi tutta la potenza.
+IDRO_CONCENTRAZIONE = {
+    "impianti_oltre_10mw": 12, "quota_potenza_oltre_10mw": 75,
+    "quota_numero_oltre_1mw": 24, "quota_potenza_oltre_1mw": 93,
+}
+
+# Produzione lorda per anno: e' la firma della variabilita' idrologica.
+IDRO_PRODUZIONE = {
+    2021: {"gwh": 1983.66, "quota_mix": 25.5, "quota_fer": 57.7, "nota": "anno umido"},
+    2022: {"gwh": 887.27, "quota_mix": 9.9, "quota_fer": None, "nota": "siccità estrema"},
+    2023: {"gwh": 1506.30, "quota_mix": None, "quota_fer": None, "nota": "ripresa"},
+    2024: {"gwh": 2177.70, "quota_mix": None, "quota_fer": None, "nota": "anno record"},
+}
+IDRO_MEDIA_2000_2022 = 1650    # GWh/anno
+IDRO_CALO_2022 = -55.3         # % rispetto al 2021
+IDRO_DEFICIT_PIOGGE_2022 = (30, 50)   # % sotto la media 1991-2020
+
+# Produzione 2023 per tipologia di impianto, GWh
+IDRO_TIPOLOGIE_2023 = {
+    "Acqua fluente": 900.7, "Bacino": 428.1, "Serbatoio": 177.5,
+}
+IDRO_POMPAGGIO_2023 = 15.9     # GWh assorbiti per i cicli di accumulo
+
+# I grandi sistemi di generazione
+IDRO_SISTEMI = [
+    {"nome": "A2A — asta del Tagliamento", "mw": 235.0, "gwh": 600,
+     "impianti": "Ampezzo (62,1 MW) e Somplago (172,8 MW)",
+     "nota": "Eredità delle opere SADE degli anni Quaranta e Cinquanta. Somplago è "
+             "scavata in caverna a 600 m di profondità, tre turbine Francis da 60 MW, "
+             "salto di 285 m. Restituisce al lago di Cavazzo, che fa da bacino di "
+             "demodulazione ed evita l'hydropeaking sul Tagliamento. Gruppi rinnovati "
+             "fra il 2011 e il 2015."},
+    {"nome": "Edison — asta del Cellina", "mw": 140.0, "gwh": 500,
+     "impianti": "30 impianti, fra cui Meduno e Barcis",
+     "nota": "Il bacino di Barcis svolge un ruolo plurimo: regimazione delle piene "
+             "autunnali, riserva irrigua estiva e generazione."},
+    {"nome": "SECAB — Alto Bût", "mw": 10.8, "gwh": 44.5,
+     "impianti": "5 centrali ad acqua fluente",
+     "nota": "Cooperativa fondata a Paluzza nel 1911, serve 5.500 utenze su 170 km² con "
+             "rete propria. I soci pagano il 40-43% in meno delle tariffe di mercato."},
+]
+
+IDRO_SECAB = {
+    "Enfretors (Paluzza)": {"kw": 2583, "gwh": 11.5},
+    "Noiariis (Sutrio)": {"kw": 2576, "gwh": 9.8},
+    "Mieli (Comeglians)": {"kw": 1880, "gwh": 14.0},
+    "Museis (Cercivento)": {"kw": 1800, "gwh": 7.2},
+    "Fontanon (Timau)": {"kw": 380, "gwh": 1.7},
+}
+
+# Il Deflusso Ecologico ha sostituito il Deflusso Minimo Vitale dal 2021
+DEFLUSSO_ECOLOGICO = {
+    "riferimento": "Direttiva Acque 2000/60/CE, Distretto Idrografico delle Alpi Orientali",
+    "obbligo_dal": 2021,
+    "moltiplicatore_rilasci": (2, 3),   # volte il vecchio DMV
+    "effetto": "Le micro-centrali e i mulini storici sono costretti a fermarsi per mesi "
+               "nei periodi di magra estivi e invernali, rilasciando l'intera portata "
+               "in alveo. È il vincolo che pesa di più sui piani di ammortamento dei "
+               "piccoli produttori.",
+}
+
+# Dove può ancora crescere: non nuovi sbarramenti, ma efficientamento e reti minori
+IDRO_POTENZIALE = {
+    "revamping_mw": 44, "nuovi_mini_micro_mw": 45,
+    "target_2030_gwh": 2837, "target_2045_gwh": 2693,
+    "fonte_potenziale": "studi A2A ed ENEA ripresi nel PER",
+}
+IDRO_AZIONI = [
+    ("Repowering degli impianti esistenti",
+     "Sostituzione di turbine obsolete con modelli ad alto rendimento: è la sola strada "
+     "per crescere, esaurita la disponibilità di grandi salti vergini."),
+    ("Micro-idro su acquedotti",
+     "Turbine sui salti geodetici delle condotte montane e civili: producono sfruttando "
+     "la pressione dell'acqua potabile in discesa, senza alcun impatto sui fiumi."),
+    ("Rilasci degli invasi irrigui",
+     "Generazione sui rilasci già previsti per l'agricoltura, senza nuove derivazioni."),
+    ("Turbine cinetiche sui canali di bonifica",
+     "Moduli da 10 kW immersi nei canali artificiali, che sfruttano lo scorrimento "
+     "superficiale senza dighe né deviazioni."),
+    ("Nuovi pompaggi su invasi esistenti",
+     "Al 2045 il fotovoltaico regionale triplicherà, generando forti eccedenze diurne: "
+     "pompare di giorno e turbinare di notte è il modo per assorbirle."),
 ]
 
 # --- dispacciamento ---
@@ -12473,174 +12573,280 @@ def _scheda_6():
 
 
 def _scheda_7():
-    st.subheader("Il parco idroelettrico regionale")
-    st.caption(f"Fonte: {DOC.FONTE_IDRO}, integrata con la serie storica Terna.")
+    q = DOC.IDRO_QUADRO
+    st.subheader("L'idroelettrico, colonna portante e punto debole")
+    st.caption(f"Fonte: {DOC.FONTE_IDRO_PER}.")
 
-    i = st.columns(4)
-    i[0].metric("Impianti", f"{DOC.IDRO_PARCO['Impianti']}")
-    i[1].metric("Potenza efficiente lorda", f"{DOC.IDRO_PARCO['Potenza efficiente lorda (MW)']:.0f} MW")
-    i[2].metric("Producibilità media", f"{DOC.IDRO_PARCO['Producibilità media annua (GWh)']:,.0f} GWh".replace(",", "."))
-    idro_anno = anno_di(idrico)["valore"].sum()
-    i[3].metric(f"Prodotto nel {anno}", f"{idro_anno:,.0f} GWh".replace(",", "."))
+    k = st.columns(5)
+    k[0].metric("Impianti", q["impianti_2023"], "al 31/12/2023")
+    k[1].metric("Potenza efficiente lorda", f"{q['mw_lordi_2023']:.1f} MW",
+                f"{q['mw_netti_2023']:.1f} MW netti")
+    k[2].metric("Quota sulle rinnovabili regionali", f"{q['quota_su_fer_regionali']}%",
+                "in condizioni idrologiche normali")
+    k[3].metric("Quota sulla produzione lorda", f"{q['quota_su_produzione_lorda']}%")
+    k[4].metric("In Italia", f"{q['posizione_italia_impianti']}° per impianti",
+                f"{q['posizione_italia_potenza']}° per potenza")
 
-    # energia stoccabile negli invasi: e' l'accumulo stagionale del sistema
-    dighe = D.carica_per("dighe_fvg")
-    if not dighe.empty:
-        vol_idro = dighe[dighe["utilizzo"].str.contains("Idro", case=False, na=False)][
-            "volume_mln_m3"].sum()
-        i2 = st.columns(4)
-        i2[0].metric("Invaso a uso idroelettrico", f"{vol_idro:,.1f} mln m³".replace(",", "."))
-        for k, salto in zip(i2[1:], (200, 400, 600)):
-            gwh = 1000 * 9.81 * vol_idro * 1e6 * salto * 0.85 / 3.6e12
-            k.metric(f"Energia stoccabile, salto {salto} m", f"{gwh:,.0f} GWh".replace(",", "."))
-        st.caption(
-            f"Fonte: {DOC.F_REGIONE}, catasto grandi dighe. L'energia stoccabile dipende "
-            "dal salto disponibile a valle dell'invaso, che varia da impianto a impianto: "
-            "qui tre ipotesi. Anche la più prudente vale **un ordine di grandezza più "
-            "di tutti gli accumuli elettrochimici** autorizzati in regione. È il vero "
-            "sistema di accumulo stagionale del Friuli, e c'è già."
-        )
-
-    idro_tot = idrico.groupby("anno")["valore"].sum()
-    if len(idro_tot) > 1:
-        mn, mx = idro_tot.min(), idro_tot.max()
-        st.caption(
-            f"Tra il {idro_tot.idxmin()} e il {idro_tot.idxmax()} la produzione è oscillata da "
-            f"**{mn:,.0f}** a **{mx:,.0f} GWh**: un fattore {mx / mn:.1f}. ".replace(",", ".")
-            + "L'idroelettrico è rinnovabile ma non è costante — dipende da quanta acqua arriva."
-        )
-
-    c1, c2 = st.columns([1.5, 1])
-    with c1:
-        st.markdown("**Produzione per tipologia di impianto**")
-        fig = px.bar(idrico.sort_values("anno"), x="anno", y="valore", color="voce",
-                     color_discrete_map=D.mappa_colori(idrico["voce"]))
-        prod_media = DOC.IDRO_PARCO["Producibilità media annua (GWh)"]
-        fig.add_hline(y=prod_media, line_dash="dash", line_color="#111827",
-                      annotation_text=f"producibilità media {prod_media:.0f} GWh",
-                      annotation_position="top left")
-        fig.update_layout(height=400, yaxis_title="GWh", xaxis_title=None, **PLOT)
-        grafico(fig, DOC.F_TERNA)
-
-    with c2:
-        st.markdown("**Composizione nell'anno selezionato**")
-        m = anno_di(idrico)
-        m = m[m["valore"] > 0]
-        if not m.empty:
-            fig = px.pie(m, values="valore", names="voce", hole=0.5,
-                         color="voce", color_discrete_map=D.mappa_colori(m["voce"]))
-            fig.update_traces(textinfo="percent")
-            fig.update_layout(height=400, **PLOT)
-            grafico(fig, DOC.F_TERNA)
-
-    st.subheader("Quanto lavora il parco idroelettrico")
-    st.caption(
-        "Ore equivalenti annue: produzione divisa per la potenza installata. "
-        "Sono la firma della variabilità idrologica, non dell'efficienza degli impianti."
-    )
-    pot_idro = pot_fonte[pot_fonte["voce"] == "Idrico"]
-    ore_idro = (idro_tot / pot_idro.set_index("anno")["valore"] * 1000).dropna().reset_index(name="ore")
-    fig = px.bar(ore_idro, x="anno", y="ore", color_discrete_sequence=["#2563EB"])
-    fig.add_hline(y=ore_idro["ore"].mean(), line_dash="dot", line_color="#111827",
-                  annotation_text=f"media {ore_idro['ore'].mean():.0f} ore",
+    # ------------------------------------------------- la volatilità, il dato chiave
+    st.subheader("Il problema non è quanto produce, è quanto varia")
+    prod_idro = pd.DataFrame([
+        {"anno": a, "GWh": v["gwh"], "nota": v["nota"]}
+        for a, v in DOC.IDRO_PRODUZIONE.items()
+    ])
+    fig = px.bar(prod_idro, x="anno", y="GWh", text_auto=".0f", color="GWh",
+                 color_continuous_scale=["#DC2626", "#FACC15", "#2563EB"],
+                 hover_data={"nota": True})
+    fig.add_hline(y=DOC.IDRO_MEDIA_2000_2022, line_dash="dash", line_color="#111827",
+                  annotation_text=f"media 2000-2022: {DOC.IDRO_MEDIA_2000_2022} GWh",
                   annotation_position="top left")
-    fig.update_layout(height=340, yaxis_title="ore/anno", xaxis_title=None, **PLOT)
-    grafico(fig, DOC.F_TERNA)
+    fig.update_traces(cliponaxis=False)
+    fig.update_layout(height=360, xaxis_title=None, coloraxis_showscale=False,
+                      yaxis_title="GWh lordi", **PLOT)
+    grafico(fig, DOC.FONTE_IDRO_PER + "; " + DOC.F_TERNA)
+
+    v1, v2, v3, v4 = st.columns(4)
+    v1.metric("2021, anno umido", f"{DOC.IDRO_PRODUZIONE[2021]['gwh']:,.0f} GWh".replace(",", "."),
+              f"{DOC.IDRO_PRODUZIONE[2021]['quota_mix']}% del mix elettrico")
+    v2.metric("2022, siccità estrema", f"{DOC.IDRO_PRODUZIONE[2022]['gwh']:,.0f} GWh".replace(",", "."),
+              f"{DOC.IDRO_CALO_2022:.1f}% in un anno")
+    v3.metric("2022 sulla media storica",
+              f"{DOC.IDRO_PRODUZIONE[2022]['gwh'] / DOC.IDRO_MEDIA_2000_2022 * 100:.0f}%")
+    v4.metric("2024, anno record", f"{DOC.IDRO_PRODUZIONE[2024]['gwh']:,.0f} GWh".replace(",", "."),
+              f"+{DOC.IDRO_PRODUZIONE[2024]['gwh'] / DOC.IDRO_PRODUZIONE[2022]['gwh'] - 1:.0%} sul 2022")
+
+    st.error(
+        f"**Fra il 2022 e il 2024 la produzione idroelettrica friulana è passata da 887 a "
+        f"2.178 GWh: due volte e mezzo.** Nel 2022 le precipitazioni sono state fra il "
+        f"{DOC.IDRO_DEFICIT_PIOGGE_2022[0]} e il {DOC.IDRO_DEFICIT_PIOGGE_2022[1]}% sotto "
+        "la media 1991-2020, e il contributo dell'idroelettrico al mix elettrico regionale "
+        f"è crollato dal {DOC.IDRO_PRODUZIONE[2021]['quota_mix']}% al "
+        f"{DOC.IDRO_PRODUZIONE[2022]['quota_mix']}%.\n\n"
+        "È il motivo per cui l'idroelettrico non può essere l'ancora del sistema "
+        "regionale: è rinnovabile ma **non è affidabile anno su anno**, e la crisi arriva "
+        "proprio quando servirebbe di più — d'estate, con la domanda di raffrescamento "
+        "alta e l'agricoltura che ha la precedenza legale sull'acqua."
+    )
+
+    # --------------------------------------------- dove sta, e quanto è concentrato
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Dove sta la potenza**")
+        prov = pd.DataFrame(DOC.IDRO_PROVINCE_MW.items(), columns=["Provincia", "MW"])
+        prov = prov[prov["MW"] > 0]
+        fig = px.bar(prov.sort_values("MW"), x="MW", y="Provincia", orientation="h",
+                     text_auto=".1f", color="MW", color_continuous_scale="Blues")
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=280, yaxis_title=None, coloraxis_showscale=False, **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER, "Dati al 31/12/2022.")
+        st.caption(
+            "Udine da sola fa il **61%**, Pordenone il 37%. Le province costiere non hanno "
+            "salti: Trieste è a zero. È una risorsa di montagna, e la montagna è metà "
+            "regione."
+        )
+    with c2:
+        st.markdown("**Quanto è concentrato**")
+        conc = DOC.IDRO_CONCENTRAZIONE
+        cc = pd.DataFrame([
+            {"Classe": f"Oltre 10 MW ({conc['impianti_oltre_10mw']} impianti)",
+             "Quota della potenza": conc["quota_potenza_oltre_10mw"]},
+            {"Classe": f"Oltre 1 MW ({conc['quota_numero_oltre_1mw']}% del numero)",
+             "Quota della potenza": conc["quota_potenza_oltre_1mw"]},
+        ])
+        fig = px.bar(cc, x="Quota della potenza", y="Classe", orientation="h",
+                     text_auto=".0f", color_discrete_sequence=["#1E3A8A"])
+        fig.update_traces(cliponaxis=False)
+        fig.update_layout(height=280, yaxis_title=None, xaxis_range=[0, 100],
+                          xaxis_title="% della potenza regionale", **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER)
+        st.caption(
+            "**Dodici impianti fanno tre quarti della potenza.** I 268 impianti del "
+            "conteggio sono in gran parte micro-derivazioni: contano per il territorio e "
+            "per le comunità che le gestiscono, non per il bilancio energetico."
+        )
+
+    # ------------------------------------------------- come produce: le tipologie
+    st.subheader("Fluente, bacino, serbatoio: tre modi diversi di essere idroelettrico")
+    tip = pd.DataFrame(DOC.IDRO_TIPOLOGIE_2023.items(), columns=["Tipologia", "GWh"])
+    tip["quota"] = tip["GWh"] / tip["GWh"].sum() * 100
+    t1, t2 = st.columns([1, 1.3])
+    with t1:
+        fig = px.pie(tip, values="GWh", names="Tipologia", hole=0.5,
+                     color="Tipologia",
+                     color_discrete_map={"Acqua fluente": "#60A5FA", "Bacino": "#2563EB",
+                                         "Serbatoio": "#1E3A8A"})
+        fig.update_traces(textinfo="percent+label", textposition="outside")
+        fig.update_layout(height=340, showlegend=False, **PLOT)
+        grafico(fig, DOC.FONTE_IDRO_PER, "Produzione 2023.")
+    with t2:
+        st.markdown(
+            f"- **Acqua fluente — {tip.loc[0, 'GWh']:.0f} GWh, il {tip.loc[0, 'quota']:.0f}%.** "
+            "Nessun accumulo: producono quello che passa, quando passa. Sono i più numerosi "
+            "e i più esposti alla siccità.\n"
+            f"- **Bacino — {tip.loc[1, 'GWh']:.0f} GWh, il {tip.loc[1, 'quota']:.0f}%.** "
+            "Invasi di regolazione giornaliera o settimanale: possono spostare la "
+            "produzione di qualche ora o giorno.\n"
+            f"- **Serbatoio — {tip.loc[2, 'GWh']:.0f} GWh, il {tip.loc[2, 'quota']:.0f}%.** "
+            "Grandi laghi artificiali che accumulano per settimane o mesi. Sono pochi ma "
+            "sono l'unico vero accumulo stagionale che la regione possiede."
+        )
+        st.caption(
+            f"Nel 2023 i cicli di pompaggio hanno assorbito **{DOC.IDRO_POMPAGGIO_2023} GWh**: "
+            "una quantità simbolica rispetto al potenziale. È esattamente la leva che il "
+            "PER vuole usare per assorbire il fotovoltaico in eccesso."
+        )
+
+    # ------------------------------------------------------- i grandi sistemi
+    st.subheader("Chi produce davvero")
+    sist = pd.DataFrame(DOC.IDRO_SISTEMI)
+    fig = px.bar(sist.sort_values("mw"), x="mw", y="nome", orientation="h",
+                 text="impianti", color="mw", color_continuous_scale="Blues")
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    fig.update_layout(height=300, yaxis_title=None, xaxis_title="MW installati",
+                      coloraxis_showscale=False, **PLOT)
+    grafico(fig, DOC.FONTE_IDRO_PER)
+
+    for r in sist.itertuples():
+        with st.expander(f"{r.nome} — {r.mw:.1f} MW, circa {r.gwh:.0f} GWh l'anno"):
+            st.markdown(f"**{r.impianti}**\n\n{r.nota}")
+
+    st.markdown("**Le cinque centrali della cooperativa SECAB**")
+    secab = pd.DataFrame([
+        {"Centrale": k, "kW": v["kw"], "GWh/anno": v["gwh"]}
+        for k, v in DOC.IDRO_SECAB.items()
+    ])
+    st.dataframe(secab.sort_values("kW", ascending=False), hide_index=True, width="stretch")
+    st.caption(
+        f"Fonte: {DOC.FONTE_IDRO_PER}. Cinque impianti ad acqua fluente per "
+        f"{secab['kW'].sum() / 1000:.1f} MW e {secab['GWh/anno'].sum():.1f} GWh l'anno. "
+        "Non è la taglia che li rende interessanti: è che una cooperativa fondata nel 1911 "
+        "possiede ancora la propria rete e restituisce ai soci il 40-43% di sconto in "
+        "bolletta. È un modello di autogoverno energetico, non solo un impianto."
+    )
+
+    # ---------------------------------------------------- il deflusso ecologico
+    st.subheader("Il vincolo che pesa di più: il Deflusso Ecologico")
+    de = DOC.DEFLUSSO_ECOLOGICO
+    st.markdown(
+        f"Dal **{de['obbligo_dal']}** tutte le derivazioni — nuove e storiche — devono "
+        f"rispettare il **Deflusso Ecologico**, che ha sostituito il vecchio Deflusso "
+        f"Minimo Vitale. Non è una soglia fissa ma un parametro dinamico, pensato per "
+        f"tenere il regime del corso d'acqua il più vicino possibile a quello naturale. "
+        f"In molti casi impone rilasci in alveo da **{de['moltiplicatore_rilasci'][0]} a "
+        f"{de['moltiplicatore_rilasci'][1]} volte** superiori a prima."
+    )
+    st.warning(f"**L'effetto pratico.** {de['effetto']}")
+    st.caption(f"Riferimento normativo: {de['riferimento']}.")
+
+    # ---------------------------------------------------- dove può ancora crescere
+    st.subheader("Dove può ancora crescere: non nuovi sbarramenti")
+    pt = DOC.IDRO_POTENZIALE
+    g = st.columns(4)
+    g[0].metric("Da repowering", f"+{pt['revamping_mw']} MW")
+    g[1].metric("Da nuovi mini e micro", f"+{pt['nuovi_mini_micro_mw']} MW", "sotto i 3 MW")
+    g[2].metric("Obiettivo 2030", f"{pt['target_2030_gwh']:,.0f} GWh".replace(",", "."))
+    g[3].metric("Obiettivo 2045", f"{pt['target_2045_gwh']:,.0f} GWh".replace(",", "."))
+    st.caption(f"Fonte del potenziale: {pt['fonte_potenziale']}.")
+
+    for titolo, testo in DOC.IDRO_AZIONI:
+        st.markdown(f"- **{titolo}** — {testo}")
 
     st.info(
-        "Il PER stima una producibilità media di "
-        f"{DOC.IDRO_PARCO['Producibilità media annua (GWh)']:,.0f} GWh e prevede di arrivare a ".replace(",", ".")
-        + "2.231 GWh al 2045: un margine di crescita limitato, perché i siti migliori sono già "
-        "sfruttati. L'espansione passa da efficientamento degli impianti esistenti e "
-        "mini-idro, non da nuovi grandi invasi."
+        f"**I grandi salti vergini sono finiti.** L'obiettivo del PER al 2045 — "
+        f"{pt['target_2045_gwh']:,.0f} GWh — è ".replace(",", ".")
+        + f"più basso di quello al 2030 ({pt['target_2030_gwh']:,.0f} GWh): ".replace(",", ".")
+        + "non è un errore, è il riconoscimento che il cambiamento climatico erode la "
+        "risorsa mentre la si efficienta. I +89 MW teorici fra repowering e mini-idro "
+        "valgono meno di quanto il clima può togliere in un anno secco.\n\n"
+        "**Per i tecnici comunali** questo significa una cosa sola: nei PAESC non ha senso "
+        "prevedere nuovi impianti su salti liberi, perché non ce ne sono. Ha senso "
+        "l'idroelettrico sulle infrastrutture che già esistono — acquedotti, rilasci "
+        "irrigui, canali di bonifica — dove si produce senza toccare un fiume."
     )
 
     st.divider()
-    centrali = D.carica_per("centrali_idro")
-    if not centrali.empty:
-        st.subheader("Le centrali sul territorio")
-        cat = D.carica_per("centrali_idro_catasto")
-        mont = D.carica_per("idro_montagna")
+    st.subheader("Le centrali sul territorio")
+    cat = D.carica_per("centrali_idro_catasto")
+    mont = D.carica_per("idro_montagna")
 
-        if not cat.empty:
-            esist = cat[cat["stato"] == "Esistente"]
-            st.caption(
-                "Catasto regionale delle derivazioni idriche: ogni punto è una centrale "
-                "con la sua concessione. Attenzione, la **potenza di concessione** non è "
-                "la potenza efficiente — è la potenza nominale media legata alla portata "
-                "derivabile, e la somma regionale sta molto sotto i 528,9 MW misurati da Terna."
-            )
-            c = st.columns(4)
-            c[0].metric("Centrali censite", len(cat), f"{len(esist)} esistenti")
-            c[1].metric("Potenza di concessione", f"{esist['potenza_mw'].sum():.0f} MW")
-            c[2].metric("In progetto o realizzazione",
-                        int((cat["stato"].isin(["In progetto", "In realizzazione"])).sum()),
-                        f"{cat[cat['stato'].isin(['In progetto', 'In realizzazione'])]['potenza_mw'].sum():.1f} MW")
-            mediana = esist["potenza_mw"].median()
-            c[3].metric("Potenza mediana", f"{mediana * 1000:.0f} kW",
-                        "metà delle centrali sta sotto")
+    if not cat.empty:
+        esist = cat[cat["stato"] == "Esistente"]
+        st.caption(
+            "Catasto regionale delle derivazioni idriche: ogni punto è una centrale "
+            "con la sua concessione. Attenzione, la **potenza di concessione** non è "
+            "la potenza efficiente — è la potenza nominale media legata alla portata "
+            "derivabile, e la somma regionale sta molto sotto i 528,9 MW misurati da Terna."
+        )
+        c = st.columns(4)
+        c[0].metric("Centrali censite", len(cat), f"{len(esist)} esistenti")
+        c[1].metric("Potenza di concessione", f"{esist['potenza_mw'].sum():.0f} MW")
+        c[2].metric("In progetto o realizzazione",
+                    int((cat["stato"].isin(["In progetto", "In realizzazione"])).sum()),
+                    f"{cat[cat['stato'].isin(['In progetto', 'In realizzazione'])]['potenza_mw'].sum():.1f} MW")
+        mediana = esist["potenza_mw"].median()
+        c[3].metric("Potenza mediana", f"{mediana * 1000:.0f} kW",
+                    "metà delle centrali sta sotto")
 
-            m = cat.copy()
-            m["size_mw"] = m["potenza_mw"].fillna(0).clip(lower=0.01)
-            fig = px.scatter_map(
-                m, lat="lat", lon="lon", size="size_mw", color="stato",
-                hover_name="nome",
-                hover_data={"potenza_mw": ":.3f", "salto_m": ":.0f", "scadenza": True,
-                            "lat": False, "lon": False, "size_mw": False},
-                size_max=30, zoom=7.1, center={"lat": 46.3, "lon": 13.0},
-                map_style="carto-positron",
-                color_discrete_map={"Esistente": "#2563EB", "In progetto": "#F97316",
-                                    "In realizzazione": "#FACC15", "Rinunciata": "#D1D5DB"},
-                labels={"potenza_mw": "MW di concessione", "salto_m": "salto (m)"})
-            fig.update_layout(height=540, margin=dict(t=10, b=10, l=0, r=0),
-                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
-                                          x=0, title=None))
-            grafico(fig, DOC.F_REGIONE + " — catasto derivazioni idriche")
+        m = cat.copy()
+        m["size_mw"] = m["potenza_mw"].fillna(0).clip(lower=0.01)
+        fig = px.scatter_map(
+            m, lat="lat", lon="lon", size="size_mw", color="stato",
+            hover_name="nome",
+            hover_data={"potenza_mw": ":.3f", "salto_m": ":.0f", "scadenza": True,
+                        "lat": False, "lon": False, "size_mw": False},
+            size_max=30, zoom=7.1, center={"lat": 46.3, "lon": 13.0},
+            map_style="carto-positron",
+            color_discrete_map={"Esistente": "#2563EB", "In progetto": "#F97316",
+                                "In realizzazione": "#FACC15", "Rinunciata": "#D1D5DB"},
+            labels={"potenza_mw": "MW di concessione", "salto_m": "salto (m)"})
+        fig.update_layout(height=540, margin=dict(t=10, b=10, l=0, r=0),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                      x=0, title=None))
+        grafico(fig, DOC.F_REGIONE + " — catasto derivazioni idriche")
 
-            c1, c2 = st.columns(2)
-            with c1:
-                fig = px.histogram(esist[esist["potenza_mw"] > 0], x="potenza_mw", nbins=40,
-                                   log_y=True, color_discrete_sequence=["#2563EB"])
-                fig.update_layout(height=300, xaxis_title="MW di concessione",
-                                  yaxis_title="centrali (scala log)",
-                                  title="Quasi tutte piccolissime", **PLOT)
-                grafico(fig, DOC.F_REGIONE)
-            with c2:
-                sal = esist.dropna(subset=["salto_m", "potenza_mw"])
-                sal = sal[(sal["salto_m"] > 0) & (sal["potenza_mw"] > 0)]
-                fig = px.scatter(sal, x="salto_m", y="potenza_mw", log_x=True, log_y=True,
-                                 hover_name="nome", color_discrete_sequence=["#2563EB"],
-                                 opacity=0.6)
-                fig.update_layout(height=300, xaxis_title="salto (m, log)",
-                                  yaxis_title="MW (log)",
-                                  title="Il salto fa la potenza", **PLOT)
-                grafico(fig, DOC.F_REGIONE)
+        c1, c2 = st.columns(2)
+        with c1:
+            fig = px.histogram(esist[esist["potenza_mw"] > 0], x="potenza_mw", nbins=40,
+                               log_y=True, color_discrete_sequence=["#2563EB"])
+            fig.update_layout(height=300, xaxis_title="MW di concessione",
+                              yaxis_title="centrali (scala log)",
+                              title="Quasi tutte piccolissime", **PLOT)
+            grafico(fig, DOC.F_REGIONE)
+        with c2:
+            sal = esist.dropna(subset=["salto_m", "potenza_mw"])
+            sal = sal[(sal["salto_m"] > 0) & (sal["potenza_mw"] > 0)]
+            fig = px.scatter(sal, x="salto_m", y="potenza_mw", log_x=True, log_y=True,
+                             hover_name="nome", color_discrete_sequence=["#2563EB"],
+                             opacity=0.6)
+            fig.update_layout(height=300, xaxis_title="salto (m, log)",
+                              yaxis_title="MW (log)",
+                              title="Il salto fa la potenza", **PLOT)
+            grafico(fig, DOC.F_REGIONE)
 
-            piccole = (esist["potenza_mw"] < 1).sum()
-            st.info(
-                f"**{piccole} centrali su {len(esist)} stanno sotto il megawatt**, e la "
-                f"mediana è di {mediana * 1000:.0f} kW: il parco idroelettrico friulano è "
-                "fatto di una lunga coda di micro-derivazioni su rogge, canali e acquedotti, "
-                "più poche grandi centrali di montagna. "
-                f"Le nuove concessioni in progetto valgono "
-                f"{cat[cat['stato'] == 'In progetto']['potenza_mw'].sum():.1f} MW su 47 pratiche: "
-                "meno di 200 kW l'una. Il grande idro è finito, resta il capillare."
-            )
+        piccole = (esist["potenza_mw"] < 1).sum()
+        st.info(
+            f"**{piccole} centrali su {len(esist)} stanno sotto il megawatt**, e la "
+            f"mediana è di {mediana * 1000:.0f} kW: il parco idroelettrico friulano è "
+            "fatto di una lunga coda di micro-derivazioni su rogge, canali e acquedotti, "
+            "più poche grandi centrali di montagna. "
+            f"Le nuove concessioni in progetto valgono "
+            f"{cat[cat['stato'] == 'In progetto']['potenza_mw'].sum():.1f} MW su 47 pratiche: "
+            "meno di 200 kW l'una. Il grande idro è finito, resta il capillare."
+        )
 
-        if not mont.empty:
-            st.markdown("**Le grandi centrali di montagna**")
-            tab = mont[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
-                        "producibilita_GWh_anno", "tipo_impianto", "salto_m"]].copy()
-            tab.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
-                           "GWh/anno", "Tipo", "Salto (m)"]
-            st.dataframe(tab.sort_values("MW", ascending=False), hide_index=True,
-                         width="stretch")
-            st.caption(
-                f"Fonte: {DOC.F_PER}, dati di impianto. "
-                f"Queste {len(mont)} centrali valgono {mont['potenza_MW'].sum():.0f} MW e "
-                f"circa {mont['producibilita_GWh_anno'].sum():.0f} GWh l'anno: "
-                "la dorsale storica del sistema, quasi tutta in Carnia e Canal del Ferro."
-            )
+    if not mont.empty:
+        st.markdown("**Le grandi centrali di montagna**")
+        tab = mont[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
+                    "producibilita_GWh_anno", "tipo_impianto", "salto_m"]].copy()
+        tab.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
+                       "GWh/anno", "Tipo", "Salto (m)"]
+        st.dataframe(tab.sort_values("MW", ascending=False), hide_index=True,
+                     width="stretch")
+        st.caption(
+            f"Fonte: {DOC.F_PER}, dati di impianto. "
+            f"Queste {len(mont)} centrali valgono {mont['potenza_MW'].sum():.0f} MW e "
+            f"circa {mont['producibilita_GWh_anno'].sum():.0f} GWh l'anno: "
+            "la dorsale storica del sistema, quasi tutta in Carnia e Canal del Ferro."
+        )
 
 def _scheda_8():
     st.subheader("Il gas naturale nel sistema energetico regionale")
