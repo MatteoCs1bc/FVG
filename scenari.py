@@ -93,6 +93,14 @@ def valuta(
     totale = c["totale_eur"] + costo_rete
 
     return {
+        # tutti i flussi annui in GWh: sono quelli che disegnano il Sankey
+        "gwh_pv": e.pv / 1e3, "gwh_eolico": e.eolico / 1e3,
+        "gwh_idro_fluente": e.idro_fluente / 1e3, "gwh_idro_bacino": e.idro_bacino / 1e3,
+        "gwh_gas": e.gas / 1e3, "gwh_import": e.importato / 1e3,
+        "gwh_bess_carica": e.bess_carica / 1e3, "gwh_bess_scarica": e.bess_scarica / 1e3,
+        "gwh_export": e.esportato / 1e3, "gwh_curtailment": e.curtailment / 1e3,
+        "gwh_spillamento": e.spillamento / 1e3, "gwh_domanda": e.domanda / 1e3,
+        "gwh_non_servita": e.non_servita / 1e3,
         "pv_mw": parco.pv_mw, "eolico_mw": parco.eolico_mw,
         "bess_mw": parco.bess_mw, "bess_mwh": parco.bess_mwh,
         "nuova_potenza_mw": nuova_mw,

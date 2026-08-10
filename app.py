@@ -3760,37 +3760,58 @@ def _motore_scenari():
                "si ripagano rispetto all'energia comprata.")
         )
 
-        st.subheader("Tutto l'anno, ora per ora")
+        st.subheader("Tutte le 8.760 ore dell'anno")
         st.caption(
-            "Le 8.760 ore dell'anno in un colpo solo: la linea nera è la domanda, le aree "
-            "la generazione. Si legge la stagionalità — il solare che gonfia l'estate, "
-            "l'import che riempie l'inverno."
+            "Nessuna aggregazione: ogni punto è un'ora di simulazione. Le aree sono la "
+            "generazione impilata, la linea nera la domanda. Si può zoomare trascinando "
+            "sul grafico."
         )
         prof_anno = profilo_orario(domanda, cf_pv, cf_eo, Parco(**{
             **base, "pv_mw": float(scelta["pv_mw"]),
             "eolico_mw": float(scelta["eolico_mw"]),
             "bess_mwh": float(scelta["bess_mwh"]),
             "bess_mw": float(scelta["bess_mwh"]) / 4}), giorno_inizio=0, giorni=365)
-        # media mobile giornaliera: 8.760 punti grezzi sono illeggibili
-        gio = prof_anno.copy()
-        gio["giorno"] = gio["ora"] // 24
-        gio = gio.groupby("giorno", as_index=False).mean(numeric_only=True)
 
         fig = go.Figure()
         for nome_s, colore in [("fotovoltaico", "#FACC15"), ("eolico", "#22C55E"),
                                ("import", "#EF4444")]:
-            fig.add_scatter(x=gio["giorno"], y=gio[nome_s], name=nome_s.capitalize(),
-                            stackgroup="anno", line=dict(width=0), fillcolor=colore)
-        fig.add_scatter(x=gio["giorno"], y=np.full(len(gio), base["idro_fluente_mw"]),
+            fig.add_scatter(x=prof_anno["ora"], y=prof_anno[nome_s],
+                            name=nome_s.capitalize(), stackgroup="anno",
+                            line=dict(width=0), fillcolor=colore, hoverinfo="x+y+name")
+        fig.add_scatter(x=prof_anno["ora"],
+                        y=np.full(len(prof_anno), base["idro_fluente_mw"]),
                         name="Idro fluente", stackgroup="anno", line=dict(width=0),
+                        fillcolor="#2563EB")
+        fig.add_scatter(x=prof_anno["ora"], y=prof_anno["domanda"], name="Domanda",
+                        mode="lines", line=dict(color="#111827", width=1))
+        fig.update_layout(height=460, xaxis_title="ora dell'anno (0 = 1 gennaio)",
+                          yaxis_title="MW", template="plotly_white",
+                          legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
+                          margin=dict(t=60, b=10, l=10, r=24),
+                          xaxis=dict(rangeslider=dict(visible=True, thickness=0.06)))
+        grafico(fig, DOC.F_ELAB,
+                "8.760 punti orari. La barra sotto il grafico permette di restringere "
+                "il periodo.")
+
+        st.markdown("**La stessa cosa vista per giorno, per leggere la stagionalità**")
+        gio = prof_anno.copy()
+        gio["giorno"] = gio["ora"] // 24
+        gio = gio.groupby("giorno", as_index=False).mean(numeric_only=True)
+        fig = go.Figure()
+        for nome_s, colore in [("fotovoltaico", "#FACC15"), ("eolico", "#22C55E"),
+                               ("import", "#EF4444")]:
+            fig.add_scatter(x=gio["giorno"], y=gio[nome_s], name=nome_s.capitalize(),
+                            stackgroup="g", line=dict(width=0), fillcolor=colore)
+        fig.add_scatter(x=gio["giorno"], y=np.full(len(gio), base["idro_fluente_mw"]),
+                        name="Idro fluente", stackgroup="g", line=dict(width=0),
                         fillcolor="#2563EB")
         fig.add_scatter(x=gio["giorno"], y=gio["domanda"], name="Domanda",
                         mode="lines", line=dict(color="#111827", width=2))
-        fig.update_layout(height=420, xaxis_title="giorno dell'anno", yaxis_title="MW medi",
+        fig.update_layout(height=380, xaxis_title="giorno dell'anno", yaxis_title="MW medi",
                           template="plotly_white", hovermode="x unified",
                           legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
                           margin=dict(t=60, b=10, l=10, r=24))
-        grafico(fig, DOC.F_ELAB, "Medie giornaliere delle 8.760 ore simulate.")
+        grafico(fig, DOC.F_ELAB, "Medie giornaliere delle stesse 8.760 ore.")
 
         st.subheader("Come si copre il divario, ora per ora")
         settimana = st.select_slider(
@@ -3834,69 +3855,100 @@ def _motore_scenari():
 
     # ------------------------------------------------ il confronto 2025 -> 2045
         st.divider()
-        st.subheader("Da oggi al 2045, in un diagramma")
+        st.subheader("Da oggi al 2045: come cambiano quantità e fonti")
         st.caption(
-            "A sinistra il sistema elettrico di oggi, a destra quello dello scenario "
-            "scelto. Ogni flusso è energia annua in GWh: si legge cosa cresce, cosa "
-            "sparisce e cosa resta importato."
+            "Due diagrammi con la stessa struttura e scale confrontabili. A sinistra le "
+            "fonti, al centro l'energia che entra nel sistema, a destra dove finisce: "
+            "domanda, accumulo, export, energia tagliata. Tutti i flussi sono in GWh "
+            "l'anno e vengono dalla simulazione oraria, non da medie."
         )
 
-        def _trasparente(esadecimale: str, alfa: float = 0.35) -> str:
-            """Da #RRGGBB a rgba(): i flussi vanno colorati come la loro fonte."""
-            r, g, b = (int(esadecimale[i:i + 2], 16) for i in (1, 3, 5))
-            return f"rgba({r},{g},{b},{alfa})"
+        def _sankey_sistema(riga, titolo):
+            """Sankey a tre livelli: fonti, sistema, destinazioni.
 
-        def _sankey_anno(riga, titolo, domanda_gwh):
+            Il nodo centrale fa da collo: entra tutto ciò che viene generato o
+            importato, esce tutto ciò che viene consumato, accumulato, esportato
+            o buttato. Così il diagramma chiude e le due annate si confrontano.
+            """
             fonti_s = [
-                ("Fotovoltaico", riga["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000, "#FACC15"),
-                ("Eolico", riga["eolico_mw"] * DOC.ORE_EQUIVALENTI["Eolico onshore"] / 1000,
-                 "#22C55E"),
-                ("Idroelettrico", 2163.0, "#2563EB"),
-                ("Termoelettrico", riga["gas_gwh"], "#4B5563"),
-                ("Import", riga["import_gwh"], "#EF4444"),
+                ("Fotovoltaico", riga["gwh_pv"], "#FACC15"),
+                ("Eolico", riga["gwh_eolico"], "#22C55E"),
+                ("Idro fluente", riga["gwh_idro_fluente"], "#60A5FA"),
+                ("Idro da bacino", riga["gwh_idro_bacino"], "#1E3A8A"),
+                ("Termoelettrico", riga["gwh_gas"], "#4B5563"),
+                ("Import", riga["gwh_import"], "#EF4444"),
+                ("Da accumulo", riga["gwh_bess_scarica"], "#A855F7"),
             ]
-            fonti_s = [f for f in fonti_s if f[1] > 1]
-            nodi_s = [f[0] for f in fonti_s] + ["Domanda regionale"]
-            idx_s = {n: i for i, n in enumerate(nodi_s)}
+            usi_s = [
+                ("Domanda regionale", riga["gwh_domanda"], "#111827"),
+                ("In accumulo", riga["gwh_bess_carica"], "#A855F7"),
+                ("Export", riga["gwh_export"], "#F97316"),
+                ("Energia tagliata", riga["gwh_curtailment"], "#9CA3AF"),
+            ]
+            fonti_s = [f for f in fonti_s if f[1] > 0.5]
+            usi_s = [u for u in usi_s if u[1] > 0.5]
+
+            centro = "Sistema elettrico regionale"
+            nodi_s = [f[0] for f in fonti_s] + [centro] + [u[0] for u in usi_s]
+            idx_s = {n: k for k, n in enumerate(nodi_s)}
+            colori_s = [f[2] for f in fonti_s] + ["#0F172A"] + [u[2] for u in usi_s]
+
+            src_s = [idx_s[f[0]] for f in fonti_s] + [idx_s[centro]] * len(usi_s)
+            tgt_s = [idx_s[centro]] * len(fonti_s) + [idx_s[u[0]] for u in usi_s]
+            val_s = [f[1] for f in fonti_s] + [u[1] for u in usi_s]
+            col_s = [_trasparente(f[2]) for f in fonti_s] + [_trasparente(u[2]) for u in usi_s]
+
             fig_s = go.Figure(go.Sankey(
-                node=dict(pad=18, thickness=20, label=nodi_s,
-                          color=[f[2] for f in fonti_s] + ["#111827"],
-                          line=dict(color="rgba(0,0,0,0.15)", width=0.5)),
-                link=dict(source=[idx_s[f[0]] for f in fonti_s],
-                          target=[idx_s["Domanda regionale"]] * len(fonti_s),
-                          value=[f[1] for f in fonti_s],
-                          color=[_trasparente(f[2]) for f in fonti_s],
-                          hovertemplate="%{value:.0f} GWh<extra></extra>")))
-            fig_s.update_layout(height=380, font_size=12, title=titolo,
-                                margin=dict(t=50, b=20, l=10, r=10))
+                node=dict(pad=18, thickness=20, label=nodi_s, color=colori_s,
+                          line=dict(color="rgba(0,0,0,0.2)", width=0.6)),
+                link=dict(source=src_s, target=tgt_s, value=val_s, color=col_s,
+                          hovertemplate="%{value:,.0f} GWh<extra></extra>")))
+            fig_s.update_layout(height=460, font_size=12, title=titolo,
+                                margin=dict(t=52, b=20, l=10, r=10))
             return fig_s
+
+        def _trasparente(esadecimale: str, alfa: float = 0.38) -> str:
+            r, g, b = (int(esadecimale[k:k + 2], 16) for k in (1, 3, 5))
+            return f"rgba({r},{g},{b},{alfa})"
 
         sk1, sk2 = st.columns(2)
         with sk1:
-            grafico(_sankey_anno(oggi, f"Oggi — {DOC.CONSUMI_ELETTRICI_TOTALE / 1000:.1f} TWh",
-                                 DOC.CONSUMI_ELETTRICI_TOTALE), DOC.F_ELAB)
+            grafico(_sankey_sistema(
+                oggi, f"Oggi — {oggi['gwh_domanda']:,.0f} GWh di domanda".replace(",", ".")),
+                DOC.F_ELAB)
         with sk2:
-            grafico(_sankey_anno(scelta, f"2045 — {domanda_twh:.1f} TWh", domanda_twh * 1000),
-                    DOC.F_ELAB)
+            grafico(_sankey_sistema(
+                scelta, f"2045 — {scelta['gwh_domanda']:,.0f} GWh di domanda".replace(",", ".")),
+                DOC.F_ELAB)
 
-        delta = pd.DataFrame([
-            {"Voce": "Fotovoltaico",
-             "Oggi": oggi["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000,
-             "2045": scelta["pv_mw"] * DOC.PV_ORE_EQUIVALENTI / 1000},
-            {"Voce": "Eolico", "Oggi": 0.0,
-             "2045": scelta["eolico_mw"] * DOC.ORE_EQUIVALENTI["Eolico onshore"] / 1000},
-            {"Voce": "Termoelettrico", "Oggi": oggi["gas_gwh"], "2045": scelta["gas_gwh"]},
-            {"Voce": "Import", "Oggi": oggi["import_gwh"], "2045": scelta["import_gwh"]},
-        ])
-        delta["Variazione"] = delta["2045"] - delta["Oggi"]
+        voci_conf = [
+            ("Fotovoltaico", "gwh_pv"), ("Eolico", "gwh_eolico"),
+            ("Idroelettrico", None), ("Termoelettrico", "gwh_gas"),
+            ("Import", "gwh_import"), ("Export", "gwh_export"),
+            ("Energia tagliata", "gwh_curtailment"),
+        ]
+        righe_conf = []
+        for nome_v, chiave in voci_conf:
+            if chiave is None:
+                a_v = oggi["gwh_idro_fluente"] + oggi["gwh_idro_bacino"]
+                b_v = scelta["gwh_idro_fluente"] + scelta["gwh_idro_bacino"]
+            else:
+                a_v, b_v = oggi[chiave], scelta[chiave]
+            righe_conf.append({"Voce": nome_v, "Oggi": a_v, "2045": b_v,
+                               "Variazione": b_v - a_v})
+        delta = pd.DataFrame(righe_conf)
         fig = px.bar(delta, x="Variazione", y="Voce", orientation="h", text_auto="+.0f",
-                     color="Variazione", color_continuous_scale=["#DC2626", "#F3F4F6", "#22C55E"],
+                     color="Variazione",
+                     color_continuous_scale=["#DC2626", "#F3F4F6", "#22C55E"],
                      color_continuous_midpoint=0)
         fig.add_vline(x=0, line_color="#111827")
         fig.update_traces(cliponaxis=False)
-        fig.update_layout(height=280, yaxis_title=None, coloraxis_showscale=False,
+        fig.update_layout(height=320, yaxis_title=None, coloraxis_showscale=False,
                           xaxis_title="GWh in più o in meno rispetto a oggi", **PLOT)
         grafico(fig, DOC.F_ELAB)
+
+        st.dataframe(delta.round(0), hide_index=True, width="stretch")
+        st.caption(f"Flussi annui in GWh dalla simulazione oraria. Fonte: {DOC.F_ELAB}.")
 
     with st.expander("Tutte le configurazioni simulate"):
         vista = df[["pv_mw", "eolico_mw", "bess_mwh", "eur_mwh", "costo_rete_mln",
