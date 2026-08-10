@@ -111,6 +111,73 @@ def valuta(
     }
 
 
+def scala_domanda(serie: pd.DataFrame, twh_obiettivo: float) -> np.ndarray:
+    """Riscala il profilo di carico su un consumo annuo dichiarato.
+
+    La forma oraria resta quella misurata, cambia solo il livello: e' il modo
+    onesto di proiettare la domanda al 2045 senza inventarsi un profilo nuovo.
+    """
+    carico = serie["carico_totale_mw"].to_numpy(dtype=float)
+    attuale_twh = carico.sum() / 1e6
+    return carico * (twh_obiettivo / attuale_twh) if attuale_twh else carico
+
+
+def cerca_autosufficienza(
+    domanda: np.ndarray,
+    cf_pv: np.ndarray,
+    cf_eolico: np.ndarray,
+    parco_base: Parco,
+    quota_import_max: float,
+    prezzi: Prezzi,
+    rete: CostiRete,
+    pv_max: float = 8000.0,
+    eolico_max: float = 1500.0,
+    bess_max: float = 20000.0,
+    passi: int = 6,
+) -> pd.DataFrame:
+    """Configurazioni che rispettano un tetto all'import, ordinate per costo.
+
+    E' il secondo passo del ragionamento: dopo aver visto quanto costa il
+    sistema ottimizzato, si fissa quanto import si e' disposti ad accettare e
+    si guarda cosa serve per starci dentro.
+    """
+    righe = []
+    for pv, eo, bess in product(
+        np.linspace(parco_base.pv_mw, pv_max, passi),
+        np.linspace(0, eolico_max, passi),
+        np.linspace(parco_base.bess_mwh, bess_max, passi),
+    ):
+        parco = replace(parco_base, pv_mw=pv, eolico_mw=eo,
+                        bess_mwh=bess, bess_mw=bess / 4)
+        r = valuta(domanda, cf_pv, cf_eolico, parco, prezzi, rete, parco_base)
+        if r["quota_import"] <= quota_import_max:
+            righe.append(r)
+    return pd.DataFrame(righe).sort_values("eur_mwh") if righe else pd.DataFrame()
+
+
+def profilo_orario(
+    domanda: np.ndarray,
+    cf_pv: np.ndarray,
+    cf_eolico: np.ndarray,
+    parco: Parco,
+    giorno_inizio: int = 0,
+    giorni: int = 7,
+) -> pd.DataFrame:
+    """Ricostruisce il dispacciamento ora per ora su una finestra di giorni."""
+    e = simula(domanda, cf_pv, cf_eolico, parco, tenere_serie=True)
+    a, b = giorno_inizio * 24, (giorno_inizio + giorni) * 24
+    n = len(domanda)
+    a, b = max(0, min(a, n - 1)), max(1, min(b, n))
+    return pd.DataFrame({
+        "ora": np.arange(a, b),
+        "domanda": domanda[a:b],
+        "fotovoltaico": e.serie["pv_mw"][a:b],
+        "eolico": e.serie["eolico_mw"][a:b],
+        "import": e.serie["import_mw"][a:b],
+        "surplus": e.serie["surplus_mw"][a:b],
+    })
+
+
 def esplora(
     serie: pd.DataFrame,
     parco_base: Parco,
