@@ -1,0 +1,13 @@
+impianto,comune,ambito,corso_acqua,gestore,potenza_MW,producibilita_GWh_anno,tipo_impianto,turbina,salto_m,anno_esercizio,fonte,affidabilita
+Somplago,Cavazzo Carnico,Carnia,Ambiesta / medio Tagliamento,A2A,172.8,450.0,serbatoio/pompaggio-demodulazione,Francis 3x55 MW asse vert.,305.0,,PER FVG (progetto),alta
+Ampezzo,Ampezzo,Carnia,Lumiei / alto Tagliamento,A2A,62.1,150.0,serbatoio stagionale,Pelton 3x20 MW asse orizz.,480.0,,PER FVG (progetto),alta
+Enfretors,Paluzza,Carnia,But,SECAB,2.583,11.5,acqua fluente,,,1959.0,Memoria SECAB (progetto),alta
+Noiaris,Sutrio,Carnia,But,SECAB,2.576,9.8,acqua fluente,Francis,,,Memoria SECAB (progetto),alta
+Museis,Cercivento,Carnia,But,SECAB,1.8,7.2,acqua fluente,,,,Memoria SECAB (progetto),alta
+Mieli - deriv. Degano,Comeglians,Carnia,Degano,SECAB,,7.9,acqua fluente,Francis/Pelton,,,Memoria SECAB (progetto),alta
+Mieli - deriv. Vaglina,Comeglians,Carnia,Vaglina,SECAB,,6.1,acqua fluente,Francis/Pelton,,,Memoria SECAB (progetto),alta
+Fontanone,Paluzza (Timau),Carnia,But,SECAB,0.38,1.7,acqua fluente,,,1913.0,Memoria SECAB (progetto),alta
+Raccolana 1,Chiusaforte,Canal del Ferro,Raccolana,IGF,1.4,6.5,acqua fluente,,,1986.0,forum ProgettoDighe,bassa
+Raccolana 2,Chiusaforte,Canal del Ferro,Raccolana,IGF,1.1,5.5,acqua fluente,,,1988.0,forum ProgettoDighe,bassa
+Raccolana 3,Chiusaforte,Canal del Ferro,Raccolana,IGF,0.6,3.5,acqua fluente,,,1994.0,forum ProgettoDighe,bassa
+Chiusaforte 4,Chiusaforte,Canal del Ferro,Raccolana,IGF,0.641,4.8,acqua fluente,,23.0,,forum ProgettoDighe,bassa

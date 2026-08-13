@@ -2086,6 +2086,102 @@ def _scheda_7():
         with st.expander(f"{r.nome} — {r.mw:.1f} MW, circa {r.gwh:.0f} GWh l'anno"):
             st.markdown(f"**{r.impianti}**\n\n{r.nota}")
 
+    # ============================================================
+    # CHI CONTROLLA LA POTENZA — sezione autonoma, modificabile da sola.
+    # I gestori noti coprono i grandi impianti; il catasto regionale delle
+    # derivazioni NON riporta il titolare della concessione, quindi le 385
+    # micro-centrali restano senza attribuzione.
+    # ============================================================
+    st.subheader("Chi controlla la potenza idroelettrica")
+    mont_g = D.carica_per("idro_montagna")
+
+    if not mont_g.empty and "gestore" in mont_g.columns:
+        per_gest = (mont_g.groupby("gestore", as_index=False)
+                    .agg(impianti=("impianto", "count"),
+                         mw=("potenza_MW", "sum"),
+                         gwh=("producibilita_GWh_anno", "sum")))
+        # Edison non è nel dettaglio impianto per impianto ma è il secondo
+        # operatore regionale: va aggiunto dai dati di sistema, dichiarandolo.
+        sist_ed = [x for x in DOC.IDRO_SISTEMI if "Edison" in x["nome"]]
+        if sist_ed:
+            per_gest = pd.concat([per_gest, pd.DataFrame([{
+                "gestore": "Edison", "impianti": 30,
+                "mw": sist_ed[0]["mw"], "gwh": sist_ed[0]["gwh"]}])], ignore_index=True)
+
+        tot_mw_reg = DOC.IDRO_QUADRO["mw_lordi_2023"]
+        per_gest["quota_potenza"] = per_gest["mw"] / tot_mw_reg * 100
+        per_gest = per_gest.sort_values("mw", ascending=False)
+
+        g1, g2, g3, g4 = st.columns(4)
+        g1.metric("Operatori identificati", len(per_gest))
+        g2.metric("Potenza attribuita", f"{per_gest['mw'].sum():.0f} MW",
+                  f"{per_gest['mw'].sum() / tot_mw_reg * 100:.0f}% del totale regionale")
+        primi_due = per_gest.nlargest(2, "mw")
+        g3.metric("I due maggiori", f"{primi_due['mw'].sum():.0f} MW",
+                  " e ".join(primi_due["gestore"]))
+        g4.metric("Non attribuita", f"{tot_mw_reg - per_gest['mw'].sum():.0f} MW",
+                  "micro-derivazioni diffuse")
+
+        cg1, cg2 = st.columns([1.3, 1])
+        with cg1:
+            grafico_g = per_gest.copy()
+            grafico_g.loc[len(grafico_g)] = {
+                "gestore": "Altri e micro-derivazioni", "impianti": np.nan,
+                "mw": tot_mw_reg - per_gest["mw"].sum(),
+                "gwh": np.nan,
+                "quota_potenza": (tot_mw_reg - per_gest["mw"].sum()) / tot_mw_reg * 100}
+            fig = px.bar(grafico_g.sort_values("mw"), x="mw", y="gestore",
+                         orientation="h", text_auto=".1f", color="gestore",
+                         color_discrete_map={"A2A": "#1E3A8A", "Edison": "#2563EB",
+                                             "SECAB": "#22C55E", "IGF": "#60A5FA",
+                                             "Altri e micro-derivazioni": "#D1D5DB"})
+            fig.update_traces(cliponaxis=False)
+            fig.update_layout(showlegend=False, height=320, yaxis_title=None,
+                              xaxis_title="MW installati", **PLOT)
+            grafico(fig, DOC.FONTE_IDRO_PER)
+        with cg2:
+            tab_g = per_gest[["gestore", "impianti", "mw", "gwh", "quota_potenza"]].copy()
+            tab_g.columns = ["Operatore", "Impianti", "MW", "GWh/anno", "% regionale"]
+            st.dataframe(tab_g.round(1), hide_index=True, width="stretch")
+            st.caption(f"Fonte: {DOC.FONTE_IDRO_PER}.")
+
+        st.markdown("**Gli impianti con gestore noto**")
+        dett = mont_g[["impianto", "comune", "corso_acqua", "gestore", "potenza_MW",
+                       "producibilita_GWh_anno", "tipo_impianto", "anno_esercizio",
+                       "affidabilita"]].copy()
+        dett.columns = ["Impianto", "Comune", "Corso d'acqua", "Gestore", "MW",
+                        "GWh/anno", "Tipo", "In esercizio dal", "Affidabilità"]
+        st.dataframe(dett.sort_values("MW", ascending=False), hide_index=True,
+                     width="stretch")
+        st.caption(
+            "Fonte: PER FVG per A2A, memoria SECAB per le centrali dell'Alto Bût, "
+            "fonti aperte per IGF — la colonna «Affidabilità» lo dichiara riga per riga."
+        )
+
+        st.info(
+            f"**Due operatori controllano i tre quarti della potenza.** A2A con le sole "
+            f"Somplago e Ampezzo fa {mont_g[mont_g['gestore'] == 'A2A']['potenza_MW'].sum():.0f} MW, "
+            "Edison ne ha 140 distribuiti su trenta impianti dell'asta del Cellina. "
+            "Il resto è frammentato fra cooperative storiche, consorzi di bonifica e "
+            "privati.\n\n"
+            "**Perché conta adesso.** Le concessioni storiche stanno scadendo e la "
+            "competenza sulle grandi derivazioni è passata alle Regioni: il FVG deve "
+            "bandire le gare, e i nuovi affidamenti dovranno prevedere investimenti "
+            "ambientali e sistemi di accumulo. È il momento in cui questa mappa della "
+            "proprietà può cambiare — o restare identica per altri trent'anni."
+        )
+
+        st.warning(
+            "**Il titolare della concessione non è un dato pubblico nel catasto.** "
+            "Lo strato cartografico regionale delle derivazioni riporta numero di "
+            "pratica, decreto e scadenza, ma non il nome del concessionario: le 385 "
+            "micro-centrali della mappa qui sopra restano senza attribuzione. "
+            "Per completarla servirebbe incrociare i numeri di pratica con i decreti "
+            "pubblicati sul Bollettino Ufficiale della Regione, oppure attingere "
+            "all'elenco delle grandi derivazioni che la Regione tiene per le gare di "
+            "rinnovo."
+        )
+
     st.markdown("**Le cinque centrali della cooperativa SECAB**")
     secab = pd.DataFrame([
         {"Centrale": k, "kW": v["kw"], "GWh/anno": v["gwh"]}
@@ -3540,451 +3636,411 @@ def pagina_motore():
 
 
 
-# ================================================================ MOTORE SCENARI
+# ================================================================ MOTORE
 @st.cache_data(show_spinner=False)
-def _serie_oraria() -> pd.DataFrame:
-    dati = D.carica_per("orario_2023")
-    dati = dati.rename(columns={dati.columns[0]: "ora"}).set_index("ora")
-    dati.index = pd.to_datetime(dati.index)
-    return dati
+def _serie_motore() -> pd.DataFrame:
+    d = D.carica_per("serie_oraria_fvg")
+    d = d.rename(columns={d.columns[0]: "ora"}).set_index("ora")
+    d.index = pd.to_datetime(d.index)
+    return d
 
 
-# Streamlit invalida la cache quando cambia il codice della funzione decorata,
-# ma non quando cambia una funzione che questa chiama in un altro modulo. Dopo
-# aver modificato `src/scenari.py` la cache resterebbe quella vecchia, con uno
-# schema di colonne diverso: si alza questa versione e la cache decade.
-VERSIONE_MOTORE = 2
+@st.cache_data(show_spinner="Calibro il modello sull'anno 2024...")
+def _calibrazione(versione: int = 3):
+    from src.motore import Parco, calibra, prepara
+    serie = _serie_motore()
+    dati = prepara(serie)
+    parco, diag = calibra(dati, Parco(**DOC.PARCO_2024))
+    return parco, diag
 
 
 @st.cache_data(show_spinner="Simulo le configurazioni ora per ora...")
-def _esplora(pv, eo, bess, prezzi_d, rete_d, colonna_eolico, domanda_twh,
-             versione=VERSIONE_MOTORE):
-    from src.scenari import scala_domanda
-    base = Parco(**DOC.PARCO_BASE_FVG)
-    serie = _serie_oraria().copy()
-    serie["carico_totale_mw"] = scala_domanda(serie, domanda_twh)
-    return esplora(serie, base, list(pv), list(eo), list(bess),
-                   prezzi=Prezzi(**prezzi_d), rete=CostiRete(**rete_d),
-                   colonna_eolico=colonna_eolico)
+def _griglia(pv, eo, bess, prezzi_d, rete_d, sito, domanda_twh, lca, versione: int = 3):
+    from src.motore import CostiRete, Prezzi, esplora, prepara
+    parco, diag = _calibrazione()
+    serie = _serie_motore()
+    dati = prepara(serie, domanda_twh=domanda_twh, colonna_eolico=sito)
+    dati["cf_pv"] = dati["cf_pv"] * diag["resa_pv"]
+    return esplora(dati, parco, list(pv), list(eo), list(bess),
+                   Prezzi(**prezzi_d), CostiRete(**rete_d), lca=lca)
+
+
+def _dati_motore(domanda_twh, sito):
+    from src.motore import prepara
+    parco, diag = _calibrazione()
+    dati = prepara(_serie_motore(), domanda_twh=domanda_twh, colonna_eolico=sito)
+    dati["cf_pv"] = dati["cf_pv"] * diag["resa_pv"]
+    return dati, parco, diag
+
+
+def _rgba(esadecimale: str, alfa: float = 0.4) -> str:
+    r, g, b = (int(esadecimale[k:k + 2], 16) for k in (1, 3, 5))
+    return f"rgba({r},{g},{b},{alfa})"
+
+
+COLORI_FONTE = {
+    "Fotovoltaico": "#FACC15", "Eolico": "#22C55E", "Idro fluente": "#60A5FA",
+    "Idro da bacino": "#1E3A8A", "Termoelettrico": "#4B5563", "Import": "#EF4444",
+    "Da accumulo": "#A855F7",
+}
+COLORI_USO = {
+    "Domanda regionale": "#111827", "In accumulo": "#A855F7", "Export": "#F97316",
+    "Energia tagliata": "#9CA3AF",
+}
+
+
+def _sankey(riga, titolo: str):
+    """Fonti a sinistra, sistema al centro, destinazioni a destra."""
+    fonti = [
+        ("Fotovoltaico", riga.get("gwh_pv", 0)),
+        ("Eolico", riga.get("gwh_eolico", 0)),
+        ("Idro fluente", riga.get("gwh_idro_fluente", 0)),
+        ("Idro da bacino", riga.get("gwh_idro_bacino", 0)),
+        ("Termoelettrico", riga.get("gwh_termo_mustrun", 0) + riga.get("gwh_termo_modulante", 0)),
+        ("Import", riga.get("gwh_import", 0)),
+        ("Da accumulo", riga.get("gwh_bess_scarica", 0)),
+    ]
+    usi = [
+        ("Domanda regionale", riga.get("gwh_domanda", 0)),
+        ("In accumulo", riga.get("gwh_bess_carica", 0)),
+        ("Export", riga.get("gwh_export", 0)),
+        ("Energia tagliata", riga.get("gwh_curtailment", 0)),
+    ]
+    fonti = [f for f in fonti if f[1] > 0.5]
+    usi = [u for u in usi if u[1] > 0.5]
+    centro = "Sistema elettrico"
+    nodi = [f[0] for f in fonti] + [centro] + [u[0] for u in usi]
+    idx = {n: k for k, n in enumerate(nodi)}
+    colori = ([COLORI_FONTE[f[0]] for f in fonti] + ["#0F172A"]
+              + [COLORI_USO[u[0]] for u in usi])
+    fig = go.Figure(go.Sankey(
+        node=dict(pad=18, thickness=20, label=nodi, color=colori,
+                  line=dict(color="rgba(0,0,0,0.2)", width=0.6)),
+        link=dict(source=[idx[f[0]] for f in fonti] + [idx[centro]] * len(usi),
+                  target=[idx[centro]] * len(fonti) + [idx[u[0]] for u in usi],
+                  value=[f[1] for f in fonti] + [u[1] for u in usi],
+                  color=([_rgba(COLORI_FONTE[f[0]]) for f in fonti]
+                         + [_rgba(COLORI_USO[u[0]]) for u in usi]),
+                  hovertemplate="%{value:,.0f} GWh<extra></extra>")))
+    fig.update_layout(height=440, font_size=12, title=titolo,
+                      margin=dict(t=52, b=20, l=10, r=10))
+    return fig
+
+
+def _grafico_orario(prof: pd.DataFrame, titolo: str, slider: bool = True):
+    ordine = ["Idro fluente", "Termoelettrico", "Eolico", "Fotovoltaico",
+              "Idro da bacino", "Import"]
+    fig = go.Figure()
+    for nome in ordine:
+        if nome in prof.columns and prof[nome].abs().sum() > 0:
+            fig.add_scatter(x=prof["ora"], y=prof[nome], name=nome, stackgroup="g",
+                            line=dict(width=0), fillcolor=COLORI_FONTE.get(nome, "#D1D5DB"))
+    fig.add_scatter(x=prof["ora"], y=prof["Domanda"], name="Domanda", mode="lines",
+                    line=dict(color="#111827", width=1.2))
+    layout = dict(height=440, title=titolo, template="plotly_white",
+                  xaxis_title="ora dell'anno", yaxis_title="MW",
+                  legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
+                  margin=dict(t=64, b=10, l=10, r=24), hovermode="x unified")
+    if slider:
+        layout["xaxis"] = dict(rangeslider=dict(visible=True, thickness=0.06))
+    fig.update_layout(**layout)
+    return fig
 
 
 def _motore_scenari():
-    from src.scenari import (cerca_autosufficienza, frontiera, migliore,
-                             profilo_orario, scala_domanda)
+    from src.motore import (LCA, CostiRete, Parco, Prezzi, autosufficienza,
+                            costo as costo_sistema_elettrico, frontiera, profilo,
+                            scegli, simula)
 
-    st.title("🔮 Motore di scenario al 2045")
+    st.title("🔮 Come decarbonizzare il Friuli-Venezia Giulia")
     st.markdown(
-        "Ogni configurazione viene simulata **ora per ora su un anno intero**. "
-        "Il ragionamento è in due passi: prima si cerca il sistema più conveniente "
-        "accettando di importare, poi si stringe il tetto all'import e si guarda "
-        "cosa serve per chiudere il divario."
+        "Tre passaggi: **com'è oggi**, **quanto conviene cambiare**, **cosa serve per "
+        "non importare più**. Ogni configurazione è simulata **ora per ora su un anno "
+        "intero**, con la curva di carico regionale ricostruita dai dati Terna e i "
+        "profili di produzione misurati per il FVG."
     )
 
-    serie = _serie_oraria()
-    base = DOC.PARCO_BASE_FVG
-
-    # ---------------------------------------------------- passo 0: la domanda
-    st.subheader("Primo: quanta elettricità servirà")
-    st.caption(
-        "Il PER prevede consumi finali in calo ma **elettricità in crescita**, perché "
-        "trasporti e riscaldamento si elettrificano. Qui il livello è dichiarato "
-        "esplicitamente: la forma oraria resta quella misurata, cambia la scala."
-    )
-    cd = st.columns([2, 1, 1])
-    with cd[0]:
-        domanda_twh = st.slider(
-            "Consumo elettrico regionale al 2045 (TWh)", 8.0, 20.0, 12.5, 0.5,
-            help="Oggi 9,3 TWh di consumi e 9,8 di richiesta. L'elettrificazione di "
-                 "mobilità e calore fa crescere questo numero anche se i consumi "
-                 "finali totali calano.")
-    cd[1].metric("Rispetto a oggi",
-                 f"{domanda_twh / (DOC.CONSUMI_ELETTRICI_TOTALE / 1000) - 1:+.0%}")
-    cd[2].metric("Elettrificazione implicita",
-                 f"{domanda_twh * 86 / 3346:.0f}%",
-                 help="Quota dell'elettricità sui consumi finali, se questi restassero "
-                      "ai livelli del bilancio 2021.")
-
-    domanda = scala_domanda(serie, domanda_twh)
-    cf_pv = serie["cf_fv_regionale"].to_numpy(dtype=float) * 0.86
-
+    # ---------------------------------------------------------- parametri
     with st.sidebar:
         st.divider()
-        st.markdown("**Cosa esplorare**")
-        pv_max = st.slider("Fotovoltaico massimo (MW)", 1500, 8000, 5000, 250)
-        eo_max = st.slider("Eolico massimo (MW)", 0, 1500, 800, 100)
-        bess_max = st.slider("Accumuli massimi (MWh)", 800, 20000, 8000, 400)
+        st.markdown("**Ipotesi**")
+        domanda_twh = st.slider("Domanda al 2045 (TWh)", 8.0, 20.0, 12.5, 0.5,
+                                help="Oggi 9,8 TWh. L'elettrificazione di mobilità e "
+                                     "calore la fa crescere anche se i consumi finali calano.")
+        sito = st.selectbox("Sito eolico", ["cf_eolico_Carso_Basovizza",
+                                            "cf_eolico_Colli_Orientali"],
+                            format_func=lambda k: {"cf_eolico_Carso_Basovizza": "Carso (2.193 h)",
+                                                   "cf_eolico_Colli_Orientali": "Colli Orientali"}[k])
+        lca = st.selectbox("Riferimento per le emissioni", list(LCA))
+        st.markdown("**Spazio di ricerca**")
+        pv_max = st.slider("Fotovoltaico massimo (MW)", 1500, 9000, 5000, 250)
+        eo_max = st.slider("Eolico massimo (MW)", 0, 2000, 800, 100)
+        bess_max = st.slider("Accumuli massimi (MWh)", 800, 30000, 10000, 500)
         passi = st.select_slider("Punti per asse", [3, 4, 5, 6], value=4)
-        sito_eolico = st.selectbox(
-            "Sito eolico di riferimento",
-            ["cf_eolico_Carso_Basovizza", "cf_eolico_Colli_Orientali"],
-            format_func=lambda k: {"cf_eolico_Carso_Basovizza": "Carso triestino (3.169 h)",
-                                   "cf_eolico_Colli_Orientali": "Colli Orientali (2.945 h)"}[k])
-    cf_eo = serie[sito_eolico].to_numpy(dtype=float)
+        peso_import = st.slider("Quanto pesa ridurre l'import", 0.0, 1.0, 0.5, 0.1,
+                                help="0 = conta solo la CO₂, 1 = conta solo l'import. "
+                                     "A parità di costo.")
 
-    with st.expander("Prezzi, contratti per differenza e costi di rete"):
+    with st.expander("Contratti per differenza, prezzi e costi di rete"):
         c = st.columns(4)
         prezzi_d = {
-            "cfd_pv": c[0].number_input("CfD fotovoltaico (€/MWh)", 20, 150, 60),
-            "cfd_eolico": c[1].number_input("CfD eolico (€/MWh)", 30, 150, 80),
-            "cfd_idro": c[2].number_input("CfD idroelettrico (€/MWh)", 20, 150, 55),
-            "gas": c[3].number_input("Prezzo del gas (€/MWh)", 30, 300, 130),
+            "cfd_pv": float(c[0].number_input("CfD fotovoltaico (€/MWh)", 20, 150, 60)),
+            "cfd_eolico": float(c[1].number_input("CfD eolico (€/MWh)", 30, 150, 80)),
+            "cfd_idro": float(c[2].number_input("CfD idroelettrico (€/MWh)", 20, 150, 55)),
+            "gas": float(c[3].number_input("Gas (€/MWh)", 30, 300, 130)),
         }
         c2 = st.columns(4)
-        prezzi_d["importazione"] = c2[0].number_input(
-            "Energia importata (€/MWh)", 40, 250, int(DOC.PUN_MEDIO_2025))
-        prezzi_d["lcos"] = c2[1].number_input("Accumulo (€/MWh scaricato)", 30, 250, 90)
-        prezzi_d["voll"] = 3000.0
+        prezzi_d["importazione"] = float(c2[0].number_input(
+            "Energia importata (€/MWh)", 40, 250, int(DOC.PUN_MEDIO_2025)))
+        prezzi_d["lcos"] = float(c2[1].number_input("Accumulo (€/MWh scaricato)", 30, 250, 90))
         rete_d = {
-            "connessione_eur_kw": c2[2].number_input(
-                "Connessione (€/kW)", 20, 300, DOC.COSTI_RETE["connessione_eur_kw"]),
-            "rinforzo_eur_kw": c2[3].number_input(
+            "connessione_eur_kw": float(c2[2].number_input(
+                "Connessione (€/kW)", 20, 300, DOC.COSTI_RETE["connessione_eur_kw"])),
+            "rinforzo_eur_kw": float(c2[3].number_input(
                 "Rinforzo oltre hosting capacity (€/kW)", 0, 600,
-                DOC.COSTI_RETE["rinforzo_eur_kw_oltre_hosting"]),
+                DOC.COSTI_RETE["rinforzo_eur_kw_oltre_hosting"])),
             "hosting_capacity_mw": float(DOC.HOSTING_CAPACITY_MW),
             "vita_anni": 30, "wacc": 0.06,
         }
-        st.caption(f"Fonte dei costi di rete: {DOC.FONTE_COSTI_RETE}.")
+        st.caption(f"Costi di rete: {DOC.FONTE_COSTI_RETE}.")
 
-    pv_range = np.linspace(base["pv_mw"], pv_max, passi).round(0)
-    eo_range = np.linspace(0, eo_max, passi).round(0) if eo_max else [0]
-    bess_range = np.linspace(base["bess_mwh"], bess_max, passi).round(0)
+    dati_oggi, parco_cal, diag = _dati_motore(None, sito)
+    e0 = simula(dati_oggi["domanda"], dati_oggi["cf_pv"], dati_oggi["cf_eolico"],
+                parco_cal, mesi=dati_oggi["mesi"])
+    c0 = costo_sistema_elettrico(e0, Prezzi(**prezzi_d), CostiRete(**rete_d), 0.0)
+    oggi = {
+        "gwh_pv": e0.pv / 1e3, "gwh_eolico": e0.eolico / 1e3,
+        "gwh_idro_fluente": e0.idro_fluente / 1e3, "gwh_idro_bacino": e0.idro_bacino / 1e3,
+        "gwh_termo_mustrun": e0.termo_mustrun / 1e3,
+        "gwh_termo_modulante": e0.termo_modulante / 1e3,
+        "gwh_import": e0.importato / 1e3, "gwh_export": e0.esportato / 1e3,
+        "gwh_bess_carica": e0.bess_carica / 1e3, "gwh_bess_scarica": e0.bess_scarica / 1e3,
+        "gwh_curtailment": e0.curtailment / 1e3, "gwh_domanda": e0.domanda / 1e3,
+        "eur_mwh": c0["eur_mwh"], "gco2_kwh": e0.intensita(lca),
+        "quota_import": e0.quota_import, "quota_fer": e0.quota_rinnovabile,
+        "pv_mw": parco_cal.pv_mw, "eolico_mw": 0.0, "bess_mwh": parco_cal.bess_mwh,
+    }
 
-    df = _esplora(tuple(pv_range), tuple(eo_range), tuple(bess_range),
-                  prezzi_d, rete_d, sito_eolico, domanda_twh, VERSIONE_MOTORE)
-    ott = migliore(df)
-
-    # ------------------------------------------------ quanto paghiamo oggi
-    st.divider()
-    st.subheader("Il punto di partenza: quanto costa il sistema di oggi")
+    # ================================================== 1. EX ANTE
+    st.header("1. Com'è oggi")
     st.caption(
-        "Stesso motore, stesso anno, ma con il parco attuale e la domanda attuale. "
-        "Serve come termine di paragone: ogni scenario va confrontato con questo, "
-        "non con zero."
+        f"Simulazione del parco attuale sull'anno 2024. Fonti: {DOC.FONTE_CARICO}; "
+        f"profili di produzione PVGIS e Atlante Eolico RSE."
     )
-    oggi = _esplora((base["pv_mw"],), (0.0,), (base["bess_mwh"],),
-                    prezzi_d, rete_d, sito_eolico,
-                    DOC.CONSUMI_ELETTRICI_TOTALE / 1000, VERSIONE_MOTORE).iloc[0]
-    o = st.columns(5)
-    o[0].metric("Costo del sistema oggi", f"{oggi['eur_mwh']:.1f} €/MWh")
-    o[1].metric("Import", f"{oggi['quota_import']:.0f}%",
-                f"{oggi['import_gwh']:,.0f} GWh".replace(",", "."))
-    o[2].metric("Quota rinnovabile", f"{oggi['quota_fer']:.0f}%")
-    o[3].metric("Intensità carbonica", f"{oggi['gco2_kwh']:.0f} g/kWh")
-    o[4].metric("Spesa annua", f"{oggi['eur_mwh'] * DOC.CONSUMI_ELETTRICI_TOTALE / 1000:,.0f} mln €".replace(",", "."))
-    st.caption(
-        f"Prezzo di riferimento del mercato nel 2025: **{DOC.PUN_MEDIO_2025} €/MWh** "
-        f"(PUN medio, il più alto fra le principali borse europee). Il costo calcolato "
-        f"qui è {'sotto' if oggi['eur_mwh'] < DOC.PUN_MEDIO_2025 else 'sopra'} quel "
-        "livello perché una parte dell'energia regionale è idroelettrico storico, già "
-        "ammortizzato e valorizzato al suo contratto per differenza."
-    )
-
-    # ---------------------------------------------- passo 1: il sistema conveniente
-    st.divider()
-    st.subheader("Secondo: il sistema più conveniente, con l'import")
-    st.caption("Fra tutte le configurazioni entro il 5% dal costo minimo, la meno emissiva.")
     m = st.columns(5)
-    m[0].metric("Fotovoltaico", f"{ott['pv_mw']:,.0f} MW".replace(",", "."),
-                f"{ott['pv_mw'] - base['pv_mw']:+,.0f}".replace(",", "."))
-    m[1].metric("Eolico", f"{ott['eolico_mw']:,.0f} MW".replace(",", "."))
-    m[2].metric("Accumuli", f"{ott['bess_mwh']:,.0f} MWh".replace(",", "."))
-    m[3].metric("Costo del sistema", f"{ott['eur_mwh']:.1f} €/MWh",
-                f"di cui rete {ott['eur_mwh'] - ott['eur_mwh_senza_rete']:.1f}")
-    m[4].metric("Import residuo", f"{ott['quota_import']:.0f}%")
+    m[0].metric("Domanda", f"{oggi['gwh_domanda']:,.0f} GWh".replace(",", "."))
+    m[1].metric("Costo del sistema", f"{oggi['eur_mwh']:.1f} €/MWh")
+    m[2].metric("Import", f"{oggi['quota_import']:.0f}%",
+                f"{oggi['gwh_import']:,.0f} GWh".replace(",", "."))
+    m[3].metric("Quota rinnovabile", f"{oggi['quota_fer']:.0f}%")
+    m[4].metric("Intensità carbonica", f"{oggi['gco2_kwh']:.0f} g/kWh")
+
+    grafico(_sankey(oggi, f"Oggi — {oggi['gwh_domanda']:,.0f} GWh".replace(",", ".")),
+            DOC.F_ELAB)
+
+    prof0 = profilo(dati_oggi, parco_cal)
+    grafico(_grafico_orario(prof0, "Le 8.760 ore del 2024, ora per ora"), DOC.F_ELAB,
+            "Trascina sulla barra sotto il grafico per restringere il periodo.")
+
+    with st.expander("Come è stato calibrato il modello, e quanto ci azzecca"):
+        st.markdown(
+            f"Il modello non è credibile se non riproduce l'anno che conosciamo. "
+            f"Tre coefficienti vengono tarati sui totali Terna 2024:\\n\\n"
+            f"- **resa fotovoltaica {diag['resa_pv']:.3f}** — "
+            f"{DOC.CALIBRAZIONE_2024['nota_resa_pv']}\\n"
+            f"- **fattore idrologico {diag['fattore_idro']:.3f}** — scala la producibilità "
+            "sull'idrologia dell'anno, che il modello non conosce.\\n"
+            f"- **must-run termoelettrico {diag['quota_mustrun'] * 100:.1f}%** — "
+            f"{DOC.CALIBRAZIONE_2024['nota_mustrun']}"
+        )
+        ver = pd.DataFrame(DOC.VERIFICA_MODELLO.items(),
+                           columns=["Grandezza", "Scarto dal dato Terna (%)"])
+        st.dataframe(ver, hide_index=True, width="stretch")
+        st.caption(
+            "Dopo la calibrazione domanda, fotovoltaico, idroelettrico e termoelettrico "
+            "coincidono; l'import netto resta il 6,4% sotto il dato Terna, differenza "
+            "attribuibile a export e perdite di rete non modellati."
+        )
+
+    st.info(
+        f"**Il punto di partenza.** Il FVG consuma {oggi['gwh_domanda']:,.0f} GWh e ne "
+        f"importa il {oggi['quota_import']:.0f}%. ".replace(",", ".")
+        + f"Le rinnovabili coprono il {oggi['quota_fer']:.0f}% della domanda, "
+        f"l'intensità carbonica è di {oggi['gco2_kwh']:.0f} gCO₂/kWh. "
+        "Il termoelettrico che vedi nel diagramma è in buona parte **cogenerazione "
+        "industriale**: non si spegne perché la fabbrica ha bisogno di vapore, e questo "
+        "vincola tutto il resto."
+    )
+
+    # ================================================== 2. OTTIMO
+    st.divider()
+    st.header("2. Il punto di equilibrio fra costo, CO₂ e import")
+    st.caption(
+        f"Domanda ipotizzata al 2045: **{domanda_twh:.1f} TWh**. Fra tutte le "
+        "configurazioni entro il 5% dal costo minimo, si sceglie quella che fa meglio "
+        "su emissioni e import, con il peso impostato nella barra laterale."
+    )
+
+    pv_r = tuple(np.linspace(DOC.PARCO_2024["pv_mw"], pv_max, passi).round(0))
+    eo_r = tuple(np.linspace(0, eo_max, passi).round(0)) if eo_max else (0.0,)
+    be_r = tuple(np.linspace(DOC.PARCO_2024["bess_mwh"], bess_max, passi).round(0))
+    df = _griglia(pv_r, eo_r, be_r, prezzi_d, rete_d, sito, domanda_twh, lca)
+    ott = scegli(df, peso_import=peso_import)
+
+    o = st.columns(5)
+    o[0].metric("Fotovoltaico", f"{ott['pv_mw']:,.0f} MW".replace(",", "."),
+                f"{ott['pv_mw'] - DOC.PARCO_2024['pv_mw']:+,.0f}".replace(",", "."))
+    o[1].metric("Eolico", f"{ott['eolico_mw']:,.0f} MW".replace(",", "."))
+    o[2].metric("Accumuli", f"{ott['bess_mwh']:,.0f} MWh".replace(",", "."))
+    o[3].metric("Costo", f"{ott['eur_mwh']:.1f} €/MWh",
+                f"{ott['eur_mwh'] - oggi['eur_mwh']:+.1f} vs oggi")
+    o[4].metric("Import", f"{ott['quota_import']:.0f}%",
+                f"{ott['quota_import'] - oggi['quota_import']:+.0f} punti")
 
     fr = frontiera(df)
-    fig = px.scatter(df, x="gco2_kwh", y="eur_mwh", color="eolico_mw", size="bess_mwh",
-                     hover_data=["pv_mw", "quota_import", "quota_fer"],
-                     color_continuous_scale="Viridis",
-                     labels={"gco2_kwh": "gCO₂/kWh (ciclo di vita)",
-                             "eur_mwh": "€/MWh, rete inclusa", "eolico_mw": "eolico (MW)"})
+    fig = px.scatter(df, x="gco2_kwh", y="eur_mwh", color="quota_import",
+                     size="bess_mwh", hover_data=["pv_mw", "eolico_mw", "quota_fer"],
+                     color_continuous_scale="RdYlGn_r",
+                     labels={"gco2_kwh": "gCO₂/kWh", "eur_mwh": "€/MWh, rete inclusa",
+                             "quota_import": "import %"})
     fig.add_scatter(x=fr["gco2_kwh"], y=fr["eur_mwh"], mode="lines",
                     line=dict(color="#111827", dash="dot"), name="Frontiera")
     fig.add_scatter(x=[ott["gco2_kwh"]], y=[ott["eur_mwh"]], mode="markers",
-                    marker=dict(size=18, color="#22C55E", line=dict(color="#111827", width=2)),
-                    name="Scelta")
-    fig.update_layout(height=480, xaxis_autorange="reversed", template="plotly_white",
+                    marker=dict(size=18, color="#22C55E",
+                                line=dict(color="#111827", width=2)), name="Scelta")
+    fig.add_scatter(x=[oggi["gco2_kwh"]], y=[oggi["eur_mwh"]], mode="markers",
+                    marker=dict(size=14, color="#EF4444", symbol="x",
+                                line=dict(width=2)), name="Oggi")
+    fig.update_layout(height=500, xaxis_autorange="reversed", template="plotly_white",
                       legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
-                      margin=dict(t=60, b=10, l=10, r=24))
-    grafico(fig, DOC.F_ELAB, f"{len(df)} configurazioni simulate, {len(fr)} non dominate.")
+                      margin=dict(t=64, b=10, l=10, r=24))
+    grafico(fig, DOC.F_ELAB, f"{len(df)} configurazioni, {len(fr)} non dominate.")
 
-    # ---------------------------------------------- passo 2: quanto import accettare
+    sk1, sk2 = st.columns(2)
+    with sk1:
+        grafico(_sankey(oggi, "Oggi"), DOC.F_ELAB)
+    with sk2:
+        grafico(_sankey(ott, f"Ottimo — {domanda_twh:.1f} TWh"), DOC.F_ELAB)
+
+    parco_ott = Parco(**{**DOC.PARCO_2024,
+                         "idro_fluente_mw": parco_cal.idro_fluente_mw,
+                         "idro_afflusso_mw": parco_cal.idro_afflusso_mw,
+                         "termo_quota_mustrun": parco_cal.termo_quota_mustrun,
+                         "pv_mw": float(ott["pv_mw"]), "eolico_mw": float(ott["eolico_mw"]),
+                         "bess_mwh": float(ott["bess_mwh"]),
+                         "bess_mw": float(ott["bess_mwh"]) / 4})
+    dati_2045, _, _ = _dati_motore(domanda_twh, sito)
+    grafico(_grafico_orario(profilo(dati_2045, parco_ott),
+                            "Le 8.760 ore dello scenario ottimo"), DOC.F_ELAB)
+
+    # ================================================== 3. SENZA IMPORT
     st.divider()
-    st.subheader("Terzo: e se volessimo importare di meno?")
+    st.header("3. E se non volessimo più importare?")
+    modalita = st.radio(
+        "Che cosa si intende per autosufficienza",
+        ["saldo annuo", "ogni ora"], horizontal=True,
+        format_func=lambda m: {"saldo annuo": "Saldo annuo nullo (si esporta d'estate, "
+                                              "si importa d'inverno)",
+                               "ogni ora": "Import nullo in ogni ora (autarchia)"}[m])
     st.caption(
-        "Il FVG oggi importa circa un terzo dell'elettricità che consuma. Qui si sceglie "
-        "quanto se ne vuole importare al 2045 e si guarda cosa costa arrivarci."
+        "Sono due cose molto diverse. Il saldo annuo è autosufficienza contabile: si "
+        "resta connessi e si compensa nell'anno. L'import nullo in ogni ora impone di "
+        "dimensionare il sistema sulla settimana peggiore dell'inverno."
     )
-    tetto = st.slider("Import massimo accettato (% della domanda)", 0, 30,
-                      int(round(ott["quota_import"])), 1)
 
-    auto = cerca_autosufficienza(
-        domanda, cf_pv, cf_eo, Parco(**base), float(tetto),
-        Prezzi(**prezzi_d), CostiRete(**rete_d),
-        pv_max=float(max(pv_max, 8000)), eolico_max=float(max(eo_max, 1500)),
-        bess_max=float(max(bess_max, 20000)), passi=passi + 1)
-
+    auto = _autosuff(modalita, prezzi_d, rete_d, sito, domanda_twh, lca, passi)
     if auto.empty:
         st.error(
-            f"**Con un tetto del {tetto}% nessuna configurazione esplorata ce la fa.** "
-            "Non significa che sia impossibile: significa che serve uscire dai limiti "
-            "impostati nella barra laterale, o accettare più import. È già un risultato: "
-            "dice dove sta il muro."
+            f"**Nessuna configurazione esplorata raggiunge l'autosufficienza "
+            f"«{modalita}» con {domanda_twh:.1f} TWh di domanda.** "
+            "Non vuol dire che sia impossibile: vuol dire che serve uscire dai limiti "
+            "impostati nella barra laterale, o accettare una domanda più bassa. "
+            "È già un risultato: dice dove sta il muro."
         )
     else:
-        scelta = auto.iloc[0]
+        sc = auto.iloc[0]
         a = st.columns(5)
-        a[0].metric("Fotovoltaico", f"{scelta['pv_mw']:,.0f} MW".replace(",", "."),
-                    f"{scelta['pv_mw'] - ott['pv_mw']:+,.0f} vs passo 2".replace(",", "."))
-        a[1].metric("Eolico", f"{scelta['eolico_mw']:,.0f} MW".replace(",", "."),
-                    f"{scelta['eolico_mw'] - ott['eolico_mw']:+,.0f}".replace(",", "."))
-        a[2].metric("Accumuli", f"{scelta['bess_mwh']:,.0f} MWh".replace(",", "."))
-        a[3].metric("Costo", f"{scelta['eur_mwh']:.1f} €/MWh",
-                    f"{scelta['eur_mwh'] - ott['eur_mwh']:+.1f} vs passo 2")
-        a[4].metric("Import", f"{scelta['quota_import']:.1f}%")
+        a[0].metric("Fotovoltaico", f"{sc['pv_mw']:,.0f} MW".replace(",", "."),
+                    f"{sc['pv_mw'] - ott['pv_mw']:+,.0f} vs ottimo".replace(",", "."))
+        a[1].metric("Eolico", f"{sc['eolico_mw']:,.0f} MW".replace(",", "."),
+                    f"{sc['eolico_mw'] - ott['eolico_mw']:+,.0f}".replace(",", "."))
+        a[2].metric("Accumuli", f"{sc['bess_mwh']:,.0f} MWh".replace(",", "."))
+        a[3].metric("Costo", f"{sc['eur_mwh']:.1f} €/MWh",
+                    f"{sc['eur_mwh'] - ott['eur_mwh']:+.1f} vs ottimo")
+        a[4].metric("Import residuo", f"{sc['quota_import']:.1f}%")
 
-        conf2 = pd.DataFrame([
-            {"Sistema": "Ottimizzato con import", "€/MWh": ott["eur_mwh"],
-             "gCO₂/kWh": ott["gco2_kwh"], "Import %": ott["quota_import"],
+        conf = pd.DataFrame([
+            {"Sistema": "Oggi", "€/MWh": oggi["eur_mwh"], "gCO₂/kWh": oggi["gco2_kwh"],
+             "Import %": oggi["quota_import"], "FER %": oggi["quota_fer"],
+             "Nuova potenza (MW)": 0.0},
+            {"Sistema": "Ottimo", "€/MWh": ott["eur_mwh"], "gCO₂/kWh": ott["gco2_kwh"],
+             "Import %": ott["quota_import"], "FER %": ott["quota_fer"],
              "Nuova potenza (MW)": ott["nuova_potenza_mw"]},
-            {"Sistema": f"Con tetto import {tetto}%", "€/MWh": scelta["eur_mwh"],
-             "gCO₂/kWh": scelta["gco2_kwh"], "Import %": scelta["quota_import"],
-             "Nuova potenza (MW)": scelta["nuova_potenza_mw"]},
+            {"Sistema": f"Autosufficiente ({modalita})", "€/MWh": sc["eur_mwh"],
+             "gCO₂/kWh": sc["gco2_kwh"], "Import %": sc["quota_import"],
+             "FER %": sc["quota_fer"], "Nuova potenza (MW)": sc["nuova_potenza_mw"]},
         ])
-        st.dataframe(conf2.round(1), hide_index=True, width="stretch")
-        st.caption(f"Confronto fra i due sistemi. Fonte: {DOC.F_ELAB}.")
+        st.dataframe(conf.round(1), hide_index=True, width="stretch")
+        st.caption(f"Confronto fra i tre sistemi. Fonte: {DOC.F_ELAB}.")
 
-        extra = scelta["eur_mwh"] - ott["eur_mwh"]
+        grafico(_sankey(sc, f"Autosufficiente — {modalita}"), DOC.F_ELAB)
+
+        parco_auto = Parco(**{**DOC.PARCO_2024,
+                              "idro_fluente_mw": parco_cal.idro_fluente_mw,
+                              "idro_afflusso_mw": parco_cal.idro_afflusso_mw,
+                              "termo_quota_mustrun": parco_cal.termo_quota_mustrun,
+                              "pv_mw": float(sc["pv_mw"]), "eolico_mw": float(sc["eolico_mw"]),
+                              "bess_mwh": float(sc["bess_mwh"]),
+                              "bess_mw": float(sc["bess_mwh"]) / 4,
+                              "import_max_mw": 0.0 if modalita == "ogni ora" else 1500.0})
+        grafico(_grafico_orario(profilo(dati_2045, parco_auto),
+                                "Le 8.760 ore dello scenario autosufficiente"), DOC.F_ELAB)
+
+        extra = sc["eur_mwh"] - ott["eur_mwh"]
         st.info(
-            f"**Portare l'import dal {ott['quota_import']:.0f}% al {tetto}% costa circa "
-            f"{extra:+.1f} €/MWh**, cioè "
-            f"{extra * domanda_twh:.0f} milioni di euro l'anno sulla bolletta regionale, "
-            f"e richiede {scelta['nuova_potenza_mw'] - ott['nuova_potenza_mw']:+,.0f} MW ".replace(",", ".")
-            + "di potenza in più. "
-            + ("È il prezzo dell'autosufficienza: non è infinito, ma non è zero. "
-               "Va confrontato con quello che si compra — meno esposizione ai prezzi di "
-               "mercato e alle crisi di fornitura." if extra > 0 else
-               "In questo caso stringere l'import non costa: le rinnovabili aggiuntive "
-               "si ripagano rispetto all'energia comprata.")
+            f"**Chiudere l'import costa {extra:+.1f} €/MWh**, cioè "
+            f"{extra * domanda_twh:.0f} milioni di euro l'anno, e richiede "
+            f"{sc['nuova_potenza_mw'] - ott['nuova_potenza_mw']:+,.0f} MW ".replace(",", ".")
+            + "di potenza in più rispetto all'ottimo. "
+            + ("La differenza fra le due letture di autosufficienza è il vero risultato: "
+               "restare connessi e compensare nell'anno costa una frazione di quello che "
+               "costa non dipendere da nessuno in nessuna ora."
+               if modalita == "saldo annuo" else
+               "Questo è il prezzo dell'autarchia elettrica: il sistema va dimensionato "
+               "sulla settimana peggiore, e per il resto dell'anno quella capacità resta "
+               "in gran parte inutilizzata.")
         )
-
-        st.subheader("Tutte le 8.760 ore dell'anno")
-        st.caption(
-            "Nessuna aggregazione: ogni punto è un'ora di simulazione. Le aree sono la "
-            "generazione impilata, la linea nera la domanda. Si può zoomare trascinando "
-            "sul grafico."
-        )
-        prof_anno = profilo_orario(domanda, cf_pv, cf_eo, Parco(**{
-            **base, "pv_mw": float(scelta["pv_mw"]),
-            "eolico_mw": float(scelta["eolico_mw"]),
-            "bess_mwh": float(scelta["bess_mwh"]),
-            "bess_mw": float(scelta["bess_mwh"]) / 4}), giorno_inizio=0, giorni=365)
-
-        fig = go.Figure()
-        for nome_s, colore in [("fotovoltaico", "#FACC15"), ("eolico", "#22C55E"),
-                               ("import", "#EF4444")]:
-            fig.add_scatter(x=prof_anno["ora"], y=prof_anno[nome_s],
-                            name=nome_s.capitalize(), stackgroup="anno",
-                            line=dict(width=0), fillcolor=colore, hoverinfo="x+y+name")
-        fig.add_scatter(x=prof_anno["ora"],
-                        y=np.full(len(prof_anno), base["idro_fluente_mw"]),
-                        name="Idro fluente", stackgroup="anno", line=dict(width=0),
-                        fillcolor="#2563EB")
-        fig.add_scatter(x=prof_anno["ora"], y=prof_anno["domanda"], name="Domanda",
-                        mode="lines", line=dict(color="#111827", width=1))
-        fig.update_layout(height=460, xaxis_title="ora dell'anno (0 = 1 gennaio)",
-                          yaxis_title="MW", template="plotly_white",
-                          legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
-                          margin=dict(t=60, b=10, l=10, r=24),
-                          xaxis=dict(rangeslider=dict(visible=True, thickness=0.06)))
-        grafico(fig, DOC.F_ELAB,
-                "8.760 punti orari. La barra sotto il grafico permette di restringere "
-                "il periodo.")
-
-        st.markdown("**La stessa cosa vista per giorno, per leggere la stagionalità**")
-        gio = prof_anno.copy()
-        gio["giorno"] = gio["ora"] // 24
-        gio = gio.groupby("giorno", as_index=False).mean(numeric_only=True)
-        fig = go.Figure()
-        for nome_s, colore in [("fotovoltaico", "#FACC15"), ("eolico", "#22C55E"),
-                               ("import", "#EF4444")]:
-            fig.add_scatter(x=gio["giorno"], y=gio[nome_s], name=nome_s.capitalize(),
-                            stackgroup="g", line=dict(width=0), fillcolor=colore)
-        fig.add_scatter(x=gio["giorno"], y=np.full(len(gio), base["idro_fluente_mw"]),
-                        name="Idro fluente", stackgroup="g", line=dict(width=0),
-                        fillcolor="#2563EB")
-        fig.add_scatter(x=gio["giorno"], y=gio["domanda"], name="Domanda",
-                        mode="lines", line=dict(color="#111827", width=2))
-        fig.update_layout(height=380, xaxis_title="giorno dell'anno", yaxis_title="MW medi",
-                          template="plotly_white", hovermode="x unified",
-                          legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
-                          margin=dict(t=60, b=10, l=10, r=24))
-        grafico(fig, DOC.F_ELAB, "Medie giornaliere delle stesse 8.760 ore.")
-
-        st.subheader("Come si copre il divario, ora per ora")
-        settimana = st.select_slider(
-            "Settimana dell'anno", options=list(range(1, 53)), value=26,
-            help="Settimana 1 = gennaio, 26 = fine giugno, 52 = dicembre.")
-        parco_scelto = Parco(**{**base, "pv_mw": float(scelta["pv_mw"]),
-                                "eolico_mw": float(scelta["eolico_mw"]),
-                                "bess_mwh": float(scelta["bess_mwh"]),
-                                "bess_mw": float(scelta["bess_mwh"]) / 4})
-        prof = profilo_orario(domanda, cf_pv, cf_eo, parco_scelto,
-                              giorno_inizio=(settimana - 1) * 7, giorni=7)
-
-        fig = go.Figure()
-        fig.add_scatter(x=prof["ora"], y=prof["fotovoltaico"], name="Fotovoltaico",
-                        stackgroup="gen", line=dict(width=0), fillcolor="#FACC15")
-        fig.add_scatter(x=prof["ora"], y=prof["eolico"], name="Eolico",
-                        stackgroup="gen", line=dict(width=0), fillcolor="#22C55E")
-        fig.add_scatter(x=prof["ora"], y=np.full(len(prof), base["idro_fluente_mw"]),
-                        name="Idro fluente", stackgroup="gen", line=dict(width=0),
-                        fillcolor="#2563EB")
-        fig.add_scatter(x=prof["ora"], y=prof["import"], name="Import",
-                        stackgroup="gen", line=dict(width=0), fillcolor="#EF4444")
-        fig.add_scatter(x=prof["ora"], y=prof["domanda"], name="Domanda",
-                        mode="lines", line=dict(color="#111827", width=2.5))
-        fig.update_layout(height=420, xaxis_title="ora dell'anno",
-                          yaxis_title="MW", template="plotly_white",
-                          legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
-                          margin=dict(t=60, b=10, l=10, r=24), hovermode="x unified")
-        grafico(fig, DOC.F_ELAB,
-                "Le aree colorate sono la generazione, la linea nera la domanda. "
-                "Dove l'area supera la linea c'è surplus, dove resta sotto entra l'import.")
-
-        surplus_tot = prof["surplus"].sum()
-        st.caption(
-            f"In questa settimana il surplus vale **{surplus_tot / 1000:,.0f} GWh** e "
-            f"l'import **{prof['import'].sum() / 1000:,.0f} GWh**. ".replace(",", ".")
-            + "È qui che si vede la differenza fra fotovoltaico ed eolico: il primo "
-            "disegna picchi diurni che spesso eccedono la domanda, il secondo riempie "
-            "anche le notti."
-        )
-
-    # ------------------------------------------------ il confronto 2025 -> 2045
-        st.divider()
-        st.subheader("Da oggi al 2045: come cambiano quantità e fonti")
-        st.caption(
-            "Due diagrammi con la stessa struttura e scale confrontabili. A sinistra le "
-            "fonti, al centro l'energia che entra nel sistema, a destra dove finisce: "
-            "domanda, accumulo, export, energia tagliata. Tutti i flussi sono in GWh "
-            "l'anno e vengono dalla simulazione oraria, non da medie."
-        )
-
-        def _flusso(riga, chiave, default=0.0) -> float:
-            """Legge un flusso dalla riga di risultato tollerando schemi diversi."""
-            try:
-                valore = riga[chiave]
-            except (KeyError, IndexError):
-                return float(default)
-            return float(valore) if pd.notna(valore) else float(default)
-
-        def _sankey_sistema(riga, titolo):
-            """Sankey a tre livelli: fonti, sistema, destinazioni.
-
-            Il nodo centrale fa da collo: entra tutto ciò che viene generato o
-            importato, esce tutto ciò che viene consumato, accumulato, esportato
-            o buttato. Così il diagramma chiude e le due annate si confrontano.
-            """
-            fonti_s = [
-                ("Fotovoltaico", _flusso(riga, "gwh_pv"), "#FACC15"),
-                ("Eolico", _flusso(riga, "gwh_eolico"), "#22C55E"),
-                ("Idro fluente", _flusso(riga, "gwh_idro_fluente"), "#60A5FA"),
-                ("Idro da bacino", _flusso(riga, "gwh_idro_bacino"), "#1E3A8A"),
-                ("Termoelettrico", _flusso(riga, "gwh_gas"), "#4B5563"),
-                ("Import", _flusso(riga, "gwh_import"), "#EF4444"),
-                ("Da accumulo", _flusso(riga, "gwh_bess_scarica"), "#A855F7"),
-            ]
-            usi_s = [
-                ("Domanda regionale", _flusso(riga, "gwh_domanda"), "#111827"),
-                ("In accumulo", _flusso(riga, "gwh_bess_carica"), "#A855F7"),
-                ("Export", _flusso(riga, "gwh_export"), "#F97316"),
-                ("Energia tagliata", _flusso(riga, "gwh_curtailment"), "#9CA3AF"),
-            ]
-            fonti_s = [f for f in fonti_s if f[1] > 0.5]
-            usi_s = [u for u in usi_s if u[1] > 0.5]
-
-            centro = "Sistema elettrico regionale"
-            nodi_s = [f[0] for f in fonti_s] + [centro] + [u[0] for u in usi_s]
-            idx_s = {n: k for k, n in enumerate(nodi_s)}
-            colori_s = [f[2] for f in fonti_s] + ["#0F172A"] + [u[2] for u in usi_s]
-
-            src_s = [idx_s[f[0]] for f in fonti_s] + [idx_s[centro]] * len(usi_s)
-            tgt_s = [idx_s[centro]] * len(fonti_s) + [idx_s[u[0]] for u in usi_s]
-            val_s = [f[1] for f in fonti_s] + [u[1] for u in usi_s]
-            col_s = [_trasparente(f[2]) for f in fonti_s] + [_trasparente(u[2]) for u in usi_s]
-
-            fig_s = go.Figure(go.Sankey(
-                node=dict(pad=18, thickness=20, label=nodi_s, color=colori_s,
-                          line=dict(color="rgba(0,0,0,0.2)", width=0.6)),
-                link=dict(source=src_s, target=tgt_s, value=val_s, color=col_s,
-                          hovertemplate="%{value:,.0f} GWh<extra></extra>")))
-            fig_s.update_layout(height=460, font_size=12, title=titolo,
-                                margin=dict(t=52, b=20, l=10, r=10))
-            return fig_s
-
-        def _trasparente(esadecimale: str, alfa: float = 0.38) -> str:
-            r, g, b = (int(esadecimale[k:k + 2], 16) for k in (1, 3, 5))
-            return f"rgba({r},{g},{b},{alfa})"
-
-        sk1, sk2 = st.columns(2)
-        with sk1:
-            grafico(_sankey_sistema(
-                oggi, f"Oggi — {_flusso(oggi, "gwh_domanda"):,.0f} GWh di domanda".replace(",", ".")),
-                DOC.F_ELAB)
-        with sk2:
-            grafico(_sankey_sistema(
-                scelta, f"2045 — {_flusso(scelta, "gwh_domanda"):,.0f} GWh di domanda".replace(",", ".")),
-                DOC.F_ELAB)
-
-        voci_conf = [
-            ("Fotovoltaico", "gwh_pv"), ("Eolico", "gwh_eolico"),
-            ("Idroelettrico", None), ("Termoelettrico", "gwh_gas"),
-            ("Import", "gwh_import"), ("Export", "gwh_export"),
-            ("Energia tagliata", "gwh_curtailment"),
-        ]
-        righe_conf = []
-        for nome_v, chiave in voci_conf:
-            if chiave is None:
-                a_v = _flusso(oggi, "gwh_idro_fluente") + _flusso(oggi, "gwh_idro_bacino")
-                b_v = (_flusso(scelta, "gwh_idro_fluente")
-                       + _flusso(scelta, "gwh_idro_bacino"))
-            else:
-                a_v, b_v = _flusso(oggi, chiave), _flusso(scelta, chiave)
-            righe_conf.append({"Voce": nome_v, "Oggi": a_v, "2045": b_v,
-                               "Variazione": b_v - a_v})
-        delta = pd.DataFrame(righe_conf)
-        fig = px.bar(delta, x="Variazione", y="Voce", orientation="h", text_auto="+.0f",
-                     color="Variazione",
-                     color_continuous_scale=["#DC2626", "#F3F4F6", "#22C55E"],
-                     color_continuous_midpoint=0)
-        fig.add_vline(x=0, line_color="#111827")
-        fig.update_traces(cliponaxis=False)
-        fig.update_layout(height=320, yaxis_title=None, coloraxis_showscale=False,
-                          xaxis_title="GWh in più o in meno rispetto a oggi", **PLOT)
-        grafico(fig, DOC.F_ELAB)
-
-        st.dataframe(delta.round(0), hide_index=True, width="stretch")
-        st.caption(f"Flussi annui in GWh dalla simulazione oraria. Fonte: {DOC.F_ELAB}.")
 
     with st.expander("Tutte le configurazioni simulate"):
         vista = df[["pv_mw", "eolico_mw", "bess_mwh", "eur_mwh", "costo_rete_mln",
-                    "gco2_kwh", "quota_import", "quota_fer", "export_gwh",
-                    "curtailment_gwh"]].copy()
+                    "gco2_kwh", "quota_import", "quota_fer", "gwh_export",
+                    "gwh_curtailment", "ore_import"]].copy()
         vista.columns = ["PV (MW)", "Eolico (MW)", "BESS (MWh)", "€/MWh", "Rete (mln €)",
-                         "gCO₂/kWh", "Import %", "FER %", "Export (GWh)", "Curtailment (GWh)"]
+                         "gCO₂/kWh", "Import %", "FER %", "Export (GWh)",
+                         "Tagliata (GWh)", "Ore di import"]
         st.dataframe(vista.round(1).sort_values("€/MWh"), hide_index=True,
                      width="stretch", height=340)
 
     st.warning(
-        "**Cosa il motore non fa.** La forma oraria del carico è un archetipo calibrato "
-        "sui totali Terna, non una misura: i confronti fra configurazioni sono robusti, "
-        "i valori assoluti meno. Non c'è la rete interna alla regione, quindi la "
-        "congestione locale non appare — ed è il vincolo vero. I costi di rete sono "
-        "ordini di grandezza. E la domanda al 2045 è un'ipotesi che scegli tu, non una "
-        "previsione: è il parametro che pesa di più su tutto il resto."
+        "**I limiti, in chiaro.** La curva di carico regionale è **ricostruita**: Terna "
+        "pubblica il carico per zona di mercato, non per regione, e qui viene ricomposta "
+        "da tre profili settoriali pesati sulla struttura dei consumi friulani. Correla "
+        "a 0,90 con la curva di zona riscalata, ma resta una ricostruzione. "
+        "La rete interna alla regione non è modellata, quindi la congestione locale non "
+        "appare — ed è il vincolo vero, come mostra la scheda Reti. I costi di rete sono "
+        "ordini di grandezza. E la domanda al 2045 è un'ipotesi che scegli tu: è il "
+        "parametro che pesa di più su tutto il resto."
     )
 
+
+@st.cache_data(show_spinner="Cerco le configurazioni autosufficienti...")
+def _autosuff(modalita, prezzi_d, rete_d, sito, domanda_twh, lca, passi, versione: int = 3):
+    from src.motore import CostiRete, Prezzi, autosufficienza, prepara
+    parco, diag = _calibrazione()
+    dati = prepara(_serie_motore(), domanda_twh=domanda_twh, colonna_eolico=sito)
+    dati["cf_pv"] = dati["cf_pv"] * diag["resa_pv"]
+    return autosufficienza(dati, parco, Prezzi(**prezzi_d), CostiRete(**rete_d),
+                           modalita=modalita, lca=lca, passi=passi + 1)
 
 
 # ------------------------------------------------------------- pagine
