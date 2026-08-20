@@ -26,7 +26,7 @@ import streamlit as st
 # --------------------------------------------------------------------- dati
 _DATI: dict[str, str] = {
     "aree_cabine_primarie":
-        "H4sIAAgNh2oC/4VVTU/cUAy897ekT/bz+zwGRP8A3FG6pKuowFYJe+HXY7pUEI+lnjMaP89MxofT"
+        "H4sIAIAQh2oC/4VVTU/cUAy897ekT/bz+zwGRP8A3FG6pKuowFYJe+HXY7pUEI+lnjMaP89MxofT"
         "w3KYh+O8vZzWeZjWebr//RSHX+fTutyv83E5Pc/fxmsiviHOrQ/z94dle1mXn+fX928DJwp9+DE9"
         "bp84igy4WHpIexz1XpEvttAsHwnyxe7gCuBqCdnAco9IRzlEi2tI151tGbeIkhFHhHQtiBGlpQYw"
         "SbrE3Xr+JCuEO4juUPYw1RhhMSnMOpER16xhuiq+rRDickNJagdFsuP/xVezBMaJpQaG16EmpViB"
@@ -37,7 +37,7 @@ _DATI: dict[str, str] = {
         "86FA7xZhkIpz2upXtsvLkn1ZcU4MiqslUsEqr7uqemAWwK7nJqhH9UuJrfNOkPQS0QfdG9Qq/6Qo"
         "CQAA",
     "aree_disponibili_fv":
-        "H4sIAAgNh2oC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
+        "H4sIAIAQh2oC/4Vby3YbOZLd8yu0642GJ/EGliq7y2fOcVXX2B4vepcWs1RZTTLVSVELfdb8wvzY"
         "RNwAMpGgumdhiZZEEAhE3LhxI/JxOl3Pw/3zPL2O58exv+/nof/H6Z/4/vgy/+Ok5eW5vKJfKq2W"
         "l6Z6ufyBvNDn4eVlWVEr+Uv6Tj8vP+374+6v88t0N9x96C+X6f63aT4M54n25PTe6vtu33n6on0X"
         "+fXyT+21oRfK1T/dfe0fx+NQLWL0Plj642Du3V55Xi+uC2mzd/RbvXfqXin6/b3fR5tXOtOOzm8j"
@@ -145,7 +145,7 @@ _DATI: dict[str, str] = {
         "Jo/r8sjPMjti2Rc5zJT4S3427uG0tki4fMmaDE8soJSuRnSN1LtbJAYz+/k4rcjbjgaUj5IHR9qc"
         "5Lh9i9oud+xENZLeywNlzZe56L+xzIukLZLlSc6lK7Pu7f8AgPOfMQo/AAA=",
     "bilancio_2021":
-        "H4sIAAgNh2oC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
+        "H4sIAIAQh2oC/42Uz46bMBDG7/sU1p5aya0wCQSO2dW2yqlR2hdwYBKN1nioPUZVn74GirogSnsC"
         "i9/8+77BV0NVRbKjCmSnDTmQ2lqSwSLrh1PTkmP5TM01eMYrGhSeDNYo1U59TGSapEq+MrQTegZ2"
         "ESCpkkOxBsxy3bX35GOyYp+uwS8W3B1BOIw9dbqPkWmZr6EXvGFgFJbsDE9WmxgmFTU47DTTOjQW"
         "1wIMMDustEzzOXhBT86DQMvgLMhT7WiiowJ5uUl/IqaODOseztJN9isZHRuOh2ZIrTbpz0ATudsE"
@@ -155,7 +155,7 @@ _DATI: dict[str, str] = {
         "tiK/BO5Da1iJXf73i9AzuBp58HoRuD+orcBjYKqGOVGAaP+kcRA9Koq/64LihtHr0UPorwBgrFDu"
         "y616F7A1NmCHuyTfq/RQZirN8jy+78awDw+/AIVMnrNsBQAA",
     "bio_impianti_dieta":
-        "H4sIAAgNh2oC/22SP28bMQzFd38KwpMNyLFj1B06FHASJ8iQ1I2RdCxone5KwBIP+uPhhn72PjlO"
+        "H4sIAIAQh2oC/22SP28bMQzFd38KwpMNyLFj1B06FHASJ8iQ1I2RdCxone5KwBIP+uPhhn72PjlO"
         "0gJdBB2PfPzxUeJ74ZDVWPUlONNHPUqwwiZLrwftcOs1uzDwz4cfzjTiMpuUGSUBcdNqwMltKw3v"
         "5SCZR98LN7EcpXiaXGsTFUpT83YzzzdmL+qhE9QY7qJYNPpCnjOuQueII0eNULIc0UsCueSilUEU"
         "kOKV5IxOty93xPiEZHbREXKjy6fqRhJE9wVVGG4TZL62ruO07tPad2y8a4RH21hH7ms6bRVNGL2v"
@@ -165,7 +165,7 @@ _DATI: dict[str, str] = {
         "SjMS7Keuy8z+NvH229PuGUO1kU97IjRuTk+xw0bVjC8vKkCedxSllZLB/GFxD0kuWfO5emx292t6"
         "AlyVqs32nBKP/gDnXvJN6gIAAA==",
     "bioenergie_comuni":
-        "H4sIAAgNh2oC/3VayXIbSZK94ytwqwsqLfblSEklWZtR1RqSrUNf2pJECoqaBJKVWNqMXz/PY0lE"
+        "H4sIAIAQh2oC/3VayXIbSZK94ytwqwsqLfblSEklWZtR1RqSrUNf2pJECoqaBJKVWNqMXz/PY0lE"
         "QBxVGWWSYksP9+fvucfLtD8fhk04nvrT5nU6DYe3/j//+99N2L+G/nAKm+1wOIZT/5/8b5t+HjBg"
         "//fmx3Q4DcuU/X9Xd/OpXz8N837YMMkY0xvtWMc2fMNlZ5n1GyU6ybnSikslNx/CtO+Px2F9nMaw"
         "xaROO1pk2B36tILZ0HwWf3Lece+UE8ZbtaG/Wt2dTmEfjmmsrcZK2UlpjWPCp5Efeqw5h359Nx/z"
@@ -254,7 +254,7 @@ _DATI: dict[str, str] = {
         "+cEob0SQEZ3ggEwVnxDXfOAeMuJ4HtMTYt4KGvBBpGdLzWlVQRC9kgsvMR5ShvseiOeVHOdvOBVR"
         "EKQhVR4UxDX+D5LFs4QOLgAA",
     "biomassa_comuni_2015":
-        "H4sIAAgNh2oC/31XyW4cNxC96yvmlgshkCyuR1mIjQC2I1iKDrkY1Kg9ZtLTLfQsAfT1eUX2MtLI"
+        "H4sIAIAQh2oC/31XyW4cNxC96yvmlgshkCyuR1mIjQC2I1iKDrkY1Kg9ZtLTLfQsAfT1eUX2MtLI"
         "6tE01MR0sZZXrx7X/fbQNaLtO9Gmvcjbp5y6fRb//ie2abdL3/fi2LeHbfN9S2Ldbx8Ou31+yG1z"
         "cbV9ap6fe6H0pbfSRB+0k8FFG4Rxl0YGW56c1coLLazXQmsltPfiOj89pX1/cTXs0+quGbaNUHQp"
         "rfHkIylJxgQqVnzU0VmrvDbKCKxp64XVOgpnyZ0aajZdYivKRKfifLEVvGtJKEFGaBiR4jP/eJVW"
@@ -288,7 +288,7 @@ _DATI: dict[str, str] = {
         "EZlzGN5nkP7jb1e7sQ7k62lS+6jmU+msJ9DJ5zj4+wCdX98OqOOrc4wDouelKs0xo+253vwfxXVo"
         "qRgQAAA=",
     "biomassa_impianti_2015":
-        "H4sIAAgNh2oC/+1aTW/bSBK9z6/QbS4No78/jhnvTLBAMmvE3hz2MmjLjMNdSjSojwX86/c1KXY3"
+        "H4sIAIAQh2oC/+1aTW/bSBK9z6/QbS4No78/jhnvTLBAMmvE3hz2MmjLjMNdSjSojwX86/c1KXY3"
         "JdqklGQnwS5tCBIBPVVXV9V7Vc2npn5qymLrm7Imy3q1WxfkX/8O7+53m215X1YFWfnNxv+xJfu6"
         "2q2KP1aC+PW6JlW9JpXf/nSzu7+vymVN3jRbv7grmlVBJKeUXJdPT35bE8WpJFpRRThlijBxRZU0"
         "wjjBqJDSCiL1lTSOO60UM1wymUDvfLMvNzCO55BMSUqY4wlSWaqMooeLdZCcm4T0W92sy8VDubjF"
@@ -332,25 +332,25 @@ _DATI: dict[str, str] = {
         "U5OelgzKA8tT6M8iSZ/G//DoV1yQAOnR1gwr09szOKubL/Bx3W4vmS/ctt8v9sU0qsVKXXwCxh0G"
         "K1mt/ppYyVmvQ80i+sEjmCOAKTbIafK+PjKfk8f/AYoBRgN1LQAA",
     "biomassa_province":
-        "H4sIAAgNh2oC/4WQQWrDMBBF9zlFDiAGzWg0I2+76bJduAdwHZGKGivYJoWevuO4gUIK1kJIoP/0"
+        "H4sIAIAQh2oC/4WQQWrDMBBF9zlFDiAGzWg0I2+76bJduAdwHZGKGivYJoWevuO4gUIK1kJIoP/0"
         "5819HrupVHeZ6rWMfencUscxD0O3ZHf++nCfS74cnurcf5Rj1/d5nst7Gew8HC9THkq+Vvdap1Me"
         "65idBEwevCNkSEgOE7B68U0if1u8x3quU/m2GpxkBaFAJHYITD6hIG8Yj3uct1OxPiiWXjlR0AqJ"
         "YSF4VU4qe4R2Knk2C0rNbSQGTeIIMCAR026D9qW1kI+6phMqNCE5u4TgQ5OacGjr0g35OOVzqaOd"
         "/ngkc+bXnNrOzlQQhdTwY+buC2O8CYsEjWfHEDk10fNdWHyMbopi4O0rTBhBDCSAyEHkMXFXQuG3"
         "XQJyAmpjkv7z3Ayopq0YCSugVSNSEEQKynz4AbhMiB+BAgAA",
     "biometano_pipeline":
-        "H4sIAAgNh2oC/x2PsW7DMAxEd36FfqVpkCkBUtvN0O0iEc4BsmhItgd/fWkvJHHEke+iTWtR+dp3"
+        "H4sIAIAQh2oC/x2PsW7DMAxEd36FfqVpkCkBUtvN0O0iEc4BsmhItgd/fWkvJHHEke+iTWtR+dp3"
         "FAtXjZxMLmjMdEEuazJCvi1V42xyy+D7WNyxsKFA7toWulseKMRo8tCkkCfGghjNh4x9t2whafba"
         "L96O/UaExPCb6P+fFtXt0umEsp/Gjhv9hlMNalU6K/HDJt2aID1KuPo/zXqcDbfKNfOUf1ZWOuAx"
         "v7hYQA4DRo8zaVlcd95T7HT8qAfoZ886vbU6+2B1Y4vWIC9uqCZ/Ns/mvP9sADfZKAEAAA==",
     "bosco":
-        "H4sIAAgNh2oC/3WQvW7DIBSF9z4FypRI1Lpw+R0zeXMX7xZ1aYKEQ2WTPn+BdrASdTkS3PNxzmV2"
+        "H4sIAIAQh2oC/3WQvW7DIBSF9z4FypRI1Lpw+R0zeXMX7xZ1aYKEQ2WTPn+BdrASdTkS3PNxzmV2"
         "2V/SGhzdwiUWvX/59TPMwU9XR79TvC9+WvxHSNOCu6ucsotlgi+HId3IxW855ETJrRzcPPttC+8h"
         "+gMdevJKhjNVChh2QDnjRRlya5VlHTzwz+yZMhBGiEqZ9gJX0iqmCrtDyfG30qlQlGkwUlcvQFGU"
         "VloEXdP6f5v+FbVoQFVUNAUlgdfcHfqElfU4B1P92NazwLUWleof65V2svyFaGZb21mlTfEX89g8"
         "5LiG2cU5RZfTiY5vI0WujGYNYR1aw5jgArRRDKmWCjViDfsBveRVws4BAAA=",
     "carico_fvg_orario":
-        "H4sIAAgNh2oC/4S9a650O3Ic+t+j8ACON5h805MRGpJ+NGCp4VbLAjx6MzJXFSOT62wDxj1Q34+7"
+        "H4sIAIEQh2oC/4S9a650O3Ic+t+j8ACON5h805MRGpJ+NGCp4VbLAjx6MzJXFSOT62wDxj1Q34+7"
         "qtYjmMyMx9/+/pc//vkvf//rP//tn/7xt3/85X/96z/92399/of/+Oe//K+//ONv//Tvf/v7v+B/"
         "/t//uf/FP/313//lP//jH3//61/O//Qf//r3//PX//vX8z/8y9/+7V//4x/4G//2X/8tp1z/R5L9"
         "//57Sv9T/98fq86fmv/oMn7G/GOk/JPzH1N+ZPwhvf2k4lbJZ1VJ+BdttZ/+XdXzz8pvq/Kzas71"
@@ -2657,7 +2657,7 @@ _DATI: dict[str, str] = {
         "d+DijQMm1XWDZxplpJbEHVoq42pPmFTXDZ9NzIQQqRhV5idGqucGG4DPh/8YCUTSkC6IVM8N/o2W"
         "eRAQJZxr6E+IzIHgfnblSUIYATx27SNLaNGxJ/Bx7uELcdj2Gyn/Hz4xkLqlZwcA",
     "centrali_idro":
-        "H4sIAAgNh2oC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
+        "H4sIAIEQh2oC/51YTW8bNxS876/YWy/Egnz8ejw6NhwYSBo3SXPoJaCljcNitVRXkgvk13fIlVNb"
         "diTDCGI5K1vz3vC9mWHGvOrFIq92Yy/WU75L4yJFsc7bfvwRv67+LQ+Xu0W6SUPaxq+3/34X27TO"
         "Io5jFps4bPPXFX582ka8u9Ib8S2P214MeRRD3DZnq3X/40cW969/XghrOymUsV0QZ+2mn27iNqcs"
         "VDAsDMvOWaFcZ8V5P27Sqh+3ub2d4rhMbVqtUxy3qSVJ+AjqPGvN3mjjyBphXGc0ac9OhWCUds2b"
@@ -2690,7 +2690,7 @@ _DATI: dict[str, str] = {
         "j7zg/ZwMbm5ie7WccB8tqWp+sA+Yh0pT/4/iVKrWsmoNQT2hYm7Oe87gumSQO51B3uuKJ+P34MkP"
         "ESWU5MHJQqbEUSQKrIHG0FEvbW0QERopEzEa9wiH28J/CNgJKsgRAAA=",
     "centrali_idro_catasto":
-        "H4sIAAgNh2oC/61925IbR5LlO74CxoftbjMIivvlUaSaWpk1uzmkRg/9MgZWQRR2UQUuqoozpq+Z"
+        "H4sIAIEQh2oC/61925IbR5LlO74CxoftbjMIivvlUaSaWpk1uzmkRg/9MgZWQRR2UQUuqoozpq+Z"
         "T1jbT9j5sT3HPRLISAAsUCt1sygVWRnICA+/Hj9+v7tbLx4eV4+7xafd4/r+t9W//c9/Xzysto+7"
         "f7trv9/s7m/WDw+b3f0a3/u02+Ovr/7tbn27WR3/a4W/cLdaPNysbvmUxXZ3v9iuHg9Pvfv32av1"
         "/eN+td3cr+a3m/mb3f3jev7yCQ/568PmAX/rcb1IcWlMWrhQlzks8I+331r3rTM+LaxfWhd9ds4X"
@@ -3009,7 +3009,7 @@ _DATI: dict[str, str] = {
         "xlGkrXEYT2bXQ66cGCTXo9gDcmi7u4EpePyv/xT80O3u/n6lhHkPEx4PEqSGwWfVtyHZOLMXuApe"
         "AV+10reJ0mapgC8cXpj9P5RwXWvbwAAA",
     "comuni_cabine":
-        "H4sIAAgNh2oC/7V9y3IbR7btXF/BWU/QiHw/hrRsOTpC8tGVdDQ4k44SWU1XXxDFBgjeCH79XWsX"
+        "H4sIAIEQh2oC/7V9y3IbR7btXF/BWU/QiHw/hrRsOTpC8tGVdDQ4k44SWU1XXxDFBgjeCH79XWsX"
         "KOKxCdBVPA5LtooQclfmfqz9zKv+drNsZ1f9dXfVzm7a9X2/amf/99bx1z+vhp/+Z9PfN09/uFv1"
         "N+39fTe7/X//XHVXf3b4O/KHu3b1T/7FZtU28j9f+wX+f3Z5dbW53Sy62S9d3y7b1U3Xzv5xverb"
         "Bb4G39C/u+zaxaK/+LVdXHxYdfzo5Xtj7G/G4vdZ+/frbo0P/tg8dj0IsH4einHBumhqic56PkrO"
@@ -3218,7 +3218,7 @@ _DATI: dict[str, str] = {
         "DFaDRQLqifTwEi9yDHOZKCSxQ0A1qRB1bpwVPqRBLVKdEz/yQm1eNcCLQxQKiMimQ5T/2dwszjAI"
         "227ZfUNh5rXjEs6WPg521LNQSGSymAkG8JAMp0lxKHIDHl4NxtaZF+iw1Y4p1vv/5ArH5ii9AAA=",
     "comuni_cabine_sintesi":
-        "H4sIAAgNh2oC/5VaXW/buBJ996/w276kgiR+6tFNmmKBtJub5OZhXxaMzbosZNFLWb5Afv2doWxH"
+        "H4sIAIEQh2oC/5VaXW/buBJ996/w276kgiR+6tFNmmKBtJub5OZhXxaMzbosZNFLWb5Afv2doWxH"
         "pMggDYoAcT38GM6cmXPItd0Nnb5STvtf6p+9M93a7FWrr/4d7CH4YKv7g3Xmave/f5xZ/zTwp1ms"
         "jG5bu7zR7fLWmaE1V9XV6rosqy9lBb+vyqJprvSnjekPzrwMr8bCfJSKgrGypovVTjk7NakabzK3"
         "YYWkohRgsdevr1MbXpZXVVHOLMqiXKy6jdOmn3ybwdjpb1NeE7lY/TuYVht1VZ9NSklxUbImM6Oq"
@@ -3281,27 +3281,27 @@ _DATI: dict[str, str] = {
         "9PGVAXYZJmpLmvQzjqmh7ns9K9wyoR6/0Sz/xO23ZN+xdfpjhdkWV2vWNNkUfTbH8LrjdMqJ+8/z"
         "Kf+NensbvCv1r69kQvk6He7f+DQiofCWJHsX/H8EH4bfTjAAAA==",
     "consumi_finali_2021":
-        "H4sIAAgNh2oC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
+        "H4sIAIEQh2oC/42UQW7DIBBF9zkFB0AVxqZJlpHVRXdV1QtMYmqNSsACzPlLWre0ERivkOz3Rw/8"
         "MWhtaJDeGyupW9YA6rbMGj3sOOMN7c31PDuPZ1RInFE4ID2NFi9G+dkCkWSS7gKUPTD64eVUTvUY"
         "UMkN4LMe4iOLQPmxCr9ZcJOxHu8Gv0hvI2Gyso88zy6KDevy75PZYZ8nko4QK/IjOGdc/iSbemzx"
         "FILV2eQsGK/jaQP8/yE8aWlHlMRiLE6AW2iDfi612Lcdq6JJfl+fW1R/xXecPRJtdFWfbUpmu1yC"
         "0ybaTXyp0v3X5SSDtBjAmy3X8C7x0+9mlUq+DWtXyZLp99eJVir+V6Ik5JvCK6FFlx9q4J+Ot8cK"
         "m5y737GfM88a7gwFAAA=",
     "demografia_scenari":
-        "H4sIAAgNh2oC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
+        "H4sIAIEQh2oC/y3MOwrAIBBF0T5rGcJ8HHFWIxYpBKMSSJPVZwyp3uUUr/Q+YI45Wnnq6AfM2vLZ"
         "ej7uKzOSboxMQCsJdwSJwXydBYEooZEtTpbCx2GxWmJ1DkzyszqL+M9iZY3OL4kTO1p+AAAA",
     "digestori_diete":
-        "H4sIAAgNh2oC/x2NWw6CMBBF/7sKFnDTdCoP+TZhAbgA00DRiZVBmMbE1Qt+neSem5whhW2L4NfC"
+        "H4sIAIEQh2oC/x2NWw6CMBBF/7sKFnDTdCoP+TZhAbgA00DRiZVBmMbE1Qt+neSem5whhW2L4NfC"
         "YVbG8xPxzqLhtojG+btzUNPzxHm3Fcg5ONuYiyTNayzGOPIQNIJKEPmW0LS2NH2cUuZiE1VZVhl3"
         "Mmp43zag2pK5SpJi/b/gUZUOJ3s2XZjvj2M4Is78ALXxgD6dAAAA",
     "digestori_fonti":
-        "H4sIAAgNh2oC/2WQTUvEQAyG7/srwl5WMdS2Wysei1TxIlLr3rM7aQ2kk3Vmin/frV8g3sL79UAG"
+        "H4sIAIEQh2oC/2WQTUvEQAyG7/srwl5WMdS2Wysei1TxIlLr3rM7aQ2kk3Vmin/frV8g3sL79UAG"
         "84nxyEEmTsFQpqOQT4LTO9IwiKO9qCRa3XZtA5fQjEEGMwd3u/vfMBDsxUaKeF1gtc1ynNgJrdbt"
         "Y9sgxDQ7Mdg8KITZ1MCxKi8V9hxGYfCs8NR2y+hm/X/204+ckgUG1tMR5GB4U+JVnVVl/YPrOXhC"
         "eE6UJCY5vDJ0PIp5UoEyL6s19i9938Jf+tk35WIRJ4qRIZqK4y9F5W0WJ+dYbGssqjyrkfT0kQ83"
         "eKKnOwEAAA==",
     "digestori_impianti":
-        "H4sIAAgNh2oC/7Va227jSJJ9n69ICOgpG5NF8yqRBewCssv2eFF2eS2XB+gXI02mVTlNMdW8uLfq"
+        "H4sIAIEQh2oC/7Va227jSJJ9n69ICOgpG5NF8yqRBewCssv2eFF2eS2XB+gXI02mVTlNMdW8uLfq"
         "YbGYb5jP2K+aL9kTmUnqRrtrBlh3tWVRVF5ORJw4EUlV8EqvJM/1qqskX9f6RVW5ErxVa83XupXV"
         "d/H4y18kf1K4rxWVflys8sevvGlFq3mhcI3npWga+eje6KrpVvqx6XSpH8WyVjn+wDSt5M+6wm/x"
         "/KwK8aRKhdsxZdF9V7qSmObro6gqzZtuLetnlSuMKQuVi1Y8fhV2MlxpW7EsFV1c5+3jWjbaU1Wj"
@@ -3378,14 +3378,14 @@ _DATI: dict[str, str] = {
         "WD+UCZTRlZEUIwlL8WafW4LfylbC5tRGR6XEEv8nY+dn8fSkGr2kZzkGcpfMNDsLQ/+2fMQCuuqd"
         "a47ZM2Y5HAIsRA5N+H6A8bCoRpyFcRwEs2k8Qw4wkizLwigJM3M1+cP/AdJCSIozKgAA",
     "digestori_mais":
-        "H4sIAAgNh2oC/8vNzMvMzY/PSNRJTs0rKUrMSQWxcxOLi6HCRanFifHZ5RlANpeZgYGBjoUJkLAE"
+        "H4sIAIEQh2oC/8vNzMvMzY/PSNRJTs0rKUrMSQWxcxOLi6HCRanFifHZ5RlANpeZgYGBjoUJkLAE"
         "sYwMgSQXAJv4TI5CAAAA",
     "digestori_sintesi":
-        "H4sIAAgNh2oC/1WNSw7CMAxE9z2LFTUf1OY0lkkssEAx5NNen3TJcmbezLT05ExdIMuDWxctjFSI"
+        "H4sIAIEQh2oC/1WNSw7CMAxE9z2LFTUf1OY0lkkssEAx5NNen3TJcmbezLT05ExdIMuDWxctjFSI"
         "q94lEbxOxqIzTvrh2kclbAM3+6+jg+/QTpj0PT3GzHm2O8NFzfVDQApWSVoOru16WfwKLoINzu0Q"
         "VrODt+YGWzQBXAC//ABHNVBgmgAAAA==",
     "dighe_fvg":
-        "H4sIAAgNh2oC/42TTW7cMAyF9z7F7LoRDEoUSWmZToEiQJAGSdtFNwNlxg1U+CdwPLOY0/QuvVgp"
+        "H4sIAIEQh2oC/42TTW7cMAyF9z7F7LoRDEoUSWmZToEiQJAGSdtFNwNlxg1U+CdwPLOY0/QuvVgp"
         "JWnTTBbdEIZhP358j9zlu2T2S+7z8TiZ+3k65HGbk0n90h2PaTOYw9Tvh24z9ONmQLPk+6mf7soX"
         "4zht8piPeXp8/p7HzvTTaPq0NGf9bTLnu3nq+m5Z5rydzJcPxrkWDLTgzMc5HfLy6+fq07zLY5pz"
         "Wp2Pq3Xqt93DMu8LjI0OSyFjsXWWJJCQiCNvPLcePZN+Qd5HdL45G26z/vpGUxJtim2IZr1X+KSa"
@@ -3398,11 +3398,11 @@ _DATI: dict[str, str] = {
         "v7U87jFlZ0+tKtP4eldBjwx1f0Cih1CHsRw0Xwu6nJ6ar+mHemW+KmQdwhG1pLJiX5xTeNp416IL"
         "kdlqjnqYWK1XZLLoQNQuYt/8BnVNt8XMBAAA",
     "geo_indicatori":
-        "H4sIAAgNh2oC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
+        "H4sIAIEQh2oC/42MMQ7CMBAE+7yCBxyRiaLAC+AHtNZhr+Ckw4dOjou8HkNBTbe7mp3GLnwTBaFK"
         "eqBWju23qTSoGrGDqbGag7gU69mjZEqWo+M+vKyibBwr/GnQbnFJHF06276q2L+Z6W+wW8UK6Oyy"
         "quyvKNiEd5dPYzrMYVxoCtNMxxMtYxjenBpBvMgAAAA=",
     "idro_comuni":
-        "H4sIAAgNh2oC/3WaS3MjN7KF9/wV3HlDMwpvYCl3uzsmQu3pq9b0YjYTJamsLl+SJRcfE6Fff78E"
+        "H4sIAIEQh2oC/3WaS3MjN7KF9/wV3HlDMwpvYCl3uzsmQu3pq9b0YjYTJamsLl+SJRcfE6Fff78E"
         "UCSL9rVnPOMmUADycc7JBJ6H7XHXrfr9oT2s3oZDt3tv//O//13127e+3R361Uu32/eH9j/1t1U7"
         "dgzY/nkevP3v4m48dK+7dtWYpmn8Svlm3azUStm1jiGslFqrFG3UPgW7atbKL+4Oh37b78uMsJLx"
         "Tf6nMWtjgo+NTvLvi19aPjz27fJu3NcF4tVwFdfJ25RcSErXCft+w9aHMjhdDbZ6HZOLvrFKqTK4"
@@ -3493,7 +3493,7 @@ _DATI: dict[str, str] = {
         "74+b8npUQUi6CvHAOkJXoBnyxga5s7XT1bxoAXl41T/nsCzE8b0XsTRRR7qRH8Lb2NRe36j/H3SC"
         "1j64KwAA",
     "idro_montagna":
-        "H4sIAAgNh2oC/6WTW0/jMBCF3/kVfgRpCLn28lgCRSttVxUgeIymqRtGiu2sY1er/PqdlBaBUpWt"
+        "H4sIAIEQh2oC/6WTW0/jMBCF3/kVfgRpCLn28lgCRSttVxUgeIymqRtGiu2sY1er/PqdlBaBUpWt"
         "9ilybJ/vzMwxqYZQOwOlUV5LQLWi3cq2psDyt0eoZOuMldAYJ3WHxeIVGmvWvqQV1eSweHh9K1Br"
         "A44aU9BB0Xm7Io3QYu1MoaA/UshW2pI6MrAx2jFvs6E1vgtdPBnV1FgZyHGLXWdEjlZT2a/5izBj"
         "c2wGxY1Qck1GPGNVEyrZ42bxDKJxHEwgzcIgBAat0BkyNw3LYlWRuV5LxcZrZD7XOreoS2pF8ifL"
@@ -3504,29 +3504,74 @@ _DATI: dict[str, str] = {
         "JP8FnvO74kI43/swiMtnUuivhh0Ng2TCbR0fiUSUfBuJRyxLU6NGEUH+Rr7FjbF8PedfNdddi7m0"
         "1sDHOfjxMGdcyjUeS+FkxEiW8Eos96Q7qt4krPgpfMbFZ+EiyI7jJv+IS87AhcEIkqO4aXoS9wkh"
         "0vOAaQTp4N1B3A/wBPAvfpMIJ/kFAAA=",
+    "inversioni_cabine":
+        "H4sIAIEQh2oC/5VWuXLjOBDN/RXMNmGpcDWO0Mfayc6s1/ZMMMkURqJlTFGEiqQU6Ou3GwcleaMF"
+        "WJDQUt+vu7n2v8Lg2/0Yj2FYB9+u4+4wdD/H8N6NYdcNc2z7OLS9n9upO4U4hDb289j9hJvb3b47"
+        "nWL7bROGrq03LlYGmHLGCs2sdmBbpVeKWUg3DYKblrf85s6P6zC1z3HcdENECYWAAkAwraBuTQK4"
+        "E0bLshUKYDd3B7Q3K787/PYtlyvODeikUOBXDq4s3QrUeO//aJ7jwvQSthH9SiZbkEYBMQIA2VoW"
+        "ZMaPcJj8exznrvBeUlCvVELK4q8GmTzmnFumpKJA8OTxfTiGje8XGeXaPHR98ziGQx9IlkJZWtWV"
+        "ZDGrpIRloU3i5j5uxhj2NfzLFZ1x+HcLiuu0TKtg5QC4xVzItIqAcReHqX2KYzhhUOqdTNBgHDpg"
+        "tDIMXBbgnDjTUgIe/dZvhxrOekN+DKA2y5PzxxzjWuQH1SP7U/BX+b89Bj8kB8BJLSQz2tFpSgh4"
+        "K1t5U839/IlqwTphNa8rma2cs+w6cn/5OUx+sXu5kuFSKimI0UjJQKf/f/FD8Nt4YWmlENa5zQjn"
+        "IIwTUDlO5EpWUG+EEysk50pYMHjmwGKlQCXlzPx99GNlzt8TQkEIAMkdV9ZliDkmjDVCKqaK5mff"
+        "71DXsTp3vpN24Zy8KCLSzpwUpu4sosdgYGKygO+h733z6oeZ+gSBi8CZS9qYojQOczfGabqMEbI0"
+        "38Mcm9u+efPbPvjcTbIrzEFWD1g3VcpIDegsoRCQQTON+JX1yYm1mGuVH5fwdMX5n28kBoS2WmCh"
+        "MwRF9h8bE+HZYmJAZjGjn6/MoHvzEJorWWCw1pm0SnPAYiNZFqFeIKtdzuRLd8ZZ+p5q/SX+pi6A"
+        "GRHSJSQseEAcKYu1AkJaOlXqPy/dJuwPFMMF7o+RrkNsLn6jysVGlk1KZzILTV3M4rmhva4eEMLd"
+        "0oooWYXyqRsxhuVj6s6lDE5pl7dJjeB19RQQYwMOh7O8SiIAfKUaS5FDEzkW97KSiU5r7rSoTwrd"
+        "6+qfQxjD8BlTlUr5NFpbaQ1z2hhsD9QmJJOaC8wMFovNxvl16LsrKYlASUQIa8kxQE4ZaXOf45Jb"
+        "JThDsMgcrPVH8MdunsMS/S9xePf9ungESqDWMtsSrAxNq0KQLpvRTTNla/vRDZfwynSMUf0pFQgT"
+        "CgdSmV4ZXAKNZbWBJ4n70Ifdr2686k2XVBJlLM8TkXOGVubYzqPHyTMv49NPoQ+lR1FHyN5TYBIr"
+        "dm7JlzhlGW9+PIYp1D61XFMfJsjUEZryoowo7eXNH2lMrNdnzoVAFYHJyzMzDdNsOAaixpIn199i"
+        "v7t491iuqYUjOMvoS8MPlQvLpS3LpVH8NmJGydxz4BYSRQ0HL1ZN2akuBTYJ7ENl5zeQpL35iiKa"
+        "P6e5GJNPcgV7i8SZZBSdSQgOU3yz4UwAnikcWcTrYfO/ucmAH/7Qk+UBQXT+RG5szYDTSBrMW5lo"
+        "+F6i6t3KFIUfcb/HV6CLIFQKTTYNjl8PUw18Ca1JtfEvGavxsEAKAAA=",
     "inversioni_flusso":
-        "H4sIAAgNh2oC/5WVu3LbMBBF+3yFujQYjSVLlFz6EatJbEaUGzeeNYlQOwNiOQDIQl8f6GGKcYiF"
-        "3HBAzuG9+wJQG2pR5wjCYqlA5PCO2r/IHZKWgpQz8m3yVufutJ4f1qA1fVuRwZ3/c/Us7slUpK2Y"
-        "LMTGNFI8grJSTK+m8z71sVzMj9ThEYQSBlrLAuumVD2xYcs+yAlm+Rahlc7hkGBKppB6X5D0SdyB"
-        "ydFGsRXCnlp8Nh2ClpdANyz0CzRCSWI6uwib8XGlpJ00ZC0NNCtIJhHS7OcsueHrdsJi5T2/fIFM"
-        "IqQBB2J5xadxhCYslI1/N2hQUzcAIc8MclQyVuUPKpJAJq2j0VqWW6khTteosHqXpox2+R+Ub/PG"
-        "+H1kkaL2r1TXpOKd7rj/fDcGfcL+SyZeoenV54y8FOhVXh7EbVXL3Y4GNmSH3DXDc/cJCHvcw/dR"
-        "Sp65ZkTOECO0xcbCHzJuaDLOGLZYgLqQYeyoMIQ1sTodE9Z5hBLK/eDNwul3zDLM/ASHFjRw8ZyZ"
-        "cDz+sNuBZtPqkLDKcwuG1TgBYYUUVOVNWjahHsQoKZ9y7/LhkLDKWkaKewKScIuy8YO/SaSS7IbJ"
-        "xiv0GWmNnFufCgedOQN+kB0beA8KK23AtHg4oeYXMJxOux/lPCe2CBtS1fHoCdsdFqMnf+yNflj3"
-        "FTKJkFlTDDXyL5+6qMf4CQAA",
+        "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"
+        "XxynU/4H/nGdNT4bAAA=",
     "inversioni_per_provincia":
-        "H4sIAAgNh2oC/0XLMQ6AIAxG4b1n6QIYruDqoLNB6fAvrSmGgdPL5vryvsetQ28UbjJgihPaxV+8"
+        "H4sIAIEQh2oC/0XLMQ6AIAxG4b1n6QIYruDqoLNB6fAvrSmGgdPL5vryvsetQ28UbjJgihPaxV+8"
         "wne5oPIHWs0x5pp5oc28ipoKx8Qh0e6QNlHgQEedjlPmGOgDUTNyWWEAAAA=",
+    "inversioni_regioni":
+        "H4sIAIEQh2oC/y1Ry07EMAy85yv2A6yoeSdHQMBlV1qxwHWVlqhEahvo49KvZ1IhNY1sj+2ZyZz6"
+        "XKZES9pxZ+pimxGWYZ3T3dDvVtZ4/4/YNaexTGsiKT0JjeMcOcctO5exjfNXjiSFIqEcjiYreWCf"
+        "aUprIWEDCSHJCdKSN+y69QPgwkry7ujwGoOex4z06a2MsZ/isSQI8oFswwW75S4fXVKRQ0WTs1yz"
+        "S5y771TnmKYu8KJSilBEXpIJZBzZwA17L0sXMdZpMhY88OeePcUhtjPGWuSOD2DHXua8DflU+e+g"
+        "9FqjA6MCaUPWc4nW8SdONQ1ZmpSvmhW7wYtU+WO3bmrFVXEP7bzteyHjSR17XAD4MS4Q1cUVcEEy"
+        "VLi3KHyMByutCHarprLy7FKGvOAFNIkAsyEaus653ypUIAv7BczBuj853kp93AEAAA==",
     "parco_impianti_2023":
-        "H4sIAAgNh2oC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
+        "H4sIAIEQh2oC/42RTWrDMBCF9z2FodtBeCTrxwcIJYtCoIWsVVtJB2wpCDkLn6Z36cUq27gNIQld"
         "aCQxb0bzPSXX+NCFI1k4RutbN44WBk/JwimGdkgpRAI7pHBxPZyPYL0PT9s2Bte5lCI1Abb9iaxP"
         "BM/AVclKMHlxNceSiyv1LiTnR1u4w4Eacj65oguxtfC6B8kFUyAZzyfD9D/Lfc4t5aiZXCPnudWt"
         "BhNPQx/UUfr+KnrXki0y1WDhZf8JaBBZ/beJkpmlzbuL/W1q1DyzLpFX1cp9VfDmRgp+dqmclHWd"
         "gyjxjvyRTyi1msZa3jWVuTPjI7NQinlSJbLRqGu9+r0J3RXfpINfrN35Mpe7cJlTusZpGIVC6Avl"
         "IwqtFBOAKPN3GYMrww+AYRR3mwIAAA==",
     "prelievi_fasce_fvg":
-        "H4sIAAgNh2oC/6Vdy67kNpLd51f4A4QG3w+ge75gZhaD2Rs17mqjALuqYVdv+usnIk4opZRYKYbu"
+        "H4sIAIEQh2oC/6Vdy67kNpLd51f4A4QG3w+ge75gZhaD2Rs17mqjALuqYVdv+usnIk4opZRYKYbu"
         "xmnY4LkkxTiMN3///Ofnn78uv3/+45dP378tv/z26U/6D7/+8fnf//60/PH5zy9///yV/u0ffvlH"
         "WP4Rl1++ff3zX79/+/n3z3//wv/8+ueX3z4//PJfn3799cu3P3763399//zbp8X99Z/fvvPIn7/8"
         "/s/Pv3799P3TX//m/5IX+v/fvyzuL9GlRD8hp0o/Kbm++GTA+R9M7ftnwcqZsUpgqBjykroB6r+/"
@@ -3661,7 +3706,7 @@ _DATI: dict[str, str] = {
         "+qoFt0TM4WGL66gu6DQEGeikxj4xi0EHNO0m+nxpKTghg4mstYbkjaDv8LDs5lgfs3GdUHDpZf+8"
         "EuiEvf/bg0Iv+FbTs6l9rmTw/T/Eye0vaKYAAA==",
     "prelievi_orari_fvg":
-        "H4sIAAgNh2oC/6y9S692O7Kl1edXpKqdQq/vdhOEVJ0qkACJ5lFStatI1alMlCcREr+ePOzPQ+y9"
+        "H4sIAIEQh2oC/6y9S692O7Kl1edXpKqdQq/vdhOEVJ0qkACJ5lFStatI1alMlCcREr+ePOzPQ+y9"
         "4jKG16clrdYcMT3teJ/wJWz/h3/+07/8yy9//K+//Msv//SXP/71b3/6x///+svf/sOf/v7XP/7t"
         "l3/583/85S//z5/++Pc//59//af//Oe//u0vf/3jf/m//4//5t/8pz//5a9/+NMfyh/HH/7L//Zv"
         "/lj+8ffvf1X94d/9+X//5W9//eP//Kv477/88d/+f7p/+k+//O3Pf/rnX/74+W8/c0zDRFVMjL0N"
@@ -7647,7 +7692,7 @@ _DATI: dict[str, str] = {
         "CfN99XB3IrFwl3B3Hlcw3p3ehUWxFmD05EONYV3C3Xn+W7w73cYm1iIsNx70NynNjQX9yXVbRg17"
         "Y9hc8eb8DaujhZvz999aneHmRPGcf+yr/wFBnamKsUEkAA==",
     "progetti_bess":
-        "H4sIAAgNh2oC/82YXW8b1xGG7/sr9q4psFicM+f7Um6VQoUbC5Ji5E7YUFt1Y5qrLpc2ol/fZ5ak"
+        "H4sIAIEQh2oC/82YXW8b1xGG7/sr9q4psFicM+f7Um6VQoUbC5Ji5E7YUFt1Y5qrLpc2ol/fZ5ak"
         "JCcuNzbQNgRIwCTFMzPvx7zHq3bq7oexb+upfxjqzfC+qx+Gqds8trfvP9bb3UM3/qNf9d3tP9t6"
         "O7XTcHs/do+Pw/4f9XrY1Ot2qt99vOWbt+//Vd/tHtb9Sj87/s522D5009TW7cQbd/2P/br7w9lq"
         "tXu/W/f1q/Pr6/q7jz9VF1NbXTdjs25q20ioTeNCyiXX/aZaDeN2qC82Vb+dxt00zRVb15hibU4m"
@@ -7680,7 +7725,7 @@ _DATI: dict[str, str] = {
         "hpRbj2hgxnOT3V/tJQaa1huCfBGkLMpPwnO7qS77bqzu/nixHTaPw96Q2TpchUsqp1cF3wjeFlxI"
         "ylwpFgzypDo2QyhzsAB32tFggLX8utB/A+26aVJRFAAA",
     "progetti_bioenergie":
-        "H4sIAAgNh2oC/51XzW7bRhi89ykWOQQpsFns7re/R9lQAhdO3VpGD7kYa5lxiFJclaQaRE/Td+mL"
+        "H4sIAIEQh2oC/51XzW7bRhi89ykWOQQpsFns7re/R9lQAhdO3VpGD7kYa5lxiFJclaQaRE/Td+mL"
         "dZaUnQRpWKaCYUuUTA7nm5lvtE1D9ZC7OvGh3mfe5l3F93mo2mO63X3g/WFfde/qbV3dvk+8H9KQ"
         "bx+66njM0wve5JY3aeC/f7jFJ293f/D7w76pt+W9x/P0ud9Xw5B4GnDgvr6rm+qHszpXbdU91BXH"
         "0101pDbz1z9dsTer64s121ydC7Z6fX1xfnW5YhtxLS65FBS4FkYFYz1PhwG4j8dypdVnz5UWkUyQ"
@@ -7707,7 +7752,7 @@ _DATI: dict[str, str] = {
         "bNG0IFEksCMRFDDadAdINBxGAnrscBP/d+d5m/f78hefeUj9p5ZYrIbSCw3Ogg2uFAmkO+YexzIG"
         "tVh8L7BYSQoRWMBC2ejVSqEKlb7/L2D/AZtM2NJTDgAA",
     "progetti_fer":
-        "H4sIAAgNh2oC/9V923Ic15Ht+/mKCj6MpYhmx75fnhwgCcmY4QUDQLCPXxxFoAiV1eiGuxuQxa+Z"
+        "H4sIAIEQh2oC/9V923Ic15Ht+/mKCj6MpYhmx75fnhwgCcmY4QUDQLCPXxxFoAiV1eiGuxuQxa+Z"
         "fzk/dtbKXX0Bia6upihbI2voIQmjN/Ylc2XmypVX9bK5mc3berRs72aj6ey2Gd3Nls30Y/23259H"
         "i/u7Zv6hvWqbv/1YjxbLejn72828+fhxVn4zmsymo0m9HP3089/wlX+7/cfo+v5u0l7x71bfZzFb"
         "3DXLZT2ql/iD6/Z9O2n+z/lsUs+b0dHNvH2YTZZ1ezUbvW1m0+qsmTY/1+8nzaJql/Wkravz+WSU"
@@ -7961,7 +8006,7 @@ _DATI: dict[str, str] = {
         "5EjZKb4Nnutpddo28+r6DyeLGSVixCCPRJCKype9roIMZMeBq6wMFgnDkEpPDTnLAiwor0HmlMja"
         "fr7Q/w/BYUJIHLYAAA==",
     "progetti_idroelettrico":
-        "H4sIAAgNh2oC/9Va21LcVhZ9n69Q8ZDMVMmqc788EsykqCI2BYyr5sl13C2YU1FLbUmNM3zN/Mv8"
+        "H4sIAIEQh2oC/9Va21LcVhZ9n69Q8ZDMVMmqc788EsykqCI2BYyr5sl13C2YU1FLbUmNM3zN/Mv8"
         "2Kx91NBNEgTHxnGGh4a+SUv7stbaWyzCWF93fQzlGNdd2Xarulx3Y93ehverT+WwWdf9VVzE+v2/"
         "QjmMYezeX/f17W03PSmbri2bMJY/f3qPT75ffSyXm3UTF/Te3XGGbljX4xjKMOKFZfwQm/ovJ8u+"
         "qxu83MdFVz58NtT9Td28WtV9KIaqr5qq5JXgpmQV59JL4Xc/ZWyLGl9YxNvYled1aOLtLZ2di8oZ"
@@ -8011,7 +8056,7 @@ _DATI: dict[str, str] = {
         "Wxg6iQRIFKrluQuMP35dlNXN32Ldlud4ftXOL9LH/497ihcj6a/+v05ZSJ9c8O2k7XM3eVl4XnTd"
         "LyXm/KfrAbZBsemfTizNqtP0alCqTltcYIqG9JjeYObxGmLwe0brfyFI6ON2JwAA",
     "progetti_per_area":
-        "H4sIAAgNh2oC/8V923bcxpn1/TwFli4m9lotrDofrrIomnY4I1EckqYzucmCmhCFuNngdDdpW08z"
+        "H4sIAIEQh2oC/8V923bcxpn1/TwFli4m9lotrDofrrIomnY4I1EckqYzucmCmhCFuNngdDdpW08z"
         "7/K/2L93FbobbMBKQ8nKOIpsUZRQXfXV/vb+TphXm/q+XTXVbNk+1LPHdlMvP1d/ffhltn56rFcf"
         "m3lT//VTNVtvqk07W7TL2aLazJrlXf3rX1fN/afNbN7eNfN6dl+vN+2qnlWruvrrzw/q367bBf57"
         "dlG3y+KqXta/VB8W9bpoNtWiqYrr1WIWSzdTogw+auFnJ0/4883nz3yO1KVwRmitvVJCRDUztvRR"
@@ -8203,7 +8248,7 @@ _DATI: dict[str, str] = {
         "YId2LitjnIL0hG86OCp1/GXb+FcbxT9VhmjNAcVD3A+Cr2tJAVdvOhWSXpHIGc0cLH6MTf1/dYF+"
         "CkuBAAA=",
     "progetti_solare":
-        "H4sIAAgNh2oC/9Vd23IbR5J936/o8JMd0eqo++VpgpIpD2MsiUvK9Ma8OFpgm+odEM3BhR7ra+Zf"
+        "H4sIAIEQh2oC/9Vd23IbR5J936/o8JMd0eqo++VpgpIpD2MsiUvK9Ma8OFpgm+odEM3BhR7ra+Zf"
         "9sf2nKrGhZLQLMpyxK6soYcgDBSqsk6ezDyZnLXr7mZY9m297u+GejHcdvXdsO4WH9pfbn+rV5u7"
         "bvlrP+u7X9639Wrdrodfbpbdhw9D/qaeD4t63q7rf/z2C575y+0/6+vN3byf8Wfb11kNq7tuvW7r"
         "do0Hrvt3/bz7j8th3i67+uRm2d8P83Xbz4b6dTcsqotu0f3Wvpt3q6pft/O+rS6X8zo2rlaiCT5q"
@@ -8365,23 +8410,23 @@ _DATI: dict[str, str] = {
         "PCSEmXtahkwjIEtr1Z+ZhHowhJxXUHEep4/HB2EYar5xb0OiSTmnypQ9JzvgDqpx+KlTVOcbtgu6"
         "z2bI/he8WSh9bW0AAA==",
     "pv_classi_2026":
-        "H4sIAAgNh2oC/12PwUoEMQyG7/sUvXkJJc04tYXZg3heEFE8l06RsN3psM0i+vRmdAWxlxTyJf+X"
+        "H4sIAIEQh2oC/12PwUoEMQyG7/sUvXkJJc04tYXZg3heEFE8l06RsN3psM0i+vRmdAWxlxTyJf+X"
         "nKS8tTMneKip92JmNmuTsnwmM5dab/i0clqkwekdlt19lXMDwuPr9Djto1ZAG3FwI4zR4rUfr33C"
         "H+CWxujAbcBT6Tzrdk61gP/FlCK0GDGgh4GC/08qpTAE65wP3oMbxqDMcxFhw8t86aI3VDbFrJxz"
         "019Oag7fChriDpvI3aAmfx5sSi/CleXD9LwlKTjtNc6hTjhLREhacfcFrHipuioBAAA=",
     "pv_province":
-        "H4sIAAgNh2oC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
+        "H4sIAIEQh2oC/2VPy2rEMAy8+1uEkeX49QPd6x7aXkOauF2xrB2StIF8feVAaaEGm2FGmhnPS/3i"
         "MvIA/Jh5KBvDvNTp8+Bacv+x33pCIpjrlssx9I8dplxW3ob+h9r74e0fed/7+4P+Wq1zHvmdx6bd"
         "5KrnhfO6ZSDvrEawpAPYTpDpkjZgPApO3uioLnXhQyo6CkHILoruTFsK2EYxaAups9qol4mLeKaE"
         "zcomEt36FhCQtIPQoMGImtS1LtJbykmkOecJo07ni+CDREMyupN5Ua16er1IbLKnGkXF32PAO9+6"
         "kROH2D5j0Cbt1TcyexuAYgEAAA==",
     "pv_traiettoria":
-        "H4sIAAgNh2oC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
+        "H4sIAIEQh2oC/42RsQqDMBRF935FPuAhydPEuBc6FQodnB8xbQOSSGo6+PWNVDtV6XwO3AP3Hsl3"
         "dpoIyPsAL+pDtJC8G+lwiaFLkwvesgwTAXJEUBoLDqf28YuXHISqqm2h4oCo9Y4gAZXiqxBG6ydi"
         "nWODMyYsCVJlfm6HX3xOKIXcFnKC0CXfEXKCQL0IR2LOP0fqe4qWeduzwUYXumVLyeYPMW/Kb9Ou"
         "mLebdfqaMrg54ywLxqSBxuUDrOtCw4M2jJxVYlOobWO+Qda7hgRR6c/KGw3m+bwlAgAA",
     "saturazione_aree":
-        "H4sIAAgNh2oC/5VYy24cSQ68z7fUJpKvJPOoGfiw5/mAgVZuaBprjwzZxgL79RvM6urOVtUspAba"
+        "H4sIAIEQh2oC/5VYy24cSQ68z7fUJpKvJPOoGfiw5/mAgVZuaBprjwzZxgL79RvM6urOVtUspAba"
         "kKxiMkkGg8F6evl8fjotz6fvP15eT8vj6+nxj39/5eXb68vz6ceP8/L1P3+8np/+POOB8/LnY/7+"
         "7fQ6nnl4evr59eeX8/Lr+eX01+n1+Xxa/vn59eX0BZYwell+f/mCE395+K1W+lTJoi+nf3w+f8df"
         "//Xzv+eXv04LaS194VKXWhqH9iWKhRpFvXwIf6lVtVWTLtGbRNXxn/gavjTM8PvVUWXaOeLWiy4O"
@@ -8416,18 +8461,18 @@ _DATI: dict[str, str] = {
         "rQi2SLn2+lAurUFcIhzmOn6+76SL7cQpBxTIY9Kv/AndOVgfyWEfhVDoCMTRcD7Ul9ztSxjO01vG"
         "oYndfvkfkUsLFnkVAAA=",
     "scenari_fer_elettriche":
-        "H4sIAAgNh2oC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
+        "H4sIAIEQh2oC/4WQQQrCMBBF956iBxhkMknTZCtYcSuC61CjDZQMhNjzG7HZtXT9/rz/mRfH7MHF"
         "yDC7iZOHTwzZHe6c3eSb/nxr/ORzTmEYPRCSAKmEOiJcHuNmSiIoq3EnpRA0UbuXakEbqo09Z555"
         "yi4M/J+j0a6zMkJ0tluHxUoWK7w+E9fSRSusNhu0iEmg3qA/M0mx0FNgH316h+V5Ruo1Uo6ENhV9"
         "AasMBmqVAQAA",
     "scenari_industria_vettori":
-        "H4sIAAgNh2oC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
+        "H4sIAIEQh2oC/42STW7CMBBG95wiBxih8V/jbkGULSonsBIjWY1iZKaRuA134WJMGqQugol3lt8n"
         "z/PMDJ4oJg+u7yMMrhvPv30gB5fG9y6FuDrGLrQBJEoBSq4Rfsif4cC3zbXa/GOFIEwea4T6DTWA"
         "M7rr2C6FJtD9NtU36nMpxRpaiaUU22ixWJGttLSz1PavT1XrUxgcxUlNoCoIsp3VBTn2s1iSM6/e"
         "+9p9T1K1yLBxWLXJQC4uPzAHDSicT2HvLs8RocxArimtyEA9CqkcNCBerN4hxTYShersKfHlifsy"
         "Sdi6NMxSpjg8bo0uDvPyzH/7AP3i63xxAwAA",
     "scenari_settori":
-        "H4sIAAgNh2oC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
+        "H4sIAIEQh2oC/33UTW7CMBAF4H1PwQGsaPxLvIQolbpqRXsBC9Jq1GCjOLDg9AUBqsiMs4zyxfPs"
         "ZyV345iGTuRtF8OASYQYk/gZQtx153MQp9BfXx8jjuGlwRP2nfi8fIHbJBQoKZoU83GPi2+MoUch"
         "VV1XIH7H7vDgm/b1QjVQKoGlhlLpPU8tpfV01RU/XkrFQGY4LDUH6WhQ072v+dHgHAPpaO8U58hk"
         "r5YP9xZ3xzwOGO4nxFSktS5ptiVZ0lxRYIrazp3Dvy7V5YG3XGPeFiyXgVm31Jv0vGWq07JAaXva"
@@ -8435,7 +8480,7 @@ _DATI: dict[str, str] = {
         "THHd+QxfQ8iHNIwoPtoNe4mUN5Wsb3VPNXM9ja2U4TXZoQNdeVuKQoJbVzm6x9m/O/vrePpi7rr+"
         "AZui5jptBgAA",
     "serie_oraria_fvg":
-        "H4sIAAgNh2oC/5S9ba7lOpIk+H9WMQuIvqDzm/1zZgGzhMRDVfYggex66MysHqBXPzR3SW7UoXSi"
+        "H4sIAIEQh2oC/5S9ba7lOpIk+H9WMQuIvqDzm/1zZgGzhMRDVfYggex66MysHqBXPzR3SW7UoXSi"
         "gaoKvKi4fiWKpPmHufmf//jj17/98Y+//duff/nXn//64+9//ct////Ov/jnv/3x9z/+9edf/uPP"
         "f/w7/vp//Of8F3/523/8+3/+81//+Nsf/lf//Os//uff/tff/C/+/c///td//gs2YO2//eW//c+/"
         "/OOv/+/f/vyP+Qvw33/98+/4f/7ff/zjn3/+5f/6459/zh//X3/w/+fPv//9b3/5f/7xt7/+x3yo"
@@ -11273,7 +11318,7 @@ _DATI: dict[str, str] = {
         "dZXgT9N2YviDnjWUmEojCjpUu1hhNb1iSYlEZ+POcW7yXIbvBVaJmQ/490vUFJmGOGzk+HOBVYqT"
         "A+5siQbar4QXtPTFCqtHlMTVDN311P34j32w8kiCriD/D5RF/2UDvgkA",
     "sorgenti_idro_catasto":
-        "H4sIAAgNh2oC/52SwWobMRCG734KHRMQRhqNZkbHUJqeWgptz0WphRHYUthd5+Cn76y9gT1ke6gu"
+        "H4sIAIEQh2oC/52SwWobMRCG734KHRMQRhqNZkbHUJqeWgptz0WphRHYUthd5+Cn76y9gT1ke6gu"
         "Euzq08x8f+vnYv/086UVO0556va1D7rn3+dyqNmeerOnPO0extKu2RxK6+fa8rX2Vh7tzzy81bF2"
         "+3ms41TaVGwAt3fWh30kYfTImDBCskh7RM/ghDA6L7x77vq/+VIu9rkPrZqnt36ahrpi0UyCPQeK"
         "ThclZBdpRsWImHS5EFD87lt+y6Pxphiwn7Sj46nmNq5I3t1RktjptcDoQHBBEfqUmCQmYLyVlVtv"
@@ -11283,7 +11328,7 @@ _DATI: dict[str, str] = {
         "4oRjEg6sqQLcMrcVV3mXFue+Z/mCieIMJk2+hktDK+rvn9wPhgAAC1pj7xIn0tjrSO/yQLyoVO9V"
         "YNr9BThtI8TRAwAA",
     "terna_long":
-        "H4sIAAgNh2oC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
+        "H4sIAIEQh2oC/+Wd629cN5Lov9+/Qh/vBbREPVkkBvMh4zsJAuzMBkiw+Wh05I63AVltSO3sYv76"
         "Jbtlqfv0eUi2Ip/iGQxm19bD9WsW68Vi8d1qt7pb7y4/bO4+3a4uVzc328t3mw/rm7vN9mZ9+cf2"
         "an30Z9r/Rfnf1fX2dn356WazW13ert/vv3e3+bh9e7X6uLqqf7v/08fb7btP/9p/9ffN9e52U//P"
         "+v+sy7+2/31vP65v315tP/z26W63+a186e2H65u37zZvd9ubm/X19Wq3vvz7/TdvLgmALt8cfffl"
@@ -11462,7 +11507,7 @@ _DATI: dict[str, str] = {
         "u2FzU5QnlMgVl72zjlToEjVgziK23A21u93WyxN3h8+D66X1hHHBGlI30/ZiffdxdXP/oQRJ+qQ5"
         "HO3umvX19Xrvo6tX+m1zvXnaC6zf4AP5X7RyDSo8YgMA",
     "trasporti_alimentazione":
-        "H4sIAAgNh2oC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
+        "H4sIAIEQh2oC/3VVy3KbQBC85yv8AWiyDxaWo4zXCikVpCScQ26kQrkoW5Cy5Bx0y7flx7ISeLWz"
         "DBc4TO90M907NK/doe1Pzbkb+jZq+n6Int+a/ld7PjfRn+Z1eGuj9747NZ/M1tT1rsiL+t/fSDDJ"
         "onzoj++HLpISYhG9nNrfIShWDqQVZDTIdjKH7ni0CrqIAbOgu7wSRC8SVjzsqo0pK6wpBh2PbF7d"
         "kyMSkGIGWJKCe5CQe1P+KMo1VsE5A6FGmhvAnwqkPCwjEVKmINM5CZJhPyZRH5jNel9ti3AcHLJ0"
@@ -11473,14 +11518,14 @@ _DATI: dict[str, str] = {
         "evMuP4wVmU8J6byONWjQimLB95cDS28ocoEykE4MuUEFpMkcECREUix4lY8jvYK+mvrOrB6fwpti"
         "JzftCYRAxmgCEMY1JokCk1K3fP8Dih8TBCsIAAA=",
     "trasporti_modo":
-        "H4sIAAgNh2oC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
+        "H4sIAIEQh2oC/32Sy2rDMBBF9/0Kf4AY9LSkZQjtqqWF9gcEFkE0loofWfjr6za2o1FMVgaf67nH"
         "GrWpScTFmMipc7Hx0+TIxZ1T58kYw+CePofONY5wKig5ptiPbSC8llBL8j34nxuXauOMWbCs4PP3"
         "z23o+5BiIEopEH8TquM7RzNuGaFB2zVyGIdUSAgFjF9LFpopWAUWMVQvLQcjitmonDGQW/lbKsuZ"
         "BqWv8xeY/74ELhHE5Qx0XYzG3QYMXwNfH6/VKbVtsYLZzy4deSI/AdD6PoBMOAWt9oqQjgZp1tCL"
         "77p0CYWMgXrZdsYzFQPM3nFkQoGJnQ7kQYFux3aY+TS/9VX8f7qzx0o11GbZ/240s9PA1aMoEp1v"
         "NrOPLfAu57ug1/wvTrn4XG0DAAA=",
     "geo__aree_cabine_primarie":
-        "H4sIAAgNh2oC/8S9zc5sOXIk+C61rrngnztJ7TSCetfAALMUhEZNKVsojNQlZJUWGkHvPoygmTnP"
+        "H4sIAIEQh2oC/8S9zc5sOXIk+C61rrngnztJ7TSCetfAALMUhEZNKVsojNQlZJUWGkHvPoygmTnP"
         "OZGJm99cYJbhQfLwn06nufl//u6v//FvP/3ub3733376w1///eef/u7P//IvP/3xr3/68//63e9/"
         "9z+37C+/+5t/+M/f/emfVqq//buU8t+nbGOu/69Zl+Dffv7zv/3081//9Mryn7/745//6U9//OmR"
         "659/+stf//zzS/7T//ZPf/rLX3/+0//17//P+uCrgD/8/NMf/sf//a/ld3+TW/o2VxX+/c8//+l/"
@@ -12117,7 +12162,7 @@ _DATI: dict[str, str] = {
         "lRAkx73hKsmf7G+jOERvaA4H1H0z58AAwDFLG/wqQXdoF8aY1GXia00y2JWoAzwtPdGDuj3yRF/2"
         "ym5zO/vcFYHeM3l+MurNAs0iTX/wyIVqwL72Xsbkf/73/wANwHwfcyECAA==",
     "geo__aree_disponibili_fv":
-        "H4sIAAgNh2oC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
+        "H4sIAIEQh2oC/6S9y44kSXYk+iuJ3nBDEPp+zI5DXhIDNDkEu28vhpeL6ExnthOREXkjIwtgEfz3"
         "UXcVkWNm6sEZd26qKrRMzc3U9HEeckT+/Tfv//b99Jv/9pu/OT29/3w7/dXr8/Pp8/v59eU3f/6b"
         "f5ltP37z3/7p339z/jKu+n/e3l8/nT791dOPH6/jgn3f0fD97fX76e39fOnz77/5/Prt58vp2O0/"
         "/vw3X0+v307vb/92uQj3+IfX53/7ev3Vz6+vb1/OL0/v1x/+p3/y4S9iS/HPU/mLGPo///mlIbnQ"
@@ -12764,7 +12809,7 @@ _DATI: dict[str, str] = {
         "s9zLKyyxcmOFq0J2OEvVrgLmXYRhrXv0WYJuL+5J7vbtmiwg5wCvmzFvmkbwwlUMnCbk7RP59//5"
         "X+xXINwYNgIA",
     "geo__comuni_fvg":
-        "H4sIAAgNh2oC/6y9S48k2XWt+VcSnPSEIs77cWeU2LwQIN1mU2pOBA2CVcFkCJkR1ZGRCaiE+9/b"
+        "H4sIAIEQh2oC/6y9S48k2XWt+VcSnPSEIs77cWeU2LwQIN1mU2pOBA2CVcFkCJkR1ZGRCaiE+9/b"
         "3M46nvszP15Bd/UkC3XCzNzsPPdj7bX+61dv//nT46/+x69+//jw9vX18R9ePn16/OHt6eX5V7/+"
         "1V9G25df/Y9/+69fPf24XfXb17fHj88P299429bw0+vLT4+vb0+ny//rVz+8fP76/Gju+N+//tXH"
         "x5fPj2+v/3n6u27/w8un//y4/9YPLy+vPz49P7ztP/dv/+bjb3wO/dep/CYUH37tfuP+/dd7a3Gj"
@@ -13419,7 +13464,7 @@ _DATI: dict[str, str] = {
         "cIbUFmzPEMTQJa1nCZLwVt4v7IzGAX0Pp7HGdFzDf6yxIitYyRqBskarXEG2eFXy2dh1gYN98fGy"
         "QtVChSFaQiTAgquHuGotC7GoJP5lA2Dxoi7J4bufK85z23/87/8B1ZIlSH2iAgA=",
     "geo__progetti_bess":
-        "H4sIAAgNh2oC/+1abU/cRhD+K9Z9aSsha99f+AYpqajSBHEkihShyAWHOrmckc+XCCL+e8fe3fEe"
+        "H4sIAIEQh2oC/+1abU/cRhD+K9Z9aSsha99f+AYpqajSBHEkihShyAWHOrmckc+XCCL+e8fe3fEe"
         "uInZo0WqiBRFPJmds5+bl2dm+TZrry7L2e7seVm066Z8Vi8W5Vlb1cvZzuyDw1az3XffZtX5bJfs"
         "3DIHo8umviybturMvs2W9efuv19+/ZgdtkU2z5t8kYNVW13WgO8fzOfw06ot2u7Hw2VWrdpm3bZ1"
         "UxWds7otl9fF+89fZ7s0ZxJM1+D9Q3VWle//KuAJcnGzM7so4WPa5qr7RP9AR/Xi6qJ/6rO6bs6r"
@@ -13454,7 +13499,7 @@ _DATI: dict[str, str] = {
         "hdZDIkfuYuJkQoLCSLmxXS+W2VFVNtn5T4erenldbyFeR1btMmlQsG7XZYRiqNg1CRhFZS+t3xsG"
         "6QGQXy5qhnOClNZjAk9yHTBiEJP+E7QazrrdLFSHwU5p6Z9EIrbxxN1XdHrzN4IAdqoXKgAA",
     "geo__progetti_bioenergie":
-        "H4sIAAgNh2oC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
+        "H4sIAIEQh2oC/61Z207cSBD9ldY8RIk0afX9whsgErEiS5ZB+5AsijqDQywZe2R7dgUR/77l6cv0"
         "hNmsMTwRTqqr3UdVdaqKH7P+blXMDmbvCtev2+K4qapi2ZdNPZvPvnmsmx18/jErr2cHZP6TORit"
         "2mZVtH05mP2Y1c3t8N/vfztHHw4vTk/Q4vwYo8P3F6fH52eHaIEv8Bkc6stVA2ZHJZj3rm4A6nrX"
         "D9jhum/a8v5++A28N31R37svt//A7ZgbsFvDdd/KZVl8+e5mBwyLh/nsphgctXfDJ4Qv/NhUdzeb"
@@ -13484,7 +13529,7 @@ _DATI: dict[str, str] = {
         "YzxL09l2i2fZng0g27MBlHEDKLdnw0ioxJ6RMKeaPm9F86lZrYafQOaN6/ZuDJ+rOFMWNdpI5v8A"
         "osL2fsD8GtoqlrYyRgnfLikRp2Jj/DILzKiJmK+t4IzFBe3uBQOjVw//Akx93JG9GwAA",
     "geo__progetti_idroelettrico":
-        "H4sIAAgNh2oC/+2cW2/bRhbHvwqhh+0u4BBzv+TNdbyFATcx7GyARRIUrER7B0uRKkk5jYN89x5q"
+        "H4sIAIEQh2oC/+2cW2/bRhbHvwqhh+0u4BBzv+TNdbyFATcx7GyARRIUrER7B0uRKkk5jYN89x5q"
         "Lhw6is1IdOPdum/9+RxK89fMnMsM82nWflzls+ezf+ZZu67zo6oo8nlrqnJ2MLu0rJk9f/tpZhaz"
         "5+jgljkYrepqldet6cw+zcpq2f25yevrvHi2zOssadI6LVKwbM2qgr+dLOoqL/K2rc28Aty0Wdvx"
         "8zwrzM1N9z/w1KrNy5vsl+WH2XOcEgJma/iYSzM3+S//yeCrpPjzwewqh89r64/dR7tvdlYVH682"
@@ -13534,7 +13579,7 @@ _DATI: dict[str, str] = {
         "px3ClC/1IJpJ4oMeuSvoSeajHuujXv+0PrRGIde/4Dg+XNt2cvTBw6cNfhb1dOQ/7sif66d/QGTb"
         "PyAi0ANevfpKKfWIb1wJ/Be8zwxFdjh+5H3hzaljgvdFuy/QeV/Ix76dlO8//wGahKFC20cAAA==",
     "geo__progetti_solare":
-        "H4sIAAgNh2oC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
+        "H4sIAIEQh2oC/+19W48bR5LuXynoaQaQibxf/DKQZckjjC33UWs0BztrLOhWWa5dNtmHZMtjD+a/"
         "n0hmRGQmuyQXi/RlgQH8YEXnjVF5iesX/3y0//Guf/Tpo+f9cn+/7Z9uVqv+Zj9s1o8eP/ou03aP"
         "Pv37Px8Nbx99Kh4fNYdGd9vNXb/dD6nZPx+tN7fpzy/7zbp71a/7H5bfrvpdN+yXq2HZXW9X0GM/"
         "3G2gzZN32+H9ZrVfDjcboO72y/2BfL/fbIeffkr/gtE3+3790/K/bn949GlcOGh2D7N9N9wM/X99"
@@ -16546,19 +16591,48 @@ def _scheda_2():
 
     st.divider()
     inv = D.carica_per("inversioni_flusso")
+    inv_cab = D.carica_per("inversioni_cabine")
+    inv_reg = D.carica_per("inversioni_regioni")
+
     if not inv.empty:
         st.subheader("Quando la rete lavora al contrario")
         st.caption(
-            "Elenco e-distribuzione delle sezioni AT/MT in cui, nel 2025, il flusso di energia "
-            "si è invertito — la distribuzione ha immesso verso l'alta tensione invece di "
-            "prelevare — per almeno l'1% o il 5% delle ore dell'anno."
+            "Elenco e-distribuzione delle sezioni AT/MT in cui, nel 2025, il flusso di "
+            "energia si è invertito — la distribuzione ha immesso verso l'alta tensione "
+            "invece di prelevare — per almeno l'1% o il 5% delle ore dell'anno."
         )
 
-        i = st.columns(4)
-        i[0].metric("Sezioni con inversione", len(inv))
-        i[1].metric("Cabine primarie coinvolte", inv["cabina"].nunique())
-        i[2].metric("Sezioni oltre il 5% del tempo", int(inv["oltre_5_pct"].sum()))
-        i[3].metric("Province interessate", inv["provincia"].nunique())
+        i1 = st.columns(4)
+        i1[0].metric("Sezioni con inversione", len(inv))
+        i1[1].metric("Cabine primarie coinvolte", inv["cabina"].nunique())
+        i1[2].metric("Sezioni oltre il 5% del tempo", int(inv["oltre_5_pct"].sum()),
+                     f"{inv['oltre_5_pct'].sum() / len(inv) * 100:.0f}% del totale")
+        i1[3].metric("Province interessate", inv["provincia"].nunique())
+
+        # ------------------------------------------------ la mappa
+        if not inv_cab.empty:
+            st.markdown("**Dove si inverte il flusso**")
+            m = inv_cab.copy()
+            m["gravita"] = np.where(m["oltre_5"] > 0, "Oltre il 5% del tempo",
+                                    "Fra l'1% e il 5%")
+            fig = px.scatter_map(
+                m, lat="lat", lon="lon", size="sezioni", color="gravita",
+                hover_name="cabina",
+                hover_data={"provincia": True, "comune_riferimento": True,
+                            "sezioni": True, "oltre_5": True,
+                            "lat": False, "lon": False},
+                size_max=26, zoom=7.2, center={"lat": 46.05, "lon": 13.1},
+                map_style="carto-positron",
+                color_discrete_map={"Oltre il 5% del tempo": "#DC2626",
+                                    "Fra l'1% e il 5%": "#FACC15"},
+                labels={"oltre_5": "sezioni oltre il 5%"})
+            fig.update_layout(height=520, margin=dict(t=10, b=10, l=0, r=0),
+                              legend=dict(orientation="h", yanchor="bottom", y=1.01,
+                                          x=0, title=None))
+            grafico(fig, DOC.FONTE_RETI_REPORT,
+                    "Le posizioni sono i centroidi dei comuni che danno il nome alla "
+                    "cabina, non le coordinate dell'impianto: i distributori non le "
+                    "pubblicano. Servono a leggere la geografia del fenomeno.")
 
         c1, c2 = st.columns(2)
         with c1:
@@ -16570,37 +16644,77 @@ def _scheda_2():
             fig.add_bar(x=per_prov["provincia"], y=per_prov["sezioni"],
                         name="Almeno l'1% del tempo", marker_color="#FACC15")
             fig.add_bar(x=per_prov["provincia"], y=per_prov["oltre5"],
-                        name="Almeno il 5%", marker_color="#EF4444")
-            fig.update_layout(height=320, barmode="overlay", yaxis_title="sezioni AT/MT",
+                        name="Almeno il 5%", marker_color="#DC2626")
+            fig.update_layout(height=340, barmode="overlay", yaxis_title="sezioni AT/MT",
                               xaxis_title=None, title="Sezioni per provincia", **PLOT)
-            grafico(fig, DOC.F_AUDIZIONI)
+            grafico(fig, DOC.FONTE_RETI_REPORT)
         with c2:
             top_cab = (inv.groupby(["cabina", "provincia"])
                        .agg(sezioni=("sezione", "count"), oltre5=("oltre_5_pct", "sum"))
                        .reset_index().nlargest(10, "sezioni"))
             fig = px.bar(top_cab.sort_values("sezioni"), x="sezioni", y="cabina",
                          orientation="h", color="provincia", text="sezioni")
-            fig.update_layout(height=320, yaxis_title=None, xaxis_title="sezioni",
-                              title="Le cabine più interessate", **PLOT)
-            grafico(fig, DOC.F_AUDIZIONI)
+            fig.update_traces(cliponaxis=False)
+            fig.update_layout(height=340, yaxis_title=None, xaxis_title="sezioni",
+                              title="Le cabine più interessate",
+                              legend=dict(orientation="h", yanchor="bottom", y=1.06,
+                                          x=0, title=None),
+                              margin=dict(t=70, b=10, l=10, r=24),
+                              template="plotly_white")
+            grafico(fig, DOC.FONTE_RETI_REPORT)
+
+        # ------------------------------------------------ il confronto nazionale
+        if not inv_reg.empty:
+            st.markdown("**Il fenomeno non è solo friulano**")
+            reg = inv_reg.sort_values("sezioni", ascending=True).copy()
+            reg["evidenza"] = np.where(reg["regione"].str.contains("Friuli"),
+                                       "Friuli-Venezia Giulia", "Altre regioni")
+            fig = px.bar(reg, x="sezioni", y="regione", orientation="h",
+                         color="evidenza", text="cabine",
+                         color_discrete_map={"Friuli-Venezia Giulia": "#DC2626",
+                                             "Altre regioni": "#D1D5DB"})
+            fig.update_traces(textposition="outside", texttemplate="%{text} cabine",
+                              cliponaxis=False)
+            fig.update_layout(height=520, yaxis_title=None,
+                              xaxis_title="sezioni AT/MT con inversione di flusso",
+                              showlegend=False, **PLOT)
+            grafico(fig, DOC.FONTE_RETI_REPORT,
+                    "Elenco nazionale: 1.728 sezioni in 18 regioni.")
+
+            posiz = (inv_reg.sort_values("sezioni", ascending=False)
+                     .reset_index(drop=True))
+            riga = posiz[posiz["regione"].str.contains("Friuli")]
+            if not riga.empty:
+                p = int(riga.index[0]) + 1
+                st.caption(
+                    f"Il FVG è **{p}° in Italia** per numero di sezioni invertite "
+                    f"({int(riga['sezioni'].iat[0])} su 1.728), ma è una regione piccola: "
+                    "in rapporto alla superficie o ai consumi il posizionamento cambia. "
+                    "Piemonte, Lombardia e Veneto guidano la classifica in valore assoluto."
+                )
 
         with st.expander("Elenco completo delle sezioni"):
-            tab = inv[["provincia", "cabina", "sezione", "oltre_1_pct", "oltre_5_pct"]].copy()
-            tab.columns = ["Provincia", "Cabina primaria", "Sezione", "≥ 1% del tempo", "≥ 5% del tempo"]
+            tab = inv[["provincia", "cabina", "comune_riferimento", "sezione",
+                       "oltre_1_pct", "oltre_5_pct"]].copy()
+            tab.columns = ["Provincia", "Cabina primaria", "Comune di riferimento",
+                           "Sezione", "≥ 1% del tempo", "≥ 5% del tempo"]
             st.dataframe(tab.sort_values(["Provincia", "Cabina primaria"]),
                          hide_index=True, width="stretch", height=320)
+            st.caption(f"Fonte: {DOC.FONTE_RETI_REPORT}.")
 
         quota5 = inv["oltre_5_pct"].sum() / len(inv) * 100
         st.info(
-            f"**{inv['cabina'].nunique()} cabine primarie su 45** hanno almeno una sezione che "
-            f"si inverte, e nel **{quota5:.0f}%** dei casi succede per oltre il 5% delle ore. "
-            "Non è un guasto: è la generazione distribuita che ha superato il consumo locale. "
-            "Ma le cabine primarie sono state progettate per un flusso a senso unico, e "
-            "l'inversione è il segnale fisico che il limite di quel progetto è stato raggiunto. "
-            "Udine e Pordenone concentrano il fenomeno, le stesse province dove i trasformatori "
-            "risultano più saturi."
+            f"**{inv['cabina'].nunique()} cabine primarie su 45** hanno almeno una sezione "
+            f"che si inverte, e nel **{quota5:.0f}%** dei casi succede per oltre il 5% "
+            "delle ore. Non è un guasto: è la generazione distribuita che ha superato il "
+            "consumo locale. Ma le cabine primarie sono state progettate per un flusso a "
+            "senso unico, e l'inversione è il segnale fisico che quel progetto ha "
+            "raggiunto il limite.\n\n"
+            "La geografia sulla mappa è istruttiva: si inverte in **Carnia** (Ampezzo, "
+            "Ovaro, Tolmezzo, Chiusaforte), dove l'idroelettrico produce più di quanto "
+            "le valli consumino, e nella **bassa pianura** (Codroipo, Palmanova, "
+            "Latisana), dove è il fotovoltaico. Due cause opposte, stesso effetto sulla rete."
         )
-
 
 
     # ------------------------------------- dove preme la pipeline sulle cabine
