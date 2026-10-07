@@ -17873,45 +17873,6 @@ def _scheda_9():
     )
 
 
-    # ------------------------------------------ centrali termoelettriche
-    st.divider()
-    st.subheader("Gli impianti termoelettrici della regione")
-    cen = pd.DataFrame(DOC.CENTRALI_TERMO)
-    t1, t2, t3, t4 = st.columns(4)
-    t1.metric("Impianti censiti", len(cen))
-    t2.metric("Potenza complessiva", f"{cen['mw'].sum():,.0f} MW".replace(",", "."))
-    t3.metric("I due maggiori",
-              f"{cen.nlargest(2, 'mw')['mw'].sum() / cen['mw'].sum() * 100:.0f}%",
-              "della potenza")
-    t4.metric("In dismissione", f"{cen[cen['stato'] == 'Dismissione']['mw'].sum():.0f} MW")
-
-    fig = px.scatter_map(
-        cen, lat="lat", lon="lon", size="mw", color="combustibile", hover_name="nome",
-        hover_data={"comune": True, "mw": ":.1f", "tecnologia": True, "stato": True,
-                    "lat": False, "lon": False},
-        size_max=44, zoom=7.1, center={"lat": 45.95, "lon": 13.3},
-        map_style="carto-positron",
-        color_discrete_map={"Gas naturale": "#9CA3AF", "Carbone": "#111827",
-                            "Rifiuti urbani e speciali": "#A855F7",
-                            "Rifiuti speciali": "#C084FC",
-                            "Gas naturale e off-gas siderurgico": "#4B5563"})
-    fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
-                      legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
-    grafico(fig, DOC.FONTE_CENTRALI, "Coordinate al centro del sito, non rilevate.")
-
-    for r in cen.sort_values("mw", ascending=False).itertuples():
-        with st.expander(f"{r.nome} — {r.mw:.0f} MW, {r.comune} ({r.prov})"):
-            st.markdown(f"**{r.tecnologia}**, alimentata a {r.combustibile.lower()}. "
-                        f"Stato: {r.stato.lower()}.\n\n{r.nota}")
-
-    st.info(
-        f"Il parco termoelettrico è **concentratissimo**: Torviscosa e Monfalcone insieme "
-        f"fanno {cen.nlargest(2, 'mw')['mw'].sum():.0f} MW su {cen['mw'].sum():,.0f} "
-        "censiti. ".replace(",", ".")
-        + "Monfalcone, a carbone, dal maggio 2024 non è più abilitata ai mercati: è la "
-        "ragione principale del crollo delle emissioni elettriche regionali."
-    )
-
 
 def _scheda_10():
     st.subheader("Idrogeno: a che punto è il Friuli-Venezia Giulia")
@@ -18949,6 +18910,442 @@ Dove un dato è stimato, è scritto.
 
 
 
+
+# =====================================================================
+# ACCETTAZIONE SOCIALE — casi di opposizione a impianti FER in FVG
+# =====================================================================
+# Censimento costruito su atti del Servizio VIA regionale (lexview),
+# delibere e pareri comunali, petizioni al Consiglio regionale e stampa
+# locale. `verifica` dice su cosa poggia ogni riga: "Verificato" = atto o
+# documento primario, "Parziale" = una sola fonte secondaria.
+#
+# `km_at` e `km_aat` sono la distanza in linea d'aria dal conduttore piu'
+# vicino a 132 kV e oltre, e a 220 kV e oltre, calcolate una volta sola
+# su rete_elettrica_fvg.geojson (OpenInfraMap). Le coordinate sono
+# centroidi comunali o di sito, non il perimetro dell'impianto: servono a
+# leggere la geografia del conflitto, non a istruire una pratica.
+ACCETTAZIONE_CASI = [
+    {"nome": "Pulfero / Torreano — eolico «Pulfar»", "prov": "UD", "anno": 2025,
+     "tipo": "Eolico", "mw": 28.8, "lat": 46.152, "lon": 13.432,
+     "km_at": 7.28, "km_aat": 11.46, "esito": "Bloccato",
+     "proponente": "Ponente Green Power srl",
+     "oppositori": "Comitato «Salviamo il Craguenza», Mountain Wilderness, 5 Comuni, "
+                   "60+ osservazioni, petizione con 3.500 firme",
+     "motivi": "Paesaggio di crinale; avifauna (grifone) e chirotteri; carsismo e "
+               "Grotta di S. Giovanni d'Antro; dati di vento contestati",
+     "stato": "Screening SCR/2052 (01/10/2025): assoggettato a VIA. Il 09/06/2026 il "
+              "decreto che istituisce i biotopi Craguenza e Joanaz blocca il progetto",
+     "verifica": "Verificato"},
+    {"nome": "Bicinicco — agrivoltaico «GREENFRUT»", "prov": "UD", "anno": 2024,
+     "tipo": "Agrivoltaico", "mw": 68.5, "lat": 45.933, "lon": 13.316,
+     "km_at": 0.40, "km_aat": 0.40, "esito": "In corso",
+     "proponente": "procedura VIA ministeriale",
+     "oppositori": "Comitato per la Difesa del Friuli Rurale; Legambiente FVG; "
+                   "consiglieri regionali",
+     "motivi": "Scala industriale su 137 ha; cittadini mai informati; procedura in "
+               "periodo elettorale comunale",
+     "stato": "In VIA ministeriale", "verifica": "Parziale"},
+    {"nome": "Aquileia — San Zili / Casa Bianca", "prov": "UD", "anno": 2023,
+     "tipo": "Fotovoltaico a terra", "mw": 9.99, "lat": 45.772, "lon": 13.360,
+     "km_at": 2.16, "km_aat": 7.26, "esito": "Bloccato",
+     "proponente": "screening SCR1945",
+     "oppositori": "Fondazione Aquileia; Comune di Aquileia; Soprintendenza ABAP",
+     "motivi": "Rischio archeologico; buffer zone UNESCO; tracciato della via romana "
+               "Aquileia–Trieste",
+     "stato": "Parere contrario del Ministero della Cultura (gen 2025): di fatto non "
+              "autorizzabile", "verifica": "Verificato"},
+    {"nome": "Mortegliano — agrivoltaico «Pista Nazca»", "prov": "UD", "anno": 2026,
+     "tipo": "Agrivoltaico", "mw": None, "lat": 45.950, "lon": 13.172,
+     "km_at": 1.28, "km_aat": 1.28, "esito": "In corso", "proponente": "Sunfield 1 srl",
+     "oppositori": "Comune di Mortegliano (parere negativo); Legambiente FVG",
+     "motivi": "Area agricola di interesse ambientale; la variante FV comunale ammette "
+               "solo cave e discariche; conflitto con la rigenerazione dell'ex pista di "
+               "volo (516.000 € pubblici), Biciplan e riordino irriguo",
+     "stato": "Screening SCR2068 in corso", "verifica": "Verificato"},
+    {"nome": "San Quirino / Montereale — «La Braida»", "prov": "PN", "anno": 2025,
+     "tipo": "Agrivoltaico", "mw": 82.0, "lat": 46.070, "lon": 12.720,
+     "km_at": 0.89, "km_aat": 9.57, "esito": "In corso", "proponente": "D2M Friuli 2 srl",
+     "oppositori": "Comune di San Quirino (parere non favorevole)",
+     "motivi": "Zona E6.1 che non ammette FER; connessione in area di mitigazione del "
+               "Biotopo dei Magredi; carenze idrauliche e paesaggistiche",
+     "stato": "In VIA regionale (VIA608)", "verifica": "Verificato"},
+    {"nome": "Pradamano / Remanzacco — «Giacomelli»", "prov": "UD", "anno": 2025,
+     "tipo": "Agrivoltaico", "mw": 40.0, "lat": 46.033, "lon": 13.320,
+     "km_at": 1.74, "km_aat": 1.98, "esito": "In corso", "proponente": "D2M Friuli srl",
+     "oppositori": "Comitato Amici del Roiello di Pradamano; Comune di Pradamano",
+     "motivi": "Roiello tutelato (D.M. 1989) e Contratto di fiume; tracciato della via "
+               "Julia Augusta; punto panoramico; ciclovia Interreg",
+     "stato": "In VIA regionale (VIA606)", "verifica": "Verificato"},
+    {"nome": "Basiliano / Mereto di Tomba", "prov": "UD", "anno": 2024,
+     "tipo": "Agrivoltaico", "mw": 90.0, "lat": 46.022, "lon": 13.090,
+     "km_at": 0.65, "km_aat": 2.84, "esito": "In corso", "proponente": "RNE23 srl",
+     "oppositori": "Comuni di Codroipo e Mereto di Tomba; Legambiente FVG",
+     "motivi": "A circa 1 km dalla base di Rivolto (abbagliamento); a meno di 500 m dal "
+               "torrente Corno tutelato, fuori dalle aree idonee; bonifiche irrigue",
+     "stato": "In VIA regionale (VIA603)", "verifica": "Verificato"},
+    {"nome": "Maniago — «Maniago Solar 1»", "prov": "PN", "anno": 2022,
+     "tipo": "Agrivoltaico", "mw": 96.0, "lat": 46.168, "lon": 12.708,
+     "km_at": 1.10, "km_aat": 14.34, "esito": "In corso",
+     "proponente": "Ellomay Solar Italy Eleven srl",
+     "oppositori": "Comune di Maniago (parere negativo confermato dopo le integrazioni); "
+                   "federazione agricola provinciale",
+     "motivi": "Barriera visiva di circa 2 km su via Tesana; frammentazione di un'area "
+               "aperta; conflitto con PRGC e Piano paesaggistico regionale",
+     "stato": "VIA regionale VIA576", "verifica": "Verificato"},
+    {"nome": "Trivignano Udinese — due progetti", "prov": "UD", "anno": 2021,
+     "tipo": "Fotovoltaico a terra", "mw": 100.9, "lat": 45.920, "lon": 13.330,
+     "km_at": 0.13, "km_aat": 0.13, "esito": "In corso",
+     "proponente": "EG Nuova Vita srl; Ellomay Solar Italy Eight srl",
+     "oppositori": "Consiglio comunale contrario all'unanimità (19/08/2021); Legambiente FVG",
+     "motivi": "SAU sottratta; chiesa di S. Marco e mura di Palmanova (UNESCO); borgo di "
+               "Clauiano",
+     "stato": "VIA regionale VIA575", "verifica": "Verificato"},
+    {"nome": "Pavia di Udine — «Equinozio»", "prov": "UD", "anno": 2023,
+     "tipo": "Agrivoltaico", "mw": 30.0, "lat": 45.993, "lon": 13.330,
+     "km_at": 0.78, "km_aat": 3.27, "esito": "In corso", "proponente": "EG Equinozio srl",
+     "oppositori": "Consiglio comunale all'unanimità: riconosce il valore del progetto ma "
+                   "denuncia il carico cumulativo",
+     "motivi": "Sul territorio ci sono già 78,5 ha di fotovoltaico, un BESS da 9 ha, le "
+               "linee Terna a 380 kV e la stazione Udine Sud; perdita di identità",
+     "stato": "VIA regionale VIA595", "verifica": "Verificato"},
+    {"nome": "Romans d'Isonzo — FV vicino alle case", "prov": "GO", "anno": 2024,
+     "tipo": "Fotovoltaico a terra", "mw": 12.0, "lat": 45.882, "lon": 13.440,
+     "km_at": 0.33, "km_aat": 2.42, "esito": "Rilocalizzato", "proponente": "n.d.",
+     "oppositori": "Residenti (petizione con 780-876 firme); sindaco Calligaris in "
+                   "IV Commissione (11/02/2025)",
+     "motivi": "Vicinanza alle abitazioni. Il Comune propone un'area alternativa, "
+               "agricola dismessa, verso Villesse",
+     "stato": "Petizione discussa in IV Commissione; nuova proposta del proponente a "
+              "luglio 2025", "verifica": "Verificato"},
+    {"nome": "Pasian di Prato — BESS di Colloredo", "prov": "UD", "anno": 2025,
+     "tipo": "Accumulo (BESS)", "mw": 25.0, "lat": 46.080, "lon": 13.160,
+     "km_at": 0.68, "km_aat": 3.97, "esito": "Autorizzato", "proponente": "n.d.",
+     "oppositori": "Residenti (petizione con 1.200 firme al Consiglio regionale, 08/07/2025)",
+     "motivi": "A circa 200 m dalle case; timori per salute e sicurezza; effetto cumulo; "
+               "richiesta di una distanza minima di 1 km",
+     "stato": "Autorizzato il 3 aprile 2025; petizione in Consiglio, audizioni annunciate",
+     "verifica": "Verificato"},
+    {"nome": "Pagnacco — biometano in via des Giavis", "prov": "UD", "anno": 2025,
+     "tipo": "Biometano", "mw": None, "lat": 46.120, "lon": 13.190,
+     "km_at": 0.40, "km_aat": 0.40, "esito": "In corso", "proponente": "n.d.",
+     "oppositori": "Comune di Pagnacco: favorevole alla transizione, contrario a questa "
+                   "localizzazione (comunicato 19/05/2025)",
+     "motivi": "Odori vicino alle case; traffico pesante sulla SR 49; danno alle attività "
+               "artigianali vicine",
+     "stato": "Contrarietà comunale", "verifica": "Verificato"},
+    {"nome": "Erto e Casso — centrale al Vajont", "prov": "PN", "anno": 2026,
+     "tipo": "Idroelettrico", "mw": None, "lat": 46.272, "lon": 12.380,
+     "km_at": 24.41, "km_aat": 39.33, "esito": "In corso",
+     "proponente": "Welly Red (Pordenone)",
+     "oppositori": "Sindaco di Longarone («luogo sacro»); un comitato presenta ricorso; "
+                   "Provincia di Belluno e Regione Veneto partecipano allo screening",
+     "motivi": "Valore memoriale del disastro del 1963; compensazioni; coinvolgimento dei "
+               "territori. Il sindaco di Erto e Casso è invece favorevole, per i canoni",
+     "stato": "Screening regionale SCR2073 avviato a febbraio 2026", "verifica": "Verificato"},
+    {"nome": "Sagrado — ex Fornaci Giuliane", "prov": "GO", "anno": 2025,
+     "tipo": "Fotovoltaico a terra", "mw": 9.6, "lat": 45.880, "lon": 13.480,
+     "km_at": 1.96, "km_aat": 2.08, "esito": "Nessuna opposizione",
+     "proponente": "Parco Solare Friulano 6 srl",
+     "oppositori": "Nessuno: il Comune è favorevole con prescrizioni",
+     "motivi": "—", "stato": "Screening SCR2048", "verifica": "Verificato"},
+    {"nome": "Tricesimo — Leonacco Basso", "prov": "UD", "anno": 2021,
+     "tipo": "Fotovoltaico a terra", "mw": None, "lat": 46.160, "lon": 13.220,
+     "km_at": 2.70, "km_aat": 4.31, "esito": "In corso", "proponente": "n.d.",
+     "oppositori": "M5S (Sergo); cittadini",
+     "motivi": "Area poco idonea; terzo tentativo di VIA dello stesso proponente",
+     "stato": "Più tentativi del proponente", "verifica": "Parziale"},
+    {"nome": "Terzo di Aquileia — Falck Renewables", "prov": "UD", "anno": 2021,
+     "tipo": "Fotovoltaico a terra", "mw": 42.0, "lat": 45.782, "lon": 13.300,
+     "km_at": 1.05, "km_aat": 2.87, "esito": "Realizzato", "proponente": "Falck Renewables",
+     "oppositori": "Citato da Sergo (M5S) come esempio di impianto su terreni non idonei",
+     "motivi": "Suolo agricolo", "stato": "Risulta censito fra gli impianti solari esistenti",
+     "verifica": "Parziale"},
+    {"nome": "San Vito al Torre / Basiliano — Chiron", "prov": "UD", "anno": 2022,
+     "tipo": "Fotovoltaico a terra", "mw": None, "lat": 45.900, "lon": 13.360,
+     "km_at": 1.35, "km_aat": 1.35, "esito": "In corso", "proponente": "Chiron Energy",
+     "oppositori": "Citati da Sergo (M5S)", "motivi": "Suolo agricolo",
+     "stato": "Da aggiornare", "verifica": "Parziale"},
+]
+
+# Distanza mediana dalla rete, calcolata su 300 punti estratti a caso nella
+# pianura friulana (bounding box 45,75-46,15 N / 12,7-13,6 E). Serve come
+# termine di paragone: senza, "2,8 km dalla rete AAT" non vuol dire nulla.
+ACCETTAZIONE_RIFERIMENTO = {"km_at_mediana": 1.26, "km_aat_mediana": 4.65, "n_punti": 300}
+
+ACCETTAZIONE_POSIZIONI = [
+    {"nome": "Fabio Scoccimarro", "ruolo": "FdI — assessore regionale all'ambiente ed energia",
+     "data": "2025-2026",
+     "sintesi": "Sul Pulfar: «non possiamo permettere enormi pale eoliche che deturpano il "
+                "paesaggio». Sui BESS parla di «emergenza» per le richieste di autorizzazione. "
+                "Alla presentazione del report ARPA sul clima attacca «l'ideologia ecologista "
+                "del no» e inquadra il riscaldamento dentro cicli storici."},
+    {"nome": "Massimiliano Fedriga", "ruolo": "Lega — presidente della Regione",
+     "data": "2025-2026",
+     "sintesi": "Strategia orientata a idrogeno e nucleare. Ha firmato il decreto che "
+                "istituisce i biotopi Craguenza e Joanaz e blocca il Pulfar."},
+    {"nome": "Rosaria Capozzi", "ruolo": "M5S — consigliera regionale", "data": "2024-2025",
+     "sintesi": "Con 778 MW installati fra gennaio 2021 e agosto 2024 il FVG avrebbe già "
+                "superato la tappa del decreto aree idonee al 2027 (772 MW), quindi non "
+                "servirebbe altro fotovoltaico di grande taglia. Contraria a Bicinicco."},
+    {"nome": "Cristian Sergo", "ruolo": "M5S — allora capogruppo", "data": "01/03/2022",
+     "sintesi": "La legge regionale del 2021 sul fotovoltaico «non risolve nulla»: elenca "
+                "Terzo di Aquileia, Manzano, Tricesimo, San Vito al Torre, Basiliano."},
+    {"nome": "Massimiliano Pozzo", "ruolo": "PD — consigliere regionale", "data": "2025",
+     "sintesi": "Contrario al Pulfar per mancanza di consenso delle comunità e per gli impatti."},
+    {"nome": "Diego Moretti", "ruolo": "PD — consigliere regionale", "data": "2025",
+     "sintesi": "Sostiene la petizione di Romans d'Isonzo contro il fotovoltaico vicino alle case."},
+    {"nome": "Serena Pellegrino", "ruolo": "AVS — consigliera regionale", "data": "2025",
+     "sintesi": "Contraria al Pulfar: documentazione carente, nessun dato di vento reale."},
+    {"nome": "Elia Miani", "ruolo": "Lega — consigliere regionale", "data": "2025-2026",
+     "sintesi": "Contrario al Pulfar (dati di vento «virtuali e scorretti»); soddisfatto "
+                "dell'istituzione dei biotopi."},
+    {"nome": "Furio Honsell", "ruolo": "Open Sinistra FVG — consigliere regionale",
+     "data": "25/05/2024",
+     "sintesi": "Contrario all'agrivoltaico di Bicinicco da 137 ha: cittadini non informati."},
+    {"nome": "Moretuzzo, Massolino", "ruolo": "Patto per l'Autonomia-Civica FVG",
+     "data": "06/07/2026",
+     "sintesi": "Interrogazione sulle frasi dell'assessore sul clima: «il pianeta si sta "
+                "riscaldando, l'aumento delle temperature ha un'evidente origine antropica». "
+                "Sostengono anche la petizione di Romans."},
+    {"nome": "Sandro Cargnelutti", "ruolo": "Legambiente FVG — presidente", "data": "2024-2025",
+     "sintesi": "Servono «grandi impianti ben progettati in aree idonee» per la neutralità "
+                "al 2045; limitare le FER aiuta il fossile."},
+]
+
+F_ACCETTAZIONE = ("Atti del Servizio VIA regionale (lexview), pareri comunali, petizioni "
+                  "al Consiglio regionale e stampa locale")
+
+
+
+
+def _scheda_16():
+    casi = pd.DataFrame(ACCETTAZIONE_CASI)
+    rif = ACCETTAZIONE_RIFERIMENTO
+
+    st.subheader("Accettazione sociale degli impianti")
+    st.caption(
+        "Censimento dei casi di opposizione a impianti da fonte rinnovabile e di accumulo "
+        "in Friuli-Venezia Giulia, dal 2021 a oggi. Ogni riga poggia su un atto "
+        "amministrativo, un parere comunale, una petizione o una fonte di stampa, "
+        "dichiarati caso per caso."
+    )
+
+    mw_noti = casi["mw"].dropna()
+    a1, a2, a3, a4 = st.columns(4)
+    a1.metric("Casi censiti", len(casi),
+              f"{(casi['verifica'] == 'Verificato').sum()} su documento primario")
+    a2.metric("Potenza contestata", f"{mw_noti.sum():,.0f} MW".replace(",", "."),
+              f"su {len(mw_noti)} casi con taglia nota")
+    a3.metric("Province coinvolte", casi["prov"].nunique(),
+              " · ".join(f"{p} {n}" for p, n in casi["prov"].value_counts().items()))
+    a4.metric("Esiti già definiti",
+              int(casi["esito"].isin(["Bloccato", "Rilocalizzato", "Realizzato",
+                                      "Autorizzato"]).sum()),
+              f"{int((casi['esito'] == 'Bloccato').sum())} bloccati")
+
+    st.info(
+        f"**I {mw_noti.sum():,.0f} MW contestati vanno letti accanto al target regionale.** "
+        "Il decreto aree idonee chiede al Friuli-Venezia Giulia 1.960 MW aggiuntivi al 2030 "
+        f"e ne risultano in esercizio circa 940. La potenza su cui oggi esiste un conflitto "
+        f"aperto vale quindi circa il {mw_noti.sum() / 1020 * 100:.0f}% di quanto manca. "
+        "Non significa che quei progetti siano tutti buoni né tutti cattivi: significa che "
+        "il margine per sbagliare localizzazione è stretto."
+        .replace(",", ".")
+    )
+
+    # ------------------------------------------------- dove sono i conflitti
+    st.divider()
+    st.markdown("**Dove sono**")
+    m = casi.copy()
+    m["size"] = m["mw"].fillna(8.0).clip(lower=8.0)
+    fig = px.scatter_map(
+        m, lat="lat", lon="lon", size="size", color="tipo", hover_name="nome",
+        hover_data={"prov": True, "mw": ":.1f", "anno": True, "esito": True,
+                    "km_aat": ":.1f", "lat": False, "lon": False, "size": False},
+        size_max=40, zoom=7.1, center={"lat": 46.0, "lon": 13.1},
+        map_style="carto-positron",
+        color_discrete_map={"Agrivoltaico": "#65A30D", "Fotovoltaico a terra": "#FACC15",
+                            "Eolico": "#22C55E", "Accumulo (BESS)": "#A855F7",
+                            "Biometano": "#F97316", "Idroelettrico": "#2563EB"},
+        labels={"km_aat": "km dalla rete ≥220 kV"})
+    fig.update_layout(height=480, margin=dict(t=10, b=10, l=0, r=0),
+                      legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
+    grafico(fig, F_ACCETTAZIONE,
+            "Coordinate del centro del comune o del sito, non il perimetro dell'impianto.")
+
+    # ------------------------------------- sovrapposizione con la rete
+    st.divider()
+    st.markdown("**Il conflitto segue la rete ad altissima tensione**")
+
+    pianura = casi[~casi["nome"].str.contains("Pulfar|Vajont")]
+    med_at = casi["km_at"].median()
+    med_aat = casi["km_aat"].median()
+    med_aat_p = pianura["km_aat"].median()
+
+    d1, d2, d3 = st.columns(3)
+    d1.metric("Distanza mediana dalla rete ≥132 kV", f"{med_at:.2f} km",
+              f"punto qualsiasi della pianura: {rif['km_at_mediana']:.2f} km",
+              delta_color="off")
+    d2.metric("Distanza mediana dalla rete ≥220 kV", f"{med_aat:.2f} km",
+              f"punto qualsiasi della pianura: {rif['km_aat_mediana']:.2f} km",
+              delta_color="off")
+    d3.metric("Solo i casi di pianura", f"{med_aat_p:.2f} km",
+              "dalla rete ≥220 kV, esclusi Pulfar e Vajont", delta_color="off")
+
+    conf = pd.DataFrame([
+        {"gruppo": "Casi contestati", "livello": "Rete ≥132 kV", "km": med_at},
+        {"gruppo": "Pianura, punto a caso", "livello": "Rete ≥132 kV", "km": rif["km_at_mediana"]},
+        {"gruppo": "Casi contestati", "livello": "Rete ≥220 kV", "km": med_aat},
+        {"gruppo": "Pianura, punto a caso", "livello": "Rete ≥220 kV", "km": rif["km_aat_mediana"]},
+    ])
+    cc1, cc2 = st.columns([1, 1])
+    with cc1:
+        fig = px.bar(conf, x="km", y="livello", color="gruppo", orientation="h",
+                     barmode="group", text_auto=".2f",
+                     color_discrete_map={"Casi contestati": "#DC2626",
+                                         "Pianura, punto a caso": "#9CA3AF"})
+        fig.update_layout(height=280, yaxis_title=None, xaxis_title="km, distanza mediana",
+                          title="Vicinanza alla rete", **PLOT)
+        grafico(fig, F_ACCETTAZIONE + "; rete da OpenInfraMap")
+    with cc2:
+        st.markdown(
+            f"""
+Sulla rete a **132 kV** i casi contestati non si distinguono dal resto del territorio:
+{med_at:.2f} km contro {rif['km_at_mediana']:.2f}. In pianura la sub-trasmissione è
+ovunque, quindi la vicinanza a una linea non spiega nulla.
+
+Sulla rete a **220 e 380 kV** il quadro cambia: {med_aat:.2f} km contro
+{rif['km_aat_mediana']:.2f}, e scende a {med_aat_p:.2f} km guardando i soli casi di
+pianura. I progetti contestati stanno in media **quasi il doppio più vicini** alla
+dorsale di trasmissione rispetto a un punto qualsiasi.
+
+È la conferma quantitativa di quello che il Consiglio comunale di Pavia di Udine mette
+nero su bianco nel suo parere: dove c'è la stazione Terna si concentrano gli impianti, e
+il carico ricade su un territorio solo.
+            """
+        )
+    st.caption(
+        "Cautela: 18 casi, coordinate al centro del comune e confronto con 300 punti "
+        "estratti a caso nella pianura. È un'indicazione sulla geografia del fenomeno, "
+        "non un test statistico."
+    )
+
+    # ------------------------------------------------- tecnologie ed esiti
+    st.divider()
+    e1, e2 = st.columns(2)
+    with e1:
+        per_tipo = (casi.groupby("tipo")
+                    .agg(casi=("nome", "size"), mw=("mw", "sum"))
+                    .reset_index().sort_values("casi", ascending=False))
+        fig = px.bar(per_tipo, x="casi", y="tipo", orientation="h", text_auto=True,
+                     color="tipo",
+                     color_discrete_map={"Agrivoltaico": "#65A30D",
+                                         "Fotovoltaico a terra": "#FACC15",
+                                         "Eolico": "#22C55E", "Accumulo (BESS)": "#A855F7",
+                                         "Biometano": "#F97316", "Idroelettrico": "#2563EB"})
+        fig.update_layout(height=320, showlegend=False, yaxis_title=None,
+                          xaxis_title="numero di casi", title="Per tecnologia", **PLOT)
+        fig.update_yaxes(categoryorder="total ascending")
+        grafico(fig, F_ACCETTAZIONE)
+    with e2:
+        per_esito = casi["esito"].value_counts().reset_index()
+        per_esito.columns = ["esito", "casi"]
+        fig = px.bar(per_esito, x="casi", y="esito", orientation="h", text_auto=True,
+                     color="esito",
+                     color_discrete_map={"In corso": "#9CA3AF", "Bloccato": "#DC2626",
+                                         "Autorizzato": "#2563EB", "Rilocalizzato": "#16A34A",
+                                         "Realizzato": "#0EA5E9",
+                                         "Nessuna opposizione": "#16A34A"})
+        fig.update_layout(height=320, showlegend=False, yaxis_title=None,
+                          xaxis_title="numero di casi", title="Per esito", **PLOT)
+        fig.update_yaxes(categoryorder="total ascending")
+        grafico(fig, F_ACCETTAZIONE)
+
+    st.markdown(
+        """
+**Agrivoltaico e fotovoltaico a terra fanno 14 casi su 18**, e non per caso: sono le
+tecnologie che occupano superficie agricola in pianura, dove vive quasi tutta la
+popolazione regionale. L'eolico ha un caso solo, il Pulfar, ma concentra la mobilitazione
+più ampia di tutte: 3.500 firme e cinque Comuni. I BESS sono il fronte nuovo, e quello su
+cui i dati disponibili al pubblico sono più scarsi.
+        """
+    )
+
+    # ------------------------------------------------- i due controesempi
+    st.divider()
+    st.markdown("**I due casi che dicono più di tutti gli altri**")
+    g1, g2 = st.columns(2)
+    with g1:
+        st.success(
+            "**Sagrado, ex Fornaci Giuliane — nessuna opposizione.** 9,6 MWp di fotovoltaico "
+            "a terra su un'area industriale dismessa. Il Comune è favorevole con prescrizioni, "
+            "non c'è nessun comitato. Il conflitto non è sulla tecnologia: è sulla "
+            "localizzazione."
+        )
+    with g2:
+        st.success(
+            "**Romans d'Isonzo — il Comune non dice no, indica dove.** A fronte di una "
+            "petizione con quasi 900 firme contro un impianto vicino alle case, "
+            "l'amministrazione propone un'area agricola dismessa verso Villesse, e a luglio "
+            "2025 il proponente presenta una nuova proposta. È il caso che mostra che "
+            "pianificare funziona."
+        )
+
+    st.warning(
+        "**Il caso opposto è Mortegliano.** Il Comune aveva pianificato: una variante "
+        "urbanistica ammette il fotovoltaico solo su cave e discariche. Il progetto è "
+        "arrivato lo stesso, altrove, su un'area agricola di interesse ambientale. "
+        "Pianificazione locale senza regia regionale non protegge il territorio: sposta "
+        "soltanto il conflitto dal tavolo urbanistico a quello della VIA."
+    )
+
+    # ------------------------------------------------- il censimento
+    st.divider()
+    st.markdown("**Il censimento, caso per caso**")
+    tab = casi[["nome", "prov", "tipo", "mw", "anno", "esito", "km_aat", "verifica"]].copy()
+    tab.columns = ["Caso", "Prov.", "Tecnologia", "MW", "Anno", "Esito",
+                   "km da rete ≥220 kV", "Verifica"]
+    st.dataframe(tab, hide_index=True, width="stretch", height=420)
+    st.caption(f"Fonte: {F_ACCETTAZIONE}.")
+
+    for r in casi.itertuples():
+        with st.expander(f"{r.nome} — {r.prov}, {r.anno} · {r.esito}"):
+            st.markdown(
+                f"**Tecnologia**: {r.tipo}"
+                + (f", {r.mw:.1f} MW" if pd.notna(r.mw) else "")
+                + f"  \n**Proponente**: {r.proponente}"
+                + f"  \n**Distanza dalla rete**: {r.km_at:.2f} km da una linea ≥132 kV, "
+                  f"{r.km_aat:.2f} km da una linea ≥220 kV"
+                + f"\n\n**Chi si oppone**: {r.oppositori}"
+                + f"\n\n**Motivi**: {r.motivi}"
+                + f"\n\n**Stato**: {r.stato}"
+                + f"\n\n*Verifica: {r.verifica.lower()}.*"
+            )
+
+    # ------------------------------------------------- posizioni politiche
+    st.divider()
+    st.markdown("**Le posizioni politiche**")
+    st.caption(
+        "Dichiarazioni pubbliche di amministratori regionali e organizzazioni, raccolte "
+        "per ricostruire il quadro del dibattito. Sono posizioni riportate, non una "
+        "valutazione dell'app."
+    )
+    pol = pd.DataFrame(ACCETTAZIONE_POSIZIONI)
+    for r in pol.itertuples():
+        with st.expander(f"{r.nome} — {r.ruolo} ({r.data})"):
+            st.markdown(r.sintesi)
+
+    st.info(
+        "**La domanda che tiene insieme tutta la sezione.** Sul Pulfar il fronte contrario "
+        "è stato trasversale, da FdI ad AVS, e il progetto è bloccato. Sui grandi impianti "
+        "fotovoltaici in pianura i pareri comunali negativi sono quasi altrettanto "
+        "trasversali. Se nessuna localizzazione va bene, i 1.020 MW che mancano al 2030 "
+        "dove si mettono? Oggi nessuna cartografia regionale risponde: la legge regionale "
+        "2/2025 rimanda a una delibera di Giunta che individui le aree non idonee, e quella "
+        "cartografia risulta ancora in corso di implementazione."
+    )
+
+
 # ------------------------------------------------------------- navigazione
 # Due pagine, un file solo. Dentro l'esplorazione le schede sono raggruppate in
 # sezioni ed eseguite una alla volta: il codice delle altre non gira nemmeno.
@@ -18958,6 +19355,7 @@ SEZIONI = [
     ('🔥 Termico, gas e bioenergie', [8, 9, 5]),
     ('🔌 Reti e territorio', [2]),
     ('🌍 Clima ed emissioni', [12, 13]),
+    ('🤝 Territorio e consenso', [16]),
     ('🔮 Scenari e transizione', [11, 10]),
     ('🗂 Dati e fonti', [15]),
 ]
@@ -18966,6 +19364,7 @@ NOMI_SCHEDE = {
     5: '🌲 Biomasse', 6: '♻️ Biometano', 7: '💧 Idroelettrico', 8: '🔥 Gas',
     9: '🔥 Termo & CO₂', 10: '🧪 Idrogeno', 11: '🔮 Scenari', 12: '🌍 Emissioni',
     13: '🌡️ Clima', 14: '🌬️ Eolico', 15: '🗂 Dati',
+    16: '🤝 Accettazione sociale',
 }
 _schede = {n: globals()[f"_scheda_{n}"] for n in NOMI_SCHEDE
            if f"_scheda_{n}" in globals()}
