@@ -15320,6 +15320,10 @@ quota_fer = p_fer / p_tot * 100 if p_tot else 0
 intensita = em_tot * 1e6 / p_tot if p_tot else 0  # tCO2 / GWh = gCO2/kWh
 
 
+# Ultimo anno disponibile della serie Eurostat/ENEA nel PER.
+# Non coincide con l'anno selezionato per i dati elettrici Terna.
+ANNO_BILANCIO = 2021
+
 bil_kpi = D.carica_per("bilancio_2021")
 
 
@@ -15328,36 +15332,63 @@ bil_kpi = D.carica_per("bilancio_2021")
 def pagina_kpi():
     """Intestazione con i numeri chiave, mostrata solo nella pagina Esplora."""
     k = st.columns(5)
-    k[0].metric("Produzione lorda", f"{p_tot:,.0f} GWh".replace(",", "."),
-                f"{D.variazione(prod_fonte, anno) or 0:+.1f}%" if D.variazione(prod_fonte, anno) else None)
-    k[1].metric("Quota rinnovabile", f"{quota_fer:.1f}%")
-    k[2].metric("Potenza efficiente", f"{pot_tot:,.0f} MW".replace(",", "."))
-    k[3].metric("Emissioni CO₂ (elettrico)", f"{em_tot:.2f} Mt")
-    k[4].metric("Intensità carbonica", f"{intensita:.0f} g/kWh")
+    k[0].metric(f"Produzione lorda {anno}", f"{p_tot:,.0f} GWh".replace(",", "."),
+                f"{D.variazione(prod_fonte, anno) or 0:+.1f}%" if D.variazione(prod_fonte, anno) else None,
+                help="Produzione lorda di energia elettrica. Esclude l'accumulo stand "
+                     "alone, che restituisce energia gia' contabilizzata alla produzione.")
+    k[1].metric(f"Quota rinnovabile {anno}", f"{quota_fer:.1f}%",
+                help="Idrico, fotovoltaico, eolico e bioenergie sulla produzione lorda. "
+                     "Le bioenergie sono dentro il termoelettrico: contarle e' cio' che "
+                     "distingue questo valore dal rapporto fra sole fonti non termiche.")
+    k[2].metric(f"Potenza efficiente {anno}", f"{pot_tot:,.0f} MW".replace(",", "."),
+                help="Potenza efficiente netta di generazione.")
+    k[3].metric(f"Emissioni CO₂ elettrico {anno}", f"{em_tot:.2f} Mt",
+                help="Comprende la CO₂ biogenica da bioenergie. Negli inventari "
+                     "nazionali quella quota e' un memo item e non si somma al fossile.")
+    k[4].metric(f"Intensità mix elettrico {anno}", f"{intensita:.0f} g/kWh",
+                help="Emissioni per kWh prodotto sull'intero mix regionale, "
+                     "rinnovabili comprese. Sul solo parco termoelettrico il valore "
+                     "e' circa il doppio.")
     if not bil_kpi.empty:
         _v = bil_kpi.set_index("voce")["valore"]
-        _imp = _v.get("Import totale", 0) - _v.get("Export totale", 0)
         _cil = _v.get("Consumo interno lordo", 1)
+        _int = _v.get("Risorse interne totale", 0)
+        # La dipendenza e' il complemento delle risorse interne, non il lordo
+        # degli import: cosi' i due riquadri chiudono sul CIL invece di
+        # sommare a piu' del 100%.
+        _imp = _cil - _int
         _em_tot = max(DOC.EMISSIONI_TOTALI_FVG.items())[1]
         _em_anno = max(DOC.EMISSIONI_TOTALI_FVG)
+        # Quota del settore elettrico: confronto fra lo stesso anno dei due
+        # termini. Il dato elettrico dell'anno selezionato non va diviso per
+        # un totale regionale di un altro anno.
+        _em_el_anno = anno_di(emissioni, _em_anno)["valore"].sum()
         k2 = st.columns(5)
-        k2[0].metric("Energia importata", f"{_imp / _cil * 100:.0f}%",
+        k2[0].metric(f"Energia importata {ANNO_BILANCIO}", f"{_imp / _cil * 100:.0f}%",
                      f"{_imp:,.0f} ktep su {_cil:,.0f}".replace(",", "."),
-                     help="Quota del consumo interno lordo che arriva da fuori regione. Bilancio 2021.")
-        k2[1].metric("Risorse interne", f"{_v.get('Risorse interne totale', 0):,.0f} ktep".replace(",", "."))
-        k2[2].metric(f"Emissioni totali ({_em_anno})", f"{_em_tot / 1000:.1f} Mt CO₂eq",
+                     help=f"Quota del consumo interno lordo che arriva da fuori regione, "
+                          f"al netto di cio' che esce. Bilancio {ANNO_BILANCIO}: e' l'ultimo "
+                          f"anno della serie Eurostat/ENEA nel PER, non l'anno selezionato sopra.")
+        k2[1].metric(f"Risorse interne {ANNO_BILANCIO}", f"{_int:,.0f} ktep".replace(",", "."),
+                     help="Produzione primaria regionale: rinnovabili elettriche e termiche, "
+                          "biomasse, biogas e calore ambientale da pompe di calore.")
+        k2[2].metric(f"Emissioni totali {_em_anno}", f"{_em_tot / 1000:.1f} Mt CO₂eq",
                      f"{DOC.EMISSIONI_QUOTA_NAZIONALE}% del totale italiano",
                      help="Tutti i settori e tutti i gas serra, non solo l'elettrico. Fonte ISPRA.")
-        k2[3].metric("di cui settore elettrico", f"{em_tot:.2f} Mt CO₂",
-                     f"{em_tot / (_em_tot / 1000) * 100:.0f}% del totale" if _em_tot else None)
+        k2[3].metric(f"di cui settore elettrico {_em_anno}",
+                     f"{_em_el_anno:.2f} Mt CO₂",
+                     f"{_em_el_anno / (_em_tot / 1000) * 100:.0f}% del totale" if _em_tot else None,
+                     help=f"Emissioni elettriche del {_em_anno}, lo stesso anno del totale "
+                          f"regionale accanto. Nell'anno selezionato ({anno}) valgono "
+                          f"{em_tot:.2f} Mt.")
         k2[4].metric("Neutralità carbonica", DOC.TARGET_FVGREEN["anno_neutralita"],
                      DOC.TARGET_FVGREEN["riferimento"].split("(")[0].strip())
     if pop:
         st.caption(
-            f"Pro capite ({pop:,.0f} abitanti): ".replace(",", ".")
-            + f"**{p_tot * 1000 / pop:,.0f} kWh** prodotti · ".replace(",", ".")
-            + f"**{em_tot * 1e6 / pop:.2f} t CO₂** dal settore elettrico · "
-            + f"**{p_tot * GWH_TO_KTEP:,.0f} ktep** di produzione totale".replace(",", ".")
+            f"Pro capite nel {anno} ({pop:,.0f} abitanti): ".replace(",", ".")
+            + f"**{p_tot * 1e6 / pop:,.0f} kWh** prodotti · ".replace(",", ".")
+            + f"**{em_tot * 1e6 / pop:.2f} t CO₂** dal settore elettrico. "
+            + f"In totale la produzione vale **{p_tot * GWH_TO_KTEP:,.0f} ktep**.".replace(",", ".")
         )
     st.divider()
 
@@ -15450,19 +15481,42 @@ def _scheda_0():
         b[3].metric("Consumi finali", f"{cfe:,.0f} ktep".replace(",", "."))
         b[4].metric("Perdite di trasformazione", f"{perdite_t:,.0f} ktep".replace(",", "."))
 
-        dip = (v.get("Import totale", 0) - v.get("Export totale", 0)) / cil * 100 if cil else 0
+        _int_tot = v.get("Risorse interne totale", 0)
+        dip = (cil - _int_tot) / cil * 100 if cil else 0
         st.caption(
-            f"Dipendenza dall'estero e dalle altre regioni: **{dip:.0f}%** del consumo interno lordo. "
-            f"Rendimento del sistema di trasformazione: **{rendimento * 100:.0f}%**."
+            f"Dipendenza da fuori regione: **{dip:.0f}%** del consumo interno lordo "
+            f"({ANNO_BILANCIO}). Il complemento sono le risorse interne: "
+            f"**{_int_tot:,.0f} ktep**. ".replace(",", ".")
+            + f"Rendimento del sistema di trasformazione: **{rendimento * 100:.0f}%**."
+        )
+        st.caption(
+            "Sul solo vettore elettrico i due saldi vanno in direzioni opposte: nel 2024 "
+            "il Friuli-Venezia Giulia ha importato **4.300 GWh** da Slovenia e Austria e "
+            "ne ha **esportati 958** verso le altre regioni italiane. Il saldo netto e' "
+            "di 3.341 GWh in ingresso: la regione dipende dall'estero, non dal resto "
+            "d'Italia, verso cui e' creditrice."
         )
 
         # ---- Sankey del bilancio
         fonti = bil[bil["blocco"].isin(["Import", "Risorse interne"])]
         fonti = fonti[fonti["valore"] > 0]
 
+        # "Energie rinnovabili" fra gli import non e' elettricita' verde comprata
+        # fuori: sono biomasse legnose e biocarburanti liquidi che entrano
+        # fisicamente in regione come merce. L'etichetta generica faceva pensare
+        # a import di energia elettrica rinnovabile.
+        _ETICHETTE_IMPORT = {
+            "Energie rinnovabili": "Biomasse e biocarburanti (da fuori regione)",
+            "Energia elettrica": "Energia elettrica (saldo estero e interregionale)",
+        }
+
+        def _nome_fonte(r):
+            if r.blocco != "Import":
+                return r.voce
+            return f"{_ETICHETTE_IMPORT.get(r.voce, r.voce + ' (import)')}"
+
         nodi_b = (
-            [f"{r.voce} (import)" if r.blocco == "Import" else r.voce
-             for r in fonti.itertuples()]
+            [_nome_fonte(r) for r in fonti.itertuples()]
             + ["Consumo interno lordo", "Trasformazione", "Uso diretto",
                "Perdite di trasformazione", "Vettori derivati",
                "Autoconsumi e perdite di rete", "Consumi finali energetici",
@@ -15480,7 +15534,7 @@ def _scheda_0():
                 sb.append(ib[a]); tb.append(ib[b_]); vb.append(float(val)); cb.append(colore)
 
         for r in fonti.itertuples():
-            nome = f"{r.voce} (import)" if r.blocco == "Import" else r.voce
+            nome = _nome_fonte(r)
             lb(nome, "Consumo interno lordo", r.valore,
                "rgba(239,68,68,0.28)" if r.blocco == "Import" else "rgba(34,197,94,0.35)")
 
@@ -15521,9 +15575,13 @@ def _scheda_0():
     st.subheader(f"Dal combustibile agli usi finali — {anno}")
     rend = st.slider(
         "Rendimento complessivo stimato del parco termoelettrico (elettrico + termico)",
-        0.30, 0.85, 0.52, 0.01,
-        help="Terna pubblica la produzione, non l'energia entrante. Questo parametro "
-             "stima l'input di combustibile e quindi le perdite di conversione.",
+        0.30, 0.85, 0.60, 0.01,
+        help="Terna pubblica la produzione, non l'energia entrante: questo parametro "
+             "stima l'input di combustibile e quindi le perdite. Il parco del FVG e' "
+             "cogenerativo per circa il 90%, quindi il rendimento complessivo "
+             "(elettrico piu' termico) sta tipicamente fra 0,60 e 0,65. Valori "
+             "intorno a 0,50 descrivono il solo rendimento elettrico e, usati qui, "
+             "gonfiano le perdite.",
     )
 
     comb_y = anno_di(prod_comb).set_index("voce")["valore"].to_dict()
@@ -15532,6 +15590,25 @@ def _scheda_0():
 
     el_termo = sum(comb_y.values())
     cal_y = anno_di(calore)["valore"].sum()
+
+    # La ripartizione per categoria deve sommare alla produzione termoelettrica.
+    # L'export Terna "Produzione termoelettrica per categoria" esiste in due
+    # versioni: senza il filtro "Tipo Produzione is Lorda" somma lorda e netta
+    # e restituisce quasi il doppio. Se succede, i flussi del parco risultano
+    # gonfiati e il nodo delle perdite si schiaccia fino a sparire.
+    _somma_cat = sum(cat_y.values())
+    if el_termo and _somma_cat > el_termo * 1.05:
+        _fattore = el_termo / _somma_cat
+        cat_y = {k: v * _fattore for k, v in cat_y.items()}
+        st.warning(
+            f"La serie per categoria somma {_somma_cat:,.0f} GWh contro i "
+            f"{el_termo:,.0f} GWh di produzione termoelettrica: l'export Terna "
+            "e' quello senza il filtro «Tipo Produzione is Lorda» e conta due "
+            "volte gli impianti (lorda piu' netta). I flussi qui sotto sono "
+            "riscalati, ma va rigenerato l'ETL con il file filtrato."
+            .replace(",", ".")
+        )
+
     input_comb = (el_termo + cal_y) / rend if rend else 0
     perdite = max(0.0, input_comb - el_termo - cal_y)
 
@@ -15595,12 +15672,20 @@ def _scheda_0():
     grafico(fig, DOC.F_TERNA)
 
     st.info(
-        f"Input di combustibile stimato: **{input_comb:,.0f} GWh** · "
+        f"Input di combustibile stimato ({anno}): **{input_comb:,.0f} GWh** · "
         f"elettricità termoelettrica **{el_termo:,.0f} GWh** · "
         f"calore utile **{cal_y:,.0f} GWh** · "
-        f"perdite **{perdite:,.0f} GWh**. "
+        f"perdite **{perdite:,.0f} GWh**, pari al "
+        f"**{perdite / input_comb * 100 if input_comb else 0:.0f}%** dell'ingresso. "
         "L'input non è misurato da Terna: dipende dal rendimento impostato sopra."
         .replace(",", ".")
+    )
+    st.caption(
+        "Le perdite riguardano **solo il parco termoelettrico**. Idrico, fotovoltaico "
+        "ed eolico entrano nel diagramma gia' come elettricita': non hanno un "
+        "rendimento di conversione nel senso dell'energia primaria, e il confronto "
+        "diretto fra la loro larghezza e quella del termoelettrico non e' fra "
+        "grandezze omogenee."
     )
 
     consumi_f = D.carica_per("consumi_finali_2021")
