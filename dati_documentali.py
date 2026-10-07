@@ -251,3 +251,5 @@ CONTESTO = {
     "aziende_manifatturiere": 8_300,
     "quota_export_top5": 75,  # % del valore dell'export da siderurgia, meccanica, mezzi di trasporto, ...
 }
+
+F_GSE_PV = "GSE, Solare Fotovoltaico — Rapporto Statistico 2024"

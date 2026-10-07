@@ -13769,6 +13769,7 @@ AUTORE = {
 
 # Etichette di fonte usate sotto i grafici
 F_TERNA = "Terna, Dati Statistici (dati.terna.it)"
+F_GSE_PV = "GSE, Solare Fotovoltaico — Rapporto Statistico 2024"
 F_TERNA_REG = "Terna, Statistiche Regionali 2024"
 F_PER = "Piano Energetico Regionale FVG 2024"
 F_RSE = "RSE, Geoportale ETA (dbeta.rse-web.it) — CC BY-SA 4.0"
@@ -15219,10 +15220,16 @@ def tabella(df, fonte: str, **kwargs) -> None:
     st.caption(f"Fonte: {fonte}.")
 
 
+# Titolo e legenda vivono entrambi nel margine superiore: con t=48 e la
+# legenda a y=1.04 finivano sovrapposti ogni volta che un grafico aveva un
+# titolo. Il margine ora ospita due fasce distinte, il titolo in alto e la
+# legenda sotto. `title_text=""` toglie il nome della colonna ("voce") che
+# Plotly stampa di default davanti alle voci della legenda.
 PLOT = dict(
     template="plotly_white",
-    margin=dict(t=48, b=10, l=10, r=24),
-    legend=dict(orientation="h", yanchor="bottom", y=1.04, x=0),
+    margin=dict(t=78, b=10, l=10, r=24),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, title_text=""),
+    title_y=0.98, title_yanchor="top", title_x=0, title_xanchor="left",
 )
 
 
@@ -16310,6 +16317,33 @@ def _scheda_2():
             st.dataframe(e.round(2), hide_index=True, width="stretch", height=320)
 
 
+# Ripartizione della potenza fotovoltaica regionale. Fonte: GSE, Solare
+# Fotovoltaico - Rapporto Statistico 2024. Terna da' il totale (1.210,8 MW
+# netti nel 2024) ma non lo scompone: la segmentazione esiste solo nei
+# rapporti GSE, che la pubblicano su due assi NON combinabili fra loro.
+PV_SEGMENTI_GSE = {
+    "anno": 2024,
+    "totale_mw": 1211.0,
+    "n_impianti": 75375,
+    "taglia_media_kw": 16,
+    # Asse 1: settore di attivita' dell'utenza allacciata
+    "per_settore_mw": {
+        "Industria": 558.0,
+        "Residenziale": 370.0,
+        "Terziario": 196.0,
+        "Agricoltura": 87.0,
+    },
+    # di cui, dentro l'industria, impianti la cui attivita' prevalente e'
+    # la produzione di energia elettrica: sono di fatto gli utility scale
+    "industria_di_cui_produzione_elettrica_mw": 305.0,
+    # Asse 2: collocazione fisica (quote sulla potenza, non sul numero)
+    "per_collocazione_quota": {
+        "A terra": 0.47,
+        "Su edifici, serre e pensiline": 0.53,
+    },
+}
+
+
 def _scheda_3():
     pv_prov = D.carica_per("pv_province")
     pv_tra = D.carica_per("pv_traiettoria")
@@ -16327,6 +16361,66 @@ def _scheda_3():
         k[2].metric("Ore equivalenti", f"{pv_gwh * 1000 / pv_mw:,.0f} h".replace(",", "."))
     k[3].metric("Quota sulla produzione regionale", f"{pv_gwh / p_tot * 100:.1f}%" if p_tot else "—")
 
+    # ------------------------------------------- composizione del parco
+    st.divider()
+    _g = PV_SEGMENTI_GSE
+    st.markdown(f"**Com'è fatto il parco fotovoltaico — {_g['anno']}**")
+    st.caption(
+        f"{_g['totale_mw']:,.0f} MW su {_g['n_impianti']:,.0f} impianti, "
+        f"taglia media {_g['taglia_media_kw']} kW. Settore e collocazione sono "
+        "due letture diverse dello stesso parco, non due metà da sommare: un "
+        "capannone industriale con il tetto fotovoltaico sta in «Industria» e "
+        "in «Su edifici», un parco a terra di un'azienda agricola sta in "
+        "«Agricoltura» e in «A terra»."
+        .replace(",", ".")
+    )
+
+    s1, s2 = st.columns(2)
+    with s1:
+        _set = pd.DataFrame(
+            sorted(_g["per_settore_mw"].items(), key=lambda kv: -kv[1]),
+            columns=["segmento", "mw"],
+        )
+        _set["quota"] = _set["mw"] / _g["totale_mw"] * 100
+        fig = px.bar(_set, x="mw", y="segmento", orientation="h", text_auto=".0f",
+                     color="segmento",
+                     color_discrete_map={"Industria": "#6B7280", "Residenziale": "#FACC15",
+                                         "Terziario": "#2563EB", "Agricoltura": "#65A30D"})
+        fig.update_layout(height=320, xaxis_title="MW", yaxis_title=None,
+                          showlegend=False, title="Per settore", **PLOT)
+        fig.update_yaxes(categoryorder="total ascending")
+        grafico(fig, DOC.F_GSE_PV)
+    with s2:
+        _col = pd.DataFrame(
+            [{"segmento": k, "mw": v * _g["totale_mw"]}
+             for k, v in _g["per_collocazione_quota"].items()]
+        )
+        fig = px.pie(_col, names="segmento", values="mw", hole=0.55,
+                     color="segmento",
+                     color_discrete_map={"A terra": "#B45309",
+                                         "Su edifici, serre e pensiline": "#FACC15"})
+        fig.update_traces(textinfo="percent+label", textposition="inside")
+        fig.update_layout(height=320, showlegend=False, title="Per collocazione", **PLOT)
+        grafico(fig, DOC.F_GSE_PV)
+
+    _ind = _g["per_settore_mw"]["Industria"]
+    _utility = _g["industria_di_cui_produzione_elettrica_mw"]
+    st.info(
+        f"Dentro i **{_ind:,.0f} MW** dell'industria, **{_utility:,.0f} MW** sono "
+        f"impianti la cui attività prevalente è la produzione di energia elettrica: "
+        f"sono gli utility scale, non tetti di capannoni. I tetti industriali veri "
+        f"valgono quindi circa **{_ind - _utility:,.0f} MW**, poco meno del "
+        f"residenziale.".replace(",", ".")
+    )
+    st.caption(
+        "**Sull'agrivoltaico**: il GSE non ne pubblica la potenza regionale in "
+        "questo rapporto. Gli impianti agrivoltaici ricadono dentro «Agricoltura» "
+        "per settore e, secondo la configurazione, fra «A terra» o «Su serre e "
+        "pensiline». Separarli richiede i registri degli incentivi dedicati "
+        "(DM agrivoltaico e misura PNRR), che non sono in questa app."
+    )
+
+    st.divider()
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Crescita della potenza installata**")
