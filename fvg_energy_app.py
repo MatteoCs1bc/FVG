@@ -15311,7 +15311,13 @@ st.markdown(
 
 p_tot = anno_di(prod_fonte)["valore"].sum()
 p_fer = anno_di(prod_fer)["valore"].sum()
-pot_tot = anno_di(pot_fonte)["valore"].sum()
+_pot_anno = anno_di(pot_fonte)
+# L'accumulo non genera energia, la sposta nel tempo: sommarlo alla potenza
+# di generazione mescola due cose diverse, e soprattutto usa un perimetro
+# diverso da quello della produzione lorda, che l'accumulo lo esclude.
+_e_acc = _pot_anno["voce"].str.contains("ccumulo", na=False)
+pot_acc = _pot_anno[_e_acc]["valore"].sum()
+pot_tot = _pot_anno[~_e_acc]["valore"].sum()
 em_tot = anno_di(emissioni)["valore"].sum()
 cal_tot = anno_di(calore)["valore"].sum()
 pop = POPOLAZIONE.get(anno)
@@ -15341,7 +15347,12 @@ def pagina_kpi():
                      "Le bioenergie sono dentro il termoelettrico: contarle e' cio' che "
                      "distingue questo valore dal rapporto fra sole fonti non termiche.")
     k[2].metric(f"Potenza efficiente {anno}", f"{pot_tot:,.0f} MW".replace(",", "."),
-                help="Potenza efficiente netta di generazione.")
+                f"+ {pot_acc:,.0f} MW di accumulo".replace(",", ".") if pot_acc else None,
+                delta_color="off",
+                help="Potenza efficiente netta di sola generazione. L'accumulo stand "
+                     "alone e' indicato a parte perche' non produce energia: la sposta "
+                     "nel tempo. Sommarlo userebbe un perimetro diverso da quello della "
+                     "produzione lorda qui accanto, che lo esclude.")
     k[3].metric(f"Emissioni CO₂ elettrico {anno}", f"{em_tot:.2f} Mt",
                 help="Comprende la CO₂ biogenica da bioenergie. Negli inventari "
                      "nazionali quella quota e' un memo item e non si somma al fossile.")
@@ -15375,12 +15386,16 @@ def pagina_kpi():
         k2[2].metric(f"Emissioni totali {_em_anno}", f"{_em_tot / 1000:.1f} Mt CO₂eq",
                      f"{DOC.EMISSIONI_QUOTA_NAZIONALE}% del totale italiano",
                      help="Tutti i settori e tutti i gas serra, non solo l'elettrico. Fonte ISPRA.")
-        k2[3].metric(f"di cui settore elettrico {_em_anno}",
-                     f"{_em_el_anno:.2f} Mt CO₂",
-                     f"{_em_el_anno / (_em_tot / 1000) * 100:.0f}% del totale" if _em_tot else None,
-                     help=f"Emissioni elettriche del {_em_anno}, lo stesso anno del totale "
-                          f"regionale accanto. Nell'anno selezionato ({anno}) valgono "
-                          f"{em_tot:.2f} Mt.")
+        _var_el = (em_tot / _em_el_anno - 1) * 100 if _em_el_anno else 0
+        k2[3].metric(f"Settore elettrico {_em_anno}→{anno}",
+                     f"{_var_el:+.0f}%",
+                     f"da {_em_el_anno:.2f} a {em_tot:.2f} Mt CO₂",
+                     delta_color="off",
+                     help=f"Nel {_em_anno} il settore elettrico pesava per il "
+                          f"{_em_el_anno / (_em_tot / 1000) * 100:.0f}% delle emissioni "
+                          f"regionali totali. Il confronto con l'anno selezionato e' "
+                          f"sul solo settore elettrico, l'unico per cui esiste una serie "
+                          f"annuale: il totale regionale si ferma al {_em_anno}.")
         k2[4].metric("Neutralità carbonica", DOC.TARGET_FVGREEN["anno_neutralita"],
                      DOC.TARGET_FVGREEN["riferimento"].split("(")[0].strip())
     if pop:
