@@ -55,6 +55,95 @@ def tabella(df, fonte: str, **kwargs) -> None:
     st.caption(f"Fonte: {fonte}.")
 
 
+# ------------------------------------------------- rete elettrica su mappa
+# Linee e stazioni vengono da OpenStreetMap (estrazione Overpass, novembre
+# 2026), ritagliate sui confini regionali. Le linee servono come sfondo a piu'
+# mappe dell'app: si disegnano una volta per classe di tensione, con None fra
+# un tratto e l'altro, cosi' Plotly le tratta come un'unica traccia.
+F_OSM = "OpenStreetMap, © contributori OSM (licenza ODbL), estrazione novembre 2026"
+COLORI_KV = {"380 kV": "#DC2626", "220 kV": "#16A34A", "132 kV": "#2563EB", "60 kV": "#A855F7"}
+SPESSORE_KV = {"380 kV": 3.2, "220 kV": 2.6, "132 kV": 1.4, "60 kV": 1.2}
+COLORI_STAZIONI = {
+    "Stazione Terna": "#DC2626",
+    "Cabina primaria": "#2563EB",
+    "Utente AT (industria)": "#4B5563",
+    "Stazione di centrale": "#F97316",
+    "Sottostazione ferroviaria": "#A855F7",
+}
+DIM_STAZIONI = {"Stazione Terna": 16, "Cabina primaria": 10, "Utente AT (industria)": 8,
+                "Stazione di centrale": 8, "Sottostazione ferroviaria": 7}
+
+
+@st.cache_data(show_spinner=False)
+def _linee_per_classe() -> dict:
+    g = D.carica_geojson("rete_linee")
+    out: dict = {}
+    if g is None:
+        return out
+    for f in g["features"]:
+        c = f["properties"]["classe"]
+        tr = out.setdefault(c, {"lon": [], "lat": [], "km": 0.0, "tratti": 0})
+        for x, y in f["geometry"]["coordinates"]:
+            tr["lon"].append(x)
+            tr["lat"].append(y)
+        tr["lon"].append(None)
+        tr["lat"].append(None)
+        tr["km"] += f["properties"].get("km_fvg") or 0.0
+        tr["tratti"] += 1
+    return out
+
+
+def strati_rete(fig, classi=("380 kV", "220 kV", "132 kV"), sotto=True,
+                legenda=True, opacita=0.8):
+    """Aggiunge le linee AT/AAT a una mappa Plotly, di norma sotto gli altri strati."""
+    linee = _linee_per_classe()
+    nuovi = [go.Scattermap(lon=linee[c]["lon"], lat=linee[c]["lat"], mode="lines",
+                           line=dict(width=SPESSORE_KV[c], color=COLORI_KV[c]),
+                           opacity=opacita, name=f"Linee {c}", hoverinfo="skip",
+                           showlegend=legenda)
+             for c in classi if c in linee]
+    if not nuovi:
+        return fig
+    fig.add_traces(nuovi)
+    if sotto:
+        n = len(nuovi)
+        fig.data = fig.data[-n:] + fig.data[:-n]
+    return fig
+
+
+def _etichetta_stazione(r) -> str:
+    righe = [f"<b>{r['nome']}</b>", f"{r['tipo']}, {r['kv']:.0f} kV"]
+    for campo in ("comune", "operatore"):
+        v = r.get(campo)
+        if isinstance(v, str) and v:
+            righe.append(v)
+    if r.get("sezioni_invertite", 0):
+        righe.append(f"{int(r['sezioni_invertite'])} sezioni con flusso invertito nel 2025")
+    return "<br>".join(righe)
+
+
+def strati_stazioni(fig, staz: pd.DataFrame, tipi, legenda=True):
+    for tipo in tipi:
+        d = staz[staz["tipo"] == tipo]
+        if d.empty:
+            continue
+        fig.add_trace(go.Scattermap(
+            lon=d["lon"], lat=d["lat"], mode="markers",
+            marker=dict(size=DIM_STAZIONI.get(tipo, 8), color=COLORI_STAZIONI.get(tipo, "#6B7280"),
+                        opacity=0.95),
+            name=f"{tipo} ({len(d)})", showlegend=legenda,
+            text=d.apply(_etichetta_stazione, axis=1),
+            hovertemplate="%{text}<extra></extra>"))
+    return fig
+
+
+def _haversine_km(lat1, lon1, lat2, lon2):
+    lat1, lon1, lat2, lon2 = (np.radians(np.asarray(v, dtype=float)) for v in (lat1, lon1, lat2, lon2))
+    a = (np.sin((lat2 - lat1) / 2) ** 2
+         + np.cos(lat1) * np.cos(lat2) * np.sin((lon2 - lon1) / 2) ** 2)
+    return 6371.0 * 2 * np.arcsin(np.sqrt(a))
+
+
 # Titolo e legenda vivono entrambi nel margine superiore: con t=48 e la
 # legenda a y=1.04 finivano sovrapposti ogni volta che un grafico aveva un
 # titolo. Il margine ora ospita due fasce distinte, il titolo in alto e la
@@ -766,6 +855,121 @@ def _scheda_2():
         fig.update_layout(height=330, **PLOT)
         grafico(fig, DOC.F_AUDIZIONI)
 
+    # ------------------------------------------------- la rete sulla mappa
+    staz = D.carica_per("stazioni_rete")
+    linee_kv = _linee_per_classe()
+    if not staz.empty and linee_kv:
+        st.divider()
+        st.subheader("La rete sul territorio: linee, stazioni e cabine primarie")
+        st.caption(
+            "Tracciati delle linee ad alta e altissima tensione e impianti di "
+            "trasformazione, da OpenStreetMap, ritagliati sui confini regionali. "
+            "Le linee sono quelle aeree e in cavo mappate: la rete di trasmissione "
+            "è quasi completa, quella di distribuzione in media tensione no, e per "
+            "questo non è disegnata."
+        )
+        cp = staz[staz["tipo"] == "Cabina primaria"]
+        n_edist = int(cp["operatore"].fillna("").str.contains("istribuzione").sum())
+        k = st.columns(5)
+        for i, c in enumerate(["380 kV", "220 kV", "132 kV"]):
+            if c in linee_kv:
+                k[i].metric(f"Linee {c}", f"{linee_kv[c]['km']:,.0f} km".replace(",", "."),
+                            help="Lunghezza dei tracciati dentro i confini regionali. Una "
+                                 "palificazione a doppia terna conta una volta.")
+        k[3].metric("Stazioni Terna", int((staz["tipo"] == "Stazione Terna").sum()),
+                    "nodi a 220-380 kV", delta_color="off")
+        k[4].metric("Cabine primarie", len(cp),
+                    f"{n_edist} e-distribuzione, {len(cp) - n_edist} AcegasApsAmga",
+                    delta_color="off",
+                    help=f"e-distribuzione dichiara {DOC.RETE_CONSISTENZA['Impianti primari'][0]} "
+                         "impianti primari al 31/12/2025.")
+
+        tutti_strati = ([f"Linee {c}" for c in COLORI_KV if c in linee_kv]
+                        + list(COLORI_STAZIONI))
+        scelti = st.multiselect(
+            "Strati sulla mappa", tutti_strati,
+            default=[s for s in tutti_strati if s not in ("Linee 60 kV", "Sottostazione ferroviaria")],
+            key="strati_rete")
+
+        fig = go.Figure()
+        strati_rete(fig, classi=[c for c in COLORI_KV if f"Linee {c}" in scelti], sotto=False)
+        strati_stazioni(fig, staz, [t for t in COLORI_STAZIONI if t in scelti])
+        fig.update_layout(
+            map=dict(style="carto-positron", zoom=7.3, center=dict(lat=46.12, lon=13.05)),
+            height=640, margin=dict(t=10, b=10, l=0, r=0),
+            legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title_text=""))
+        grafico(fig, F_OSM, "Le linee a 60 kV sono quasi tutte della rete ferroviaria.")
+
+        r1, r2 = st.columns([1, 1.2])
+        with r1:
+            per_tipo = staz["tipo"].value_counts().rename_axis("Tipo").reset_index(name="Impianti")
+            fig = px.bar(per_tipo.sort_values("Impianti"), x="Impianti", y="Tipo",
+                         orientation="h", text_auto=True, color="Tipo",
+                         color_discrete_map=COLORI_STAZIONI)
+            fig.update_layout(showlegend=False, height=300, yaxis_title=None,
+                              title="Gli impianti di trasformazione in AT", **PLOT)
+            grafico(fig, F_OSM)
+        with r2:
+            ind = staz[staz["tipo"] == "Utente AT (industria)"]
+            st.markdown(
+                f"""
+**Cinque nodi reggono tutto.** La rete a 380 kV tocca il Friuli in cinque stazioni
+Terna — {", ".join(sorted(staz[staz["tipo"] == "Stazione Terna"]["nome"]))} — ed è
+da lì che l'energia scende a 132 kV verso le {len(cp)} cabine primarie, che a loro
+volta alimentano la media tensione.
+
+**Gli utenti allacciati direttamente in alta tensione sono {len(ind)}**: acciaierie,
+cartiere, cementifici, chimica. Sono i grandi carichi industriali che fanno della
+regione un territorio dove l'industria assorbe il
+{DOC.CONSUMI_ELETTRICI_SETTORE['Industria'] / DOC.CONSUMI_ELETTRICI_TOTALE * 100:.0f}%
+dei consumi elettrici, e sono anche i candidati naturali per accumuli e
+contratti di lungo periodo con le rinnovabili.
+                """
+            )
+
+        with st.expander(f"Elenco degli impianti — {len(staz)}"):
+            tb = staz[["nome", "tipo", "kv", "operatore", "comune", "codice_terna",
+                       "sezioni_invertite"]].copy()
+            tb.columns = ["Impianto", "Tipo", "kV", "Operatore", "Comune", "Codice Terna",
+                          "Sezioni invertite 2025"]
+            st.dataframe(tb.sort_values(["Tipo", "Impianto"]), hide_index=True,
+                         width="stretch", height=360)
+            st.caption(f"Fonte: {F_OSM}. Impianti vicini dello stesso tipo uniti in uno.")
+
+    sec = D.carica_per("cabine_secondarie_comuni")
+    geo_com = D.carica_geojson("comuni_fvg")
+    if not sec.empty and geo_com is not None:
+        st.subheader("Le cabine secondarie, comune per comune")
+        dich = DOC.RETE_CONSISTENZA["Cabine secondarie"][0]
+        tot_sec = int(sec["cabine_secondarie"].sum())
+        s1, s2, s3 = st.columns(3)
+        s1.metric("Cabine secondarie mappate", f"{tot_sec:,}".replace(",", "."))
+        s2.metric("Dichiarate da e-distribuzione", f"{dich:,}".replace(",", "."),
+                  f"mappate il {tot_sec / dich * 100:.0f}%", delta_color="off")
+        s3.metric("Densità mediana", f"{sec['per_km2'].median():.1f} per km²")
+
+        vista = st.radio("Cosa mostrare", ["Per km²", "Numero"], horizontal=True,
+                         key="vista_secondarie")
+        col = "per_km2" if vista == "Per km²" else "cabine_secondarie"
+        fig = px.choropleth_map(
+            sec, geojson=geo_com, locations="comune", color=col,
+            color_continuous_scale="Blues", map_style="carto-positron", zoom=7.2,
+            center={"lat": 46.11, "lon": 13.10}, opacity=0.75, hover_name="comune",
+            hover_data={"cabine_secondarie": True, "per_km2": ":.2f", "km2": ":.0f",
+                        "comune": False},
+            labels={"cabine_secondarie": "cabine", "per_km2": "per km²", "km2": "km²"})
+        fig.update_layout(height=520, margin=dict(t=10, b=10, l=0, r=0))
+        strati_rete(fig, classi=("380 kV", "220 kV", "132 kV"), sotto=False, opacita=0.5)
+        grafico(fig, F_OSM)
+        st.caption(
+            "Le cabine secondarie mappate vengono per lo più dalla Carta tecnica "
+            "regionale, che le registra come edifici. Mancano quindi le cabine su palo e "
+            "quelle dentro altri fabbricati: è il motivo principale della distanza dal "
+            "totale dichiarato dal distributore. La distribuzione territoriale resta "
+            "comunque leggibile: la densità segue gli abitati e le zone produttive, non "
+            "la superficie."
+        )
+
     st.subheader("Dove la rete è già satura")
     st.caption(
         "Un'area è **rossa** quando la potenza in immissione richiesta supera il 90% "
@@ -861,8 +1065,9 @@ def _scheda_2():
         grafico(fig, DOC.F_AUDIZIONI)
         st.caption(
             f"{b['Impianti autorizzati o in istruttoria']} impianti tra autorizzati e in "
-            "istruttoria. Le richieste valgono quasi cinque volte il fabbisogno stimato dal "
-            "piano: è il segnale di una corsa a prenotare capacità più che di un bisogno reale."
+            "istruttoria. Le richieste valgono quasi sette volte il fabbisogno stimato dal "
+            "piano: è il segnale di una corsa a prenotare capacità più che di un bisogno "
+            "reale. Il dettaglio pratica per pratica è più sotto."
         )
 
     with c2:
@@ -934,18 +1139,26 @@ def _scheda_2():
 
         colori_gestore = {"e-distribuzione": "#2563EB", "AcegasApsAmga": "#F97316",
                           "SECAB": "#22C55E"}
+        if "cabina" not in aree.columns:
+            aree["cabina"] = aree["codice"]
         fig = px.choropleth_map(
             aree, geojson=geo_cp, locations="codice", color="gestore",
             color_discrete_map=colori_gestore,
-            hover_name="codice",
-            hover_data={"gestore": True, "area_km2": ":.0f", "codice": False},
+            hover_name="cabina",
+            hover_data={"gestore": True, "area_km2": ":.0f", "codice": True},
             map_style="carto-positron", zoom=7.2,
-            center={"lat": 46.11, "lon": 13.10}, opacity=0.55,
+            center={"lat": 46.11, "lon": 13.10}, opacity=0.45,
+            labels={"codice": "codice area", "area_km2": "km²"},
         )
+        _staz = D.carica_per("stazioni_rete")
+        if not _staz.empty:
+            strati_stazioni(fig, _staz, ["Cabina primaria"])
         fig.update_layout(height=560, margin=dict(t=10, b=10, l=0, r=0),
                           legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0,
                                       title=None))
-        grafico(fig, DOC.F_REGIONE)
+        grafico(fig, DOC.F_REGIONE + "; cabine primarie da " + F_OSM,
+                "Ogni area porta il nome della cabina primaria che contiene. Dove la "
+                "cabina sta fuori dal poligono, il nome è quello della cabina più vicina.")
 
         c1, c2 = st.columns([1, 1])
         with c1:
@@ -970,7 +1183,7 @@ def _scheda_2():
         piu_grande = aree.loc[aree["area_km2"].idxmax()]
         st.info(
             f"Le aree sono **{len(aree)}** e coprono {aree['area_km2'].sum():,.0f} km². ".replace(",", ".")
-            + f"Le dimensioni sono molto diseguali: la più estesa ({piu_grande['codice']}, "
+            + f"Le dimensioni sono molto diseguali: la più estesa ({piu_grande['cabina']}, "
             f"{piu_grande['area_km2']:,.0f} km²) vale quanto decine di aree urbane. ".replace(",", ".")
             + f"**{fuori}** sono a cavallo del confine regionale, cioè fanno capo a cabine "
             "che servono anche territorio fuori dal FVG. "
@@ -981,7 +1194,8 @@ def _scheda_2():
 
         with st.expander("Elenco delle aree"):
             st.dataframe(
-                aree.rename(columns={"codice": "Codice", "gestore": "Gestore",
+                aree.rename(columns={"codice": "Codice", "cabina": "Cabina primaria",
+                                     "gestore": "Gestore",
                                      "area_km2": "km²", "fuori_regione": "A cavallo del confine"})
                 .sort_values("km²", ascending=False),
                 hide_index=True, width="stretch", height=300,
@@ -1007,6 +1221,30 @@ def _scheda_2():
         i[1].metric("Cabine primarie coinvolte", inv["cabina"].nunique())
         i[2].metric("Sezioni oltre il 5% del tempo", int(inv["oltre_5_pct"].sum()))
         i[3].metric("Province interessate", inv["provincia"].nunique())
+
+        if {"lat", "lon"}.issubset(inv.columns) and inv["lat"].notna().any():
+            mi = (inv.dropna(subset=["lat"])
+                  .groupby(["cabina", "provincia", "lat", "lon"])
+                  .agg(sezioni=("sezione", "count"), oltre5=("oltre_5_pct", "sum"))
+                  .reset_index())
+            mi["frequenza"] = np.where(mi["oltre5"] > 0, "Oltre il 5% delle ore",
+                                       "Fra l'1% e il 5% delle ore")
+            fig = px.scatter_map(
+                mi, lat="lat", lon="lon", size="sezioni", color="frequenza",
+                hover_name="cabina",
+                hover_data={"provincia": True, "sezioni": True, "oltre5": True,
+                            "lat": False, "lon": False, "frequenza": False},
+                labels={"sezioni": "sezioni invertite", "oltre5": "di cui oltre il 5%"},
+                size_max=26, zoom=7.2, center={"lat": 46.12, "lon": 13.05},
+                map_style="carto-positron",
+                color_discrete_map={"Oltre il 5% delle ore": "#EF4444",
+                                    "Fra l'1% e il 5% delle ore": "#FACC15"})
+            strati_rete(fig, classi=("380 kV", "220 kV", "132 kV"), opacita=0.45)
+            fig.update_layout(height=520, margin=dict(t=10, b=10, l=0, r=0),
+                              legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0,
+                                          title=None))
+            grafico(fig, DOC.F_AUDIZIONI + "; posizione delle cabine da " + F_OSM,
+                    "Le cabine sono nella loro posizione reale, non nel centro del comune.")
 
         c1, c2 = st.columns(2)
         with c1:
@@ -1085,7 +1323,7 @@ def _scheda_2():
             sat, geojson=geo_cp2, locations="codice", color=col_sat,
             color_continuous_scale="Reds", map_style="carto-positron", zoom=7.2,
             center={"lat": 46.05, "lon": 13.10}, opacity=0.72,
-            hover_name="codice",
+            hover_name="cabina" if "cabina" in sat.columns else "codice",
             hover_data={"gestore": True, "progetti": True, "mw_richiesti": ":.0f",
                         "mw_per_km2": ":.2f", "area_km2": ":.0f", "codice": False},
             labels={"mw_richiesti": "MW richiesti", "mw_per_km2": "MW per km²"})
@@ -1101,9 +1339,14 @@ def _scheda_2():
             comp = comp[comp["MW"] > 0]
             top = sat.nlargest(10, "mw_richiesti")["codice"]
             # il codice AC001E01592 non dice nulla: lo affianco alla provincia
-            etichette = sat.set_index("codice")["gestore"].to_dict()
-            comp["area"] = comp["codice"].map(
-                lambda c: f"{c[-5:]} · {etichette.get(c, '')[:14]}")
+            if "cabina" in sat.columns:
+                etichette = sat.set_index("codice")["cabina"].to_dict()
+                comp["area"] = comp["codice"].map(
+                    lambda c: str(etichette.get(c, c)).replace(" (più vicina)", "")[:26])
+            else:
+                etichette = sat.set_index("codice")["gestore"].to_dict()
+                comp["area"] = comp["codice"].map(
+                    lambda c: f"{c[-5:]} · {etichette.get(c, '')[:14]}")
             fig = px.bar(comp[comp["codice"].isin(top)], x="MW", y="area",
                          color="Tecnologia", orientation="h",
                          color_discrete_map={"Solare": "#FACC15", "Accumuli": "#A855F7",
@@ -1147,9 +1390,207 @@ def _scheda_2():
 
         with st.expander("Elenco delle aree per pressione"):
             e = sat[sat["mw_richiesti"] > 0].sort_values("mw_richiesti", ascending=False)
-            e = e[["codice", "gestore", "area_km2", "progetti", "mw_richiesti", "mw_per_km2"]]
-            e.columns = ["Codice", "Gestore", "km²", "Progetti", "MW richiesti", "MW/km²"]
+            if "cabina" not in e.columns:
+                e["cabina"] = ""
+            e = e[["cabina", "codice", "gestore", "area_km2", "progetti", "mw_richiesti",
+                   "mw_per_km2"]]
+            e.columns = ["Cabina primaria", "Codice", "Gestore", "km²", "Progetti",
+                         "MW richiesti", "MW/km²"]
             st.dataframe(e.round(2), hide_index=True, width="stretch", height=320)
+
+    # --------------------------------------------- accumuli, pratica per pratica
+    st.divider()
+    st.subheader("Gli accumuli in coda: il catasto, pratica per pratica")
+
+    bp = pd.DataFrame(BESS_PRATICHE)
+    attive = bp[bp["escluso"] == ""]
+    tot_mw = attive["mw_conteggiato"].sum()
+    aud = BESS_AUDIZIONI_2026
+    rifb = BESS_RIFERIMENTO
+
+    q = st.columns(4)
+    q[0].metric("Pratiche in catasto", len(bp),
+                f"{len(attive)} conteggiate, {len(bp) - len(attive)} escluse")
+    q[1].metric("Potenza richiesta", f"{tot_mw:,.0f} MW".replace(",", "."),
+                f"{(tot_mw / aud['mw'] - 1) * 100:+.0f}% su {aud['mw']:,.0f} MW di {aud['data']}"
+                .replace(",", "."), delta_color="off")
+    q[2].metric("Rispetto al fabbisogno", f"{tot_mw / BESS['Fabbisogno stimato dal piano (MW)']:.1f}×",
+                f"il piano ne stima {BESS['Fabbisogno stimato dal piano (MW)']} MW", delta_color="off")
+    q[3].metric("Superficie impegnata", f"{attive['sup_ha'].sum():.0f} ha",
+                f"{tot_mw / attive['sup_ha'].sum():.0f} MW per ettaro", delta_color="off")
+
+    st.info(
+        f"**Il dato cambia di {(tot_mw - aud['mw']) / aud['mw'] * 100:.0f}% rispetto a quello "
+        f"delle audizioni.** In Commissione, ad aprile 2026, si parlava di {aud['pratiche']} "
+        f"impianti per {aud['mw']:,.0f} MW; il catasto regionale di ottobre ne conta "
+        f"{len(bp)} per {tot_mw:,.0f} MW al netto delle esclusioni. Parte della differenza è "
+        "crescita reale in sei mesi, parte è perimetro: il catasto raccoglie anche le "
+        "pratiche appena depositate. In ogni caso le richieste valgono ormai quasi sette "
+        f"volte i {BESS['Fabbisogno stimato dal piano (MW)']} MW che il piano stima necessari."
+        .replace(",", ".")
+    )
+
+    # ------------------------------------------------- dove sono
+    mb = bp.copy()
+    mb["size"] = mb["mw_conteggiato"].clip(lower=6.0)
+    mb["conteggio"] = mb["escluso"].apply(lambda e: "Esclusa dal totale" if e else "Conteggiata")
+    fig = px.scatter_map(
+        mb, lat="lat", lon="lon", size="size", color="conteggio", hover_name="nome",
+        hover_data={"zona": True, "mw": ":.1f", "stato": True, "km_aat": ":.2f",
+                    "escluso": True, "lat": False, "lon": False, "size": False,
+                    "conteggio": False},
+        size_max=42, zoom=7.2, center={"lat": 45.97, "lon": 13.25},
+        map_style="carto-positron",
+        color_discrete_map={"Conteggiata": "#A855F7", "Esclusa dal totale": "#D1D5DB"},
+        labels={"km_aat": "km dalla rete ≥220 kV", "mw": "MW dichiarati"})
+    _staz_b = D.carica_per("stazioni_rete")
+    strati_rete(fig, classi=("380 kV", "220 kV"), opacita=0.7)
+    if not _staz_b.empty:
+        strati_stazioni(fig, _staz_b, ["Stazione Terna"])
+    fig.update_layout(height=500, margin=dict(t=10, b=10, l=0, r=0),
+                      legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0, title=None))
+    grafico(fig, F_BESS + "; rete e stazioni da " + F_OSM,
+            "Punto al centro dei poligoni della pratica, non il perimetro dell'impianto.")
+
+    if not _staz_b.empty:
+        _ter = _staz_b[_staz_b["tipo"] == "Stazione Terna"].reset_index(drop=True)
+        _d = np.array([_haversine_km(bp["lat"], bp["lon"], t.lat, t.lon)
+                       for t in _ter.itertuples()]).T
+        bp["km_stazione"] = _d.min(axis=1)
+        bp["stazione"] = _ter["nome"].values[_d.argmin(axis=1)]
+        _att = bp[bp["escluso"] == ""]
+        _vic = _att[_att["km_stazione"] <= 3]
+        n1, n2, n3 = st.columns(3)
+        n1.metric("Distanza mediana dalla stazione Terna più vicina",
+                  f"{bp['km_stazione'].median():.2f} km")
+        n2.metric("Potenza entro 3 km da una stazione",
+                  f"{_vic['mw_conteggiato'].sum():,.0f} MW".replace(",", "."),
+                  f"{_vic['mw_conteggiato'].sum() / _att['mw_conteggiato'].sum() * 100:.0f}% "
+                  "del totale", delta_color="off")
+        _per_st = (_att.groupby("stazione")["mw_conteggiato"].sum()
+                   .sort_values(ascending=False))
+        n3.metric("Stazione più richiesta", _per_st.index[0],
+                  f"{_per_st.iloc[0]:,.0f} MW in coda".replace(",", "."), delta_color="off")
+        st.caption(
+            "Distanza in linea d'aria dal centro della pratica alla stazione 380 kV più "
+            f"vicina. Quattro delle {len(_ter)} stazioni Terna della regione raccolgono "
+            "quasi tutta la coda degli accumuli."
+        )
+
+    # ------------------------------------------------- concentrazione
+    st.markdown("**Tre zone si prendono quasi tutto**")
+    zone = (attive.groupby("zona")
+            .agg(pratiche=("fascicolo", "size"), mw=("mw_conteggiato", "sum"),
+                 ha=("sup_ha", "sum"))
+            .reset_index().sort_values("mw", ascending=False))
+    zone["quota"] = zone["mw"] / tot_mw * 100
+    prime3 = zone.head(3)
+
+    z1, z2 = st.columns([1.25, 1])
+    with z1:
+        fig = px.bar(zone.sort_values("mw"), x="mw", y="zona", orientation="h",
+                     text_auto=".0f", color="mw", color_continuous_scale="Purples")
+        fig.update_layout(height=340, yaxis_title=None, xaxis_title="MW richiesti",
+                          coloraxis_showscale=False, title="Per zona", **PLOT)
+        grafico(fig, F_BESS)
+    with z2:
+        tz = prime3[["zona", "pratiche", "mw", "quota"]].copy()
+        tz.columns = ["Zona", "Pratiche", "MW", "% del totale"]
+        st.dataframe(tz.round(1), hide_index=True, width="stretch")
+        st.markdown(
+            f"""
+Le prime tre zone valgono **{prime3['mw'].sum():,.0f} MW**, il
+**{prime3['mw'].sum() / tot_mw * 100:.0f}%** di tutte le richieste regionali, su
+{prime3['pratiche'].sum()} pratiche delle {len(attive)} conteggiate.
+
+Non è una coincidenza geografica: sono i tre punti dove la rete di trasmissione
+ha un nodo. Santa Maria la Longa ospita la stazione di Udine Sud, e quel comune
+ha già dichiarato di considerarsi saturo di fotovoltaico.
+            """.replace(",", ".")
+        )
+
+    # ------------------------------------------------- vicinanza alla rete
+    st.markdown("**Gli accumuli si incollano alla rete di trasmissione**")
+    med_at = bp["km_at"].median()
+    med_aat = bp["km_aat"].median()
+    w = bp["mw_conteggiato"]
+    pond = float((bp["km_aat"] * w).sum() / w.sum()) if w.sum() else 0.0
+
+    v1, v2, v3 = st.columns(3)
+    v1.metric("Distanza mediana da una linea ≥132 kV", f"{med_at:.2f} km",
+              f"punto qualsiasi della pianura: {rifb['km_at_mediana']:.2f} km", delta_color="off")
+    v2.metric("Distanza mediana da una linea ≥220 kV", f"{med_aat:.2f} km",
+              f"punto qualsiasi della pianura: {rifb['km_aat_mediana']:.2f} km", delta_color="off")
+    v3.metric("Ponderata sulla potenza", f"{pond:.2f} km",
+              f"{int((bp['km_aat'] <= 2).sum())} pratiche su {len(bp)} entro 2 km",
+              delta_color="off")
+
+    cfr = pd.DataFrame([
+        {"gruppo": "Accumuli in progetto", "livello": "Rete ≥132 kV", "km": med_at},
+        {"gruppo": "Pianura, punto a caso", "livello": "Rete ≥132 kV", "km": rifb["km_at_mediana"]},
+        {"gruppo": "Accumuli in progetto", "livello": "Rete ≥220 kV", "km": med_aat},
+        {"gruppo": "Pianura, punto a caso", "livello": "Rete ≥220 kV", "km": rifb["km_aat_mediana"]},
+    ])
+    w1, w2 = st.columns([1, 1])
+    with w1:
+        fig = px.bar(cfr, x="km", y="livello", color="gruppo", orientation="h",
+                     barmode="group", text_auto=".2f",
+                     color_discrete_map={"Accumuli in progetto": "#A855F7",
+                                         "Pianura, punto a caso": "#9CA3AF"})
+        fig.update_layout(height=260, yaxis_title=None, xaxis_title="km, distanza mediana",
+                          title="Vicinanza alla rete", **PLOT)
+        grafico(fig, F_BESS + "; rete da OpenInfraMap")
+    with w2:
+        st.markdown(
+            f"""
+Un accumulo senza connessione non serve a niente, quindi la vicinanza alla rete è
+una scelta razionale, non un abuso. Ma il numero dice quanto quella scelta sia
+stretta: **{med_aat:.2f} km mediani dalla dorsale ad altissima tensione, contro
+{rifb['km_aat_mediana']:.2f} km** di un punto qualsiasi della pianura. Pesando sui
+MW si scende a {pond:.2f} km.
+
+È un rapporto molto più forte di quello che si osserva per i progetti
+fotovoltaici contestati, dove il fattore è circa 1,6. Gli accumuli non si
+distribuiscono sul territorio: si impilano sui nodi.
+
+Il risvolto è che il carico territoriale non è negoziabile per via tecnica. O si
+compensano i comuni che ospitano i nodi, o il conflitto resta.
+            """
+        )
+
+    # ------------------------------------------------- le due esclusioni
+    st.markdown("**Due pratiche non entrano nel totale**")
+    e1, e2 = st.columns(2)
+    auk = bp[bp["nome"].str.contains("Aukera")].iloc[0]
+    with e1:
+        st.warning(
+            f"**{auk['nome']} — {auk['mw']:,.0f} MW dichiarati su {auk['sup_ha']:.2f} ha.** "
+            f"Sono {auk['mw'] / auk['sup_ha']:.0f} MW per ettaro: "
+            f"{auk['mw'] / auk['sup_ha'] / (attive['mw_conteggiato'].sum() / attive['sup_ha'].sum()):.0f} "
+            f"volte la densità media delle altre pratiche "
+            f"({attive['mw_conteggiato'].sum() / attive['sup_ha'].sum():.0f} MW/ha) e un ordine "
+            "di grandezza oltre qualsiasi tecnologia esistente. "
+            "Lo schema suggerisce una virgola fuori posto: con 137,75 MW la densità "
+            "tornerebbe nella norma. Finché il dato non è verificato all'origine, "
+            "la pratica resta visibile ma fuori dal totale.".replace(",", ".")
+        )
+    with e2:
+        st.warning(
+            "**Basiliano Uno, pratica 2560 — 75 MW.** Insiste sullo stesso identico "
+            "poligono della pratica 2559 dello stesso proponente, che ne dichiara 78. "
+            "Due progetti sovrapposti sulla stessa area sono quasi sempre alternative "
+            "presentate in parallelo, non impianti da sommare. Nel totale resta la 2559, "
+            "quella di taglia maggiore."
+        )
+
+    with st.expander(f"Il censimento completo — {len(bp)} pratiche"):
+        tb = bp[["fascicolo", "nome", "zona", "mw", "mw_conteggiato", "sup_ha",
+                 "stato", "km_aat", "escluso"]].copy()
+        tb.columns = ["Fascicolo", "Pratica", "Zona", "MW dichiarati", "MW conteggiati",
+                      "ha", "Stato", "km da rete ≥220 kV", "Nota"]
+        st.dataframe(tb.round(2), hide_index=True, width="stretch", height=460)
+        st.caption(f"Fonte: {F_BESS}.")
+
 
 
 # Ripartizione della potenza fotovoltaica regionale. Fonte: GSE, Solare
@@ -1599,10 +2040,51 @@ def _scheda_3():
                 map_style="carto-positron",
                 color_discrete_map={"Fotovoltaico": "#FACC15", "Agrivoltaico": "#65A30D"},
                 labels={"potenza_mw": "MW", "superficie_ha": "ha"})
-            fig.update_layout(height=520, margin=dict(t=10, b=10, l=0, r=0),
+            fv_osm = D.carica_per("fv_terra_osm")
+            if not fv_osm.empty:
+                _mw = fv_osm["mw_dichiarati"].fillna(fv_osm["mw_stimati"])
+                fig.add_trace(go.Scattermap(
+                    lon=fv_osm["lon"], lat=fv_osm["lat"], mode="markers",
+                    marker=dict(size=(fv_osm["ha"].clip(lower=1) ** 0.5 * 3.2).clip(upper=26),
+                                color="#7C2D12", opacity=0.75),
+                    name=f"Già costruiti a terra ({len(fv_osm)})",
+                    text=[f"<b>{n if isinstance(n, str) else 'Impianto a terra'}</b><br>"
+                          f"{c if isinstance(c, str) else ''}<br>{h:.1f} ha, circa {m:.1f} MW"
+                          for n, c, h, m in zip(fv_osm["nome"], fv_osm["comune"],
+                                                fv_osm["ha"], _mw)],
+                    hovertemplate="%{text}<extra></extra>"))
+            strati_rete(fig, classi=("380 kV", "220 kV", "132 kV"), opacita=0.4,
+                        legenda=False)
+            fig.update_layout(height=560, margin=dict(t=10, b=10, l=0, r=0),
                               legend=dict(orientation="h", yanchor="bottom", y=1.01, x=0,
                                           title=None))
-            grafico(fig, DOC.F_AUDIZIONI)
+            grafico(fig, DOC.F_AUDIZIONI + "; impianti esistenti e rete da " + F_OSM,
+                    "In marrone gli impianti a terra già costruiti, mappati su OpenStreetMap; "
+                    "in giallo e verde i progetti in procedimento.")
+
+            if not fv_osm.empty:
+                _a_terra = PV_SEGMENTI_GSE["totale_mw"] * PV_SEGMENTI_GSE["per_collocazione_quota"]["A terra"]
+                _mw_osm = float(_mw.sum())
+                o1, o2, o3 = st.columns(3)
+                o1.metric("Parchi a terra mappati", len(fv_osm),
+                          f"{fv_osm['ha'].sum():,.0f} ha".replace(",", "."), delta_color="off")
+                o2.metric("Potenza stimata", f"{_mw_osm:,.0f} MW".replace(",", "."),
+                          f"il GSE ne conta circa {_a_terra:,.0f} a terra".replace(",", "."),
+                          delta_color="off",
+                          help=f"Potenza dichiarata dove c'è, altrimenti superficie divisa "
+                               f"per {DOC.PV_ETTARI_PER_MWP} ha/MW.")
+                o3.metric("In pipeline, per confronto",
+                          f"{attivi['superficie_ha'].sum():,.0f} ha".replace(",", "."),
+                          f"{attivi['superficie_ha'].sum() / fv_osm['ha'].sum():.1f} volte il "
+                          "costruito", delta_color="off")
+                _top = (fv_osm.groupby("comune")["ha"].sum().sort_values(ascending=False)
+                        .head(3))
+                st.caption(
+                    "I parchi esistenti si addensano nella bassa pianura udinese "
+                    f"({', '.join(_top.index)} in testa per superficie). La mappatura "
+                    "OpenStreetMap non è completa: copre circa "
+                    f"{_mw_osm / _a_terra * 100:.0f}% della potenza a terra del GSE."
+                )
 
         installato = anno_di(pot_fonte[pot_fonte["voce"] == "Fotovoltaico"])["valore"].sum()
         ha_mw = attivi["superficie_ha"].sum() / attivi["potenza_mw"].sum()
@@ -3747,6 +4229,116 @@ Dove un dato è stimato, è scritto.
 
 
 # =====================================================================
+# ACCUMULI (BESS) — catasto regionale, 14/10/2026
+# =====================================================================
+# Fonte: layer prog_impaue_v_bess_public del server cartografico regionale.
+# Le 36 geometrie pubblicate corrispondono a 27 pratiche: alcune hanno il
+# poligono ripetuto o spezzato in piu' parti, e vanno unite per fascicolo,
+# altrimenti la stessa potenza viene contata due volte. Le coordinate sono
+# riproiettate da EPSG:6708 (RDN2008 / UTM 33N) a WGS84.
+#
+# `km_at` e `km_aat` sono la distanza dal conduttore piu' vicino a 132 kV e
+# oltre, e a 220 kV e oltre, calcolate su rete_elettrica_fvg.geojson.
+#
+# Due pratiche non entrano nel totale, e il motivo e' scritto nel campo
+# `escluso`: il valore resta visibile ma non viene sommato.
+BESS_PRATICHE = [
+    {"fascicolo": "2549", "nome": "Aukera Italy 19 S.r.l.", "zona": "Santa Maria la Longa", "mw": 1377.5,
+     "mw_conteggiato": 0.0, "escluso": "dato anomalo", "sup_ha": 3.06, "stato": "in corso",
+     "lat": 45.96840, "lon": 13.27920, "km_at": 0.66, "km_aat": 0.66},
+    {"fascicolo": "2438", "nome": "BESS Redipuglia S.r.l", "zona": "Redipuglia / San Pier d'Isonzo", "mw": 206.5,
+     "mw_conteggiato": 206.5, "escluso": "", "sup_ha": 4.06, "stato": "in corso / n.d.",
+     "lat": 45.85137, "lon": 13.47778, "km_at": 0.28, "km_aat": 0.32},
+    {"fascicolo": "2128", "nome": "Ilary Energia S.r.l.", "zona": "Santa Maria la Longa", "mw": 206.0,
+     "mw_conteggiato": 206.0, "escluso": "", "sup_ha": 9.07, "stato": "in esercizio",
+     "lat": 45.96348, "lon": 13.28855, "km_at": 0.15, "km_aat": 0.15},
+    {"fascicolo": "2626", "nome": "Green Bess Udine S.r.l.", "zona": "Santa Maria la Longa", "mw": 200.6,
+     "mw_conteggiato": 200.6, "escluso": "", "sup_ha": 4.44, "stato": "in corso",
+     "lat": 45.96565, "lon": 13.26631, "km_at": 0.09, "km_aat": 0.09},
+    {"fascicolo": "2558", "nome": "AEI PROJECT XXIV s.r.l. (Planais I)", "zona": "Planais", "mw": 141.1,
+     "mw_conteggiato": 141.1, "escluso": "", "sup_ha": 8.63, "stato": "in corso",
+     "lat": 45.77277, "lon": 13.22499, "km_at": 1.21, "km_aat": 1.23},
+    {"fascicolo": "2502", "nome": "Buja S.r.l.", "zona": "Buja", "mw": 111.9,
+     "mw_conteggiato": 111.9, "escluso": "", "sup_ha": 3.92, "stato": "conclusa",
+     "lat": 46.24449, "lon": 13.09411, "km_at": 0.95, "km_aat": 1.37},
+    {"fascicolo": "2567", "nome": "Green Bess Udine Sud S.r.l.", "zona": "Santa Maria la Longa", "mw": 110.3,
+     "mw_conteggiato": 110.3, "escluso": "", "sup_ha": 2.39, "stato": "in corso",
+     "lat": 45.96255, "lon": 13.26831, "km_at": 0.21, "km_aat": 0.21},
+    {"fascicolo": "2585", "nome": "Green Bess Srl Redipuglia San Pier d'Isonzo", "zona": "Redipuglia / San Pier d'Isonzo", "mw": 110.3,
+     "mw_conteggiato": 110.3, "escluso": "", "sup_ha": 3.50, "stato": "in corso",
+     "lat": 45.84694, "lon": 13.47595, "km_at": 0.12, "km_aat": 0.12},
+    {"fascicolo": "2575", "nome": "EVO S.r.l. Agricola", "zona": "Redipuglia / San Pier d'Isonzo", "mw": 105.0,
+     "mw_conteggiato": 105.0, "escluso": "", "sup_ha": 4.24, "stato": "in corso",
+     "lat": 45.85597, "lon": 13.47222, "km_at": 0.07, "km_aat": 0.07},
+    {"fascicolo": "2518", "nome": "Santa Maria Srl.", "zona": "Santa Maria la Longa", "mw": 104.0,
+     "mw_conteggiato": 104.0, "escluso": "", "sup_ha": 2.93, "stato": "n.d.",
+     "lat": 45.96560, "lon": 13.27693, "km_at": 0.31, "km_aat": 0.31},
+    {"fascicolo": "2540", "nome": "Viola Rinnovabili S.r.l.", "zona": "Basiliano", "mw": 100.0,
+     "mw_conteggiato": 100.0, "escluso": "", "sup_ha": 1.30, "stato": "in corso",
+     "lat": 46.04218, "lon": 13.13659, "km_at": 0.32, "km_aat": 0.35},
+    {"fascicolo": "2548", "nome": "RNE 18 SRL", "zona": "Basiliano", "mw": 100.0,
+     "mw_conteggiato": 100.0, "escluso": "", "sup_ha": 6.12, "stato": "in corso",
+     "lat": 46.06019, "lon": 13.12559, "km_at": 0.67, "km_aat": 1.66},
+    {"fascicolo": "2554", "nome": "Eco Storage 4 S.r.l.", "zona": "Redipuglia / San Pier d'Isonzo", "mw": 99.0,
+     "mw_conteggiato": 99.0, "escluso": "", "sup_ha": 2.78, "stato": "in corso",
+     "lat": 45.85474, "lon": 13.48199, "km_at": 0.13, "km_aat": 0.54},
+    {"fascicolo": "2529", "nome": "RNE 14 Srl", "zona": "Santa Maria la Longa", "mw": 90.0,
+     "mw_conteggiato": 90.0, "escluso": "", "sup_ha": 3.03, "stato": "autorizzato",
+     "lat": 45.96620, "lon": 13.28359, "km_at": 0.35, "km_aat": 0.35},
+    {"fascicolo": "2559", "nome": "Basiliano Uno S.r.l.", "zona": "Basiliano", "mw": 78.0,
+     "mw_conteggiato": 78.0, "escluso": "", "sup_ha": 4.95, "stato": "in corso",
+     "lat": 46.04258, "lon": 13.13429, "km_at": 0.21, "km_aat": 0.21},
+    {"fascicolo": "2560", "nome": "Basiliano Uno S.r.l.", "zona": "Basiliano", "mw": 75.0,
+     "mw_conteggiato": 0.0, "escluso": "probabile alternativa alla pratica 2559", "sup_ha": 4.95, "stato": "in corso",
+     "lat": 46.04258, "lon": 13.13429, "km_at": 0.21, "km_aat": 0.21},
+    {"fascicolo": "2427", "nome": "Porpetto Srl", "zona": "Porpetto", "mw": 65.0,
+     "mw_conteggiato": 65.0, "escluso": "", "sup_ha": 1.15, "stato": "n.d.",
+     "lat": 45.84961, "lon": 13.21003, "km_at": 1.16, "km_aat": 2.03},
+    {"fascicolo": "2512", "nome": "Udine Ovest 65 srl", "zona": "Basiliano", "mw": 65.0,
+     "mw_conteggiato": 65.0, "escluso": "", "sup_ha": 2.06, "stato": "n.d.",
+     "lat": 46.04409, "lon": 13.13588, "km_at": 0.14, "km_aat": 0.30},
+    {"fascicolo": "2601", "nome": "Parco Energetico Friulano 3 S.r.l.", "zona": "Planais", "mw": 41.5,
+     "mw_conteggiato": 41.5, "escluso": "", "sup_ha": 1.38, "stato": "in corso",
+     "lat": 45.78433, "lon": 13.22976, "km_at": 0.12, "km_aat": 0.12},
+    {"fascicolo": "2323", "nome": "Renantis Italia Srl", "zona": "Buja", "mw": 25.0,
+     "mw_conteggiato": 25.0, "escluso": "", "sup_ha": 2.18, "stato": "n.d.",
+     "lat": 46.24035, "lon": 13.10734, "km_at": 0.15, "km_aat": 0.26},
+    {"fascicolo": "2340", "nome": "Renantis Italia Srl", "zona": "Udine est", "mw": 25.0,
+     "mw_conteggiato": 25.0, "escluso": "", "sup_ha": 1.69, "stato": "n.d.",
+     "lat": 46.08344, "lon": 13.30139, "km_at": 0.08, "km_aat": 0.17},
+    {"fascicolo": "2403", "nome": "Atlas Solar 1 Srl", "zona": "Basiliano", "mw": 25.0,
+     "mw_conteggiato": 25.0, "escluso": "", "sup_ha": 5.37, "stato": "n.d.",
+     "lat": 46.04646, "lon": 13.13219, "km_at": 0.13, "km_aat": 0.30},
+    {"fascicolo": "2511", "nome": "BATTITA LTD", "zona": "Pordenone", "mw": 10.0,
+     "mw_conteggiato": 10.0, "escluso": "", "sup_ha": 0.35, "stato": "conclusa",
+     "lat": 45.94647, "lon": 12.87115, "km_at": 0.09, "km_aat": 5.26},
+    {"fascicolo": "2621", "nome": "AEI PROJECT XXII S.R.L.L", "zona": "Isontino", "mw": 10.0,
+     "mw_conteggiato": 10.0, "escluso": "", "sup_ha": 0.22, "stato": "in corso",
+     "lat": 45.93697, "lon": 13.44537, "km_at": 0.88, "km_aat": 6.33},
+    {"fascicolo": "2542", "nome": "Biko Spv 28 S.r.l.", "zona": "Pordenone ovest", "mw": 10.0,
+     "mw_conteggiato": 10.0, "escluso": "", "sup_ha": 0.79, "stato": "in corso",
+     "lat": 46.03519, "lon": 12.65818, "km_at": 0.76, "km_aat": 9.98},
+    {"fascicolo": "2514", "nome": "BATTITA LTD", "zona": "Pordenone", "mw": 9.9,
+     "mw_conteggiato": 9.9, "escluso": "", "sup_ha": 0.24, "stato": "n.d.",
+     "lat": 45.94615, "lon": 12.87154, "km_at": 0.05, "km_aat": 5.31},
+    {"fascicolo": "2566", "nome": "Nwj Ita S.r.l.", "zona": "Udine nord", "mw": 1.2,
+     "mw_conteggiato": 1.2, "escluso": "", "sup_ha": 0.36, "stato": "in corso",
+     "lat": 46.09165, "lon": 13.09119, "km_at": 0.69, "km_aat": 4.18},
+]
+
+# Dato dichiarato nelle audizioni della IV Commissione (aprile 2026), tenuto
+# per ricostruire la crescita della pipeline.
+BESS_AUDIZIONI_2026 = {"pratiche": 26, "mw": 1405.5, "data": "aprile 2026"}
+
+# Mediane calcolate su 400 punti estratti a caso nella pianura friulana
+# (45,75-46,15 N / 12,7-13,6 E): servono da termine di paragone.
+BESS_RIFERIMENTO = {"km_at_mediana": 1.35, "km_aat_mediana": 4.22, "n_punti": 400}
+
+F_BESS = "Catasto regionale FVG, layer impianti BESS (14/10/2026)"
+
+
+
+# =====================================================================
 # ACCETTAZIONE SOCIALE — casi di opposizione a impianti FER in FVG
 # =====================================================================
 # Censimento costruito su atti del Servizio VIA regionale (lexview),
@@ -4098,7 +4690,7 @@ il carico ricade su un territorio solo.
 
     st.markdown(
         """
-**Agrivoltaico e fotovoltaico a terra fanno 14 casi su 18**, e non per caso: sono le
+**Agrivoltaico e fotovoltaico a terra sono i due terzi dei casi**, e non per caso: sono le
 tecnologie che occupano superficie agricola in pianura, dove vive quasi tutta la
 popolazione regionale. L'eolico ha un caso solo, il Pulfar, ma concentra la mobilitazione
 più ampia di tutte: 3.500 firme e cinque Comuni. I BESS sono il fronte nuovo, e quello su
